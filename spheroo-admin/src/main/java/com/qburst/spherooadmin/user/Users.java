@@ -16,7 +16,7 @@ public class Users
 
     @Id
     @Column(name="user_id")
-    private Long userId;
+    private long userId;
 
     @Column(name="email_id")
     @NotNull
