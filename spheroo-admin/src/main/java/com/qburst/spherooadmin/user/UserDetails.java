@@ -1,12 +1,12 @@
 package com.qburst.spherooadmin.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.sun.istack.NotNull;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -19,6 +19,7 @@ public class UserDetails
     private long userId;
 
     @Column(name = "first_name")
+    @NotNull
     private String firstName;
 
     @Column(name = "second_name")
@@ -29,7 +30,6 @@ public class UserDetails
 
 
     @OneToOne(mappedBy = "userDetails",cascade = CascadeType.ALL)
-//    @JoinColumn(name = "login_id",referencedColumnName = "login_id")
     @PrimaryKeyJoinColumn
     private Users users;
 
