@@ -1,31 +1,29 @@
 package com.qburst.spherooadmin.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.sun.istack.NotNull;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class Users
 {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "login_id")
-//    private int  loginId;
 
     @Id
     @Column(name="user_id")
-    private long userId;
+    private Long userId;
 
     @Column(name="email_id")
+    @NotNull
     private String emailId;
 
     @Column(name="password")
+    @NotNull
     private String password;
 
     @OneToOne
