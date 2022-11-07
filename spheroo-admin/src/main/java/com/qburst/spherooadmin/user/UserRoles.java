@@ -19,4 +19,5 @@ public class UserRoles
     private int  userRoleId;
     @Column(name = "user_role")
     private String userRole;
+
 }

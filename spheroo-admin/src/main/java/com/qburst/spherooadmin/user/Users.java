@@ -10,12 +10,17 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "users")
 public class Users
 {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "login_id")
+//    private int  loginId;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "login_id")
-    private int  loginId;
+    @Column(name="user_id")
+    private long userId;
 
     @Column(name="email_id")
     private String emailId;
@@ -23,7 +28,9 @@ public class Users
     @Column(name="password")
     private String password;
 
-//    @OneToOne
-//    @JoinColumn(name = "user_id_foreign",referencedColumnName = "user_id")
-//    private Users users;
+    @OneToOne
+    @MapsId
+    @JoinColumn(name="user_id")
+    private UserDetails userDetails;
+
 }
