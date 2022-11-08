@@ -15,20 +15,20 @@ public class Users
 {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
     private long userId;
 
-    @Column(name="email_id")
-    @NotNull
+    @Column(name = "user_name", nullable = false)
+    private String userName;
+
+    @Column(name="email_id", nullable = false, unique = true, length = 320)
     private String emailId;
 
-    @Column(name="password")
-    @NotNull
+    @Column(name="password",nullable = false)
     private String password;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name="user_id")
-    private UserDetails userDetails;
+    @Column(name="user_role", nullable = false)
+    private int userRole;
 
 }
