@@ -1,4 +1,4 @@
-package com.qburst.spherooadmin;
+package com.qburst.spherooadmin.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,6 +31,6 @@ public class Users
     private String password;
 
     @Column(name="user_role", nullable = false)
-    private int userRole;
+    private String userRole;
 
 }
