@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -21,16 +25,27 @@ public class Users
     @Column(name="user_id")
     private long userId;
 
+    @NotNull
+    @NotEmpty
     @Column(name = "user_name", nullable = false)
+    @Size(min = 6,max = 30)
     private String userName;
 
+    @NotNull
+    @NotEmpty
+    @Email
+    @Size(min =3,max = 320)
     @Column(name="email_id", nullable = false, unique = true, length = 320)
     private String emailId;
 
-    @Column(name="password",nullable = false)
+    @NotNull
+    @NotEmpty
+    @Column(name="password",length = 20,nullable = false)
+    @Size(min = 8,max = 100)
     private String password;
 
     @Column(name="user_role", nullable = false)
-    private String userRole;
+    @Enumerated(EnumType.ORDINAL)
 
+    private UserRole userRole;
 }
