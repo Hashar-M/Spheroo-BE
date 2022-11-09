@@ -8,6 +8,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * @inheritDoc
+ *
+ * Implements the category service interface.
+ */
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService{

@@ -11,7 +11,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class UploadCategoryIconUtil {
+    /**
+     * Uploads the icon for category
+     * @param fileName Name of the icon being uploaded
+     * @param multipartFile the file being uploaded
+     * @return Generated fileCode(A random 10 character alphanumeric string) for the image
+     */
     public static String saveFile(String fileName, MultipartFile multipartFile) throws IOException {
+
         Path uploadPath = Paths.get("File-Uploads/categoryIcons");
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);

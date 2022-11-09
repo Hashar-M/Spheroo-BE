@@ -14,7 +14,11 @@ import javax.persistence.Column;
 import javax.persistence.GenerationType;
 
 
-
+/**
+ * Represents the Category entity.
+ * A Category represents the types of services provided by a supplier
+ * E.g. Electrical, plumbing, etc.
+ */
 @Entity
 @Getter
 @Setter
