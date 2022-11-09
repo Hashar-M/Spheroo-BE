@@ -26,29 +26,35 @@ import java.util.Objects;
 @RequestMapping("/category")
 public class CategoryController {
     private CategoryService categoryService;
+
     @GetMapping("/id={id}")
     public ResponseEntity<Category> getById(@PathVariable long id){
         return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
     }
+
     @GetMapping("/page={page}&=qty={noOfElements}")
     public ResponseEntity<Page<Category>> findAllById(@PathVariable int page, @PathVariable int noOfElements){
         return new ResponseEntity<>(categoryService.getAllCategoriesPaged(page, noOfElements), HttpStatus.OK);
     }
+
     @PutMapping("/id={id}")
     public ResponseEntity<HttpStatus> updateCategory(@RequestBody Category category, @PathVariable Long id) {
         categoryService.updateCategoryById(id, category);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @DeleteMapping("/id={id}")
     public ResponseEntity<HttpStatus> deleteCategory(@PathVariable long id){
         categoryService.deleteCategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @PostMapping("/new")
     public ResponseEntity<HttpStatus> createCategory(@RequestBody Category category) {
         categoryService.saveCategory(category);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
     @PostMapping("/id={id}/uploadIcon")
     public ResponseEntity<HttpStatus> uploadCategoryIcon(@RequestParam("file") MultipartFile multipartFile, @PathVariable long id) throws IOException {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));

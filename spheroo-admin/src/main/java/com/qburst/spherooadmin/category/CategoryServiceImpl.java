@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
+
     private CategoryRepository categoryRepository;
 
     @Override
@@ -41,6 +42,7 @@ public class CategoryServiceImpl implements CategoryService{
         Pageable pageWithRequiredElements = PageRequest.of(pageNo, noOfElements, Sort.by("categoryId"));
         return categoryRepository.findAll(pageWithRequiredElements);
     }
+
     @Transactional
     @Override
     public void updateCategoryIconById(Long categoryId, String categoryIconPath) {
