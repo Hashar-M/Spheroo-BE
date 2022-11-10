@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -20,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static com.qburst.spherooadmin.constants.UserModelConstants.PASSWORD;
-import static com.qburst.spherooadmin.constants.UserModelConstants.TABLE_NAME;
+import static com.qburst.spherooadmin.constants.UserModelConstants.USERS_TABLE;
 import static com.qburst.spherooadmin.constants.UserModelConstants.USER_EMAIL_ID;
 import static com.qburst.spherooadmin.constants.UserModelConstants.USER_ID;
 import static com.qburst.spherooadmin.constants.UserModelConstants.USER_NAME;
@@ -34,7 +33,7 @@ import static com.qburst.spherooadmin.constants.UserModelConstants.USER_ROLE;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = TABLE_NAME)
+@Table(name = USERS_TABLE)
 public class Users
 {
 

@@ -1,6 +1,5 @@
 package com.qburst.spherooadmin.signup;
 
-import com.qburst.spherooadmin.constants.PathConstants;
 import com.qburst.spherooadmin.user.UserService;
 import com.qburst.spherooadmin.user.Users;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static com.qburst.spherooadmin.constants.PathConstants.REGISTRATION_PATH;
+import static com.qburst.spherooadmin.constants.SpherooConstants.REGISTRATION_FAILURE_RESPONSE_MESSAGE;
+import static com.qburst.spherooadmin.constants.SpherooConstants.REGISTRATION_PATH;
+import static com.qburst.spherooadmin.constants.SpherooConstants.REGISTRATION_SUCCESS_RESPONSE_MESSAGE;
 
 /**
  * @author Akhilesh
@@ -32,12 +33,12 @@ public class SignUpController {
     @PostMapping(REGISTRATION_PATH)
     public ResponseEntity<ResponseDTO> registration(@Valid @RequestBody Users users ){
         if(userService.isEmailAlreadyInUse(users.getEmailId())) {
-            ResponseDTO response=new ResponseDTO(false,"email already in use",null);
+            ResponseDTO response=new ResponseDTO(false,REGISTRATION_FAILURE_RESPONSE_MESSAGE,null);
             return ResponseEntity.ok(response);
         }
         else {
             userService.createNewUser(users);
-            ResponseDTO response=new ResponseDTO(true,"success",null);
+            ResponseDTO response=new ResponseDTO(true,REGISTRATION_SUCCESS_RESPONSE_MESSAGE,null);
             return ResponseEntity.ok(response);
         }
     }
