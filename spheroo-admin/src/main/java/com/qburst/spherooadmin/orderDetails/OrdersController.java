@@ -19,15 +19,25 @@ public class OrdersController
     get orders by page
     grt orders by Escalation
     get orders sort by date due asc & desc
+    delete mapping
+    icon upload, is needed?
      */
 
     @Autowired
     private OrdersService ordersService;
 
     @GetMapping("/id={id}")
-    public ResponseEntity<Orders> getOrderById(@PathVariable long id)
+    public ResponseEntity<?> getOrderById(@PathVariable long id)
     {
-        return new ResponseEntity<>(ordersService.getOrderById(id), HttpStatus.OK);
+        Orders orders = ordersService.getOrderById(id);
+        if(orders != null)
+        {
+            return ResponseEntity.status(HttpStatus.OK).body(orders);
+        }
+        else
+        {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
+        }
     }
 
     @PostMapping("/new-order")
@@ -44,9 +54,14 @@ public class OrdersController
     }
 
     @PutMapping("/id={id}")
-    public ResponseEntity<HttpStatus> updateOrder(@RequestBody Orders orders, @PathVariable long id)
+    public ResponseEntity<?> updateOrder(@RequestBody Orders orders, @PathVariable long id)
     {
         orders.setOrderId(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        boolean status =ordersService.updateOrdersById(orders);
+        if(!status) //false
+        {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("order updated");
     }
 }

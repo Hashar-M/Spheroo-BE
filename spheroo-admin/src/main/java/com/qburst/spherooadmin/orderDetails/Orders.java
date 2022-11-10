@@ -1,14 +1,19 @@
 package com.qburst.spherooadmin.orderDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 @Getter
@@ -25,16 +30,20 @@ public class Orders
     @Column(name="order_id")
     private long orderId;
 
-    @Column(name="customer_id")  //need to add not null
+    @NotNull
+    @Column(name="customer_id",nullable = false)
     private long customerId;  //many to one mapping, customer table is not available
 
-    @Column(name="category_id")  //not null
+    @NotNull
+    @Column(name="category_id",nullable = false)  //not null
     private long categoryId;    //many to one mapping
 
-    @Column(name="service_id")  //not null
+    @NotNull
+    @Column(name="service_id",nullable = false)  //not null
     private long serviceId;     //many to one mapping
 
-    @Column(name = "created_date")
+    @NotNull
+    @Column(name = "created_date",nullable = false)
     private Date createdDate;   //date format
 
     @Column(name="delivery_from_date")
@@ -43,19 +52,19 @@ public class Orders
     @Column(name="delivery_to_date")
     private Date deliveryToDate;
 
-    @Column(name="comments")
+    @Column(name="comments",length = 1024)
     private String comments;
 
-    @Column(name = "zip_code")
+    @NotNull
+    @Column(name = "zip_code",nullable = false)
     private String zipCode; // from user table
 
-    @Column(name = "order_status")
+    @NotNull
+    @Column(name = "order_status",nullable = false)
     private String orderStatus;
 
     @Column (name = "issue_attached_image")
     private String issuePicture;
 
-    @Column(name = "service_priority")
-    private String servicePriority;
 
 }

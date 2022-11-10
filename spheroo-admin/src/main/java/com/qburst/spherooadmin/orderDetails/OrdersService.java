@@ -10,5 +10,5 @@ public interface OrdersService
     List<Orders> getOrderByEscalation(int escalationPeriod);
     void addOrder(Orders order);
     Page<Orders> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc);
-    void updateOrdersById(Orders orders);
+    boolean updateOrdersById(Orders orders);
 }

@@ -47,8 +47,14 @@ public class OrdersServiceImpl implements OrdersService
     }
 
     @Override
-    public void updateOrdersById(Orders orders)
+    public boolean updateOrdersById(Orders orders)
     {
+        Orders existingOrder= ordersRepo.getReferenceById(orders.getOrderId());
+        if(existingOrder == null)
+        {
+            return false;
+        }
         ordersRepo.save(orders);
+        return true;
     }
 }
