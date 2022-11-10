@@ -1,7 +1,7 @@
 package com.qburst.spherooadmin.signup;
 
+import com.qburst.spherooadmin.constants.PathConstants;
 import com.qburst.spherooadmin.user.UserService;
-import com.qburst.spherooadmin.user.UserServiceImp;
 import com.qburst.spherooadmin.user.Users;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+
+import static com.qburst.spherooadmin.constants.PathConstants.REGISTRATION_PATH;
 
 /**
  * @author Akhilesh
@@ -27,7 +29,7 @@ public class SignUpController {
      * @return successful http response with body of ResponseDTO object in Json,
      * describing the status of new user creation.
      */
-    @PostMapping("/registration")
+    @PostMapping(REGISTRATION_PATH)
     public ResponseEntity<ResponseDTO> registration(@Valid @RequestBody Users users ){
         if(userService.isEmailAlreadyInUse(users.getEmailId())) {
             ResponseDTO response=new ResponseDTO(false,"email already in use",null);

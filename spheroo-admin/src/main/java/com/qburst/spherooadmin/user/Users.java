@@ -19,6 +19,13 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static com.qburst.spherooadmin.constants.UserModelConstants.PASSWORD;
+import static com.qburst.spherooadmin.constants.UserModelConstants.TABLE_NAME;
+import static com.qburst.spherooadmin.constants.UserModelConstants.USER_EMAIL_ID;
+import static com.qburst.spherooadmin.constants.UserModelConstants.USER_ID;
+import static com.qburst.spherooadmin.constants.UserModelConstants.USER_NAME;
+import static com.qburst.spherooadmin.constants.UserModelConstants.USER_ROLE;
+
 /**
  * User model class.
  */
@@ -27,18 +34,18 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = TABLE_NAME)
 public class Users
 {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
+    @Column(name=USER_ID)
     private long userId;
 
     @NotNull
     @NotEmpty
-    @Column(name = "user_name", nullable = false)
+    @Column(name = USER_NAME, nullable = false)
     @Size(min = 6,max = 30)
     private String userName;
 
@@ -46,17 +53,16 @@ public class Users
     @NotEmpty
     @Email
     @Size(min =3,max = 320)
-    @Column(name="email_id", nullable = false, unique = true, length = 320)
+    @Column(name=USER_EMAIL_ID, nullable = false, unique = true, length = 320)
     private String emailId;
 
     @NotNull
     @NotEmpty
-    @Column(name="password",length = 20,nullable = false)
+    @Column(name=PASSWORD,length = 20,nullable = false)
     @Size(min = 8,max = 100)
     private String password;
 
-    @Column(name="user_role", nullable = false)
+    @Column(name=USER_ROLE, nullable = false)
     @Enumerated(EnumType.ORDINAL)
-
     private UserRole userRole;
 }
