@@ -38,7 +38,7 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public Users getUserById(String email) {
+    public Users getUserByEmailId(String email) {
         return null;
     }
 }

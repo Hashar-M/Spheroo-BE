@@ -6,5 +6,5 @@ package com.qburst.spherooadmin.user;
 public interface UserService {
     public boolean isEmailAlreadyInUse(String email);
     public void createNewUser(Users users);
-    public Users getUserById(String email);
+    public Users getUserByEmailId(String email);
 }
