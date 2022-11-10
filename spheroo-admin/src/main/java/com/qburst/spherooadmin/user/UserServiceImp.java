@@ -36,4 +36,9 @@ public class UserServiceImp implements UserService{
         users.setPassword(passwordEncoder.encode(users.getPassword()));
         usersRepository.save(users);
     }
+
+    @Override
+    public Users getUserById(String email) {
+        return null;
+    }
 }
