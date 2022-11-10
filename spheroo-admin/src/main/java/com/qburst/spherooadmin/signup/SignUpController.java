@@ -1,5 +1,7 @@
 package com.qburst.spherooadmin.signup;
 
+import com.qburst.spherooadmin.user.UserService;
+import com.qburst.spherooadmin.user.UserServiceImp;
 import com.qburst.spherooadmin.user.Users;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ import javax.validation.Valid;
 @RestController
 @AllArgsConstructor
 public class SignUpController {
-    private SignUpService userService;
+    private UserService userService;
 
     /**
      * @param users - user model.
@@ -27,7 +29,7 @@ public class SignUpController {
      */
     @PostMapping("/registration")
     public ResponseEntity<ResponseDTO> registration(@Valid @RequestBody Users users ){
-        if(userService.emailVerification(users.getEmailId())) {
+        if(userService.isEmailAlreadyInUse(users.getEmailId())) {
             ResponseDTO response=new ResponseDTO(false,"email already in use",null);
             return ResponseEntity.ok(response);
         }

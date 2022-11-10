@@ -1,30 +1,28 @@
-package com.qburst.spherooadmin.signup;
+package com.qburst.spherooadmin.user;
 
-import com.qburst.spherooadmin.user.UserRole;
-import com.qburst.spherooadmin.user.Users;
-import com.qburst.spherooadmin.user.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
+ * @inheritDoc
  * @author Akhilesh
- * Service class used for sign up operations.
+ * Service class used for user specific operations.
  */
 @Service
-public class SignUpService {
+public class UserServiceImp implements UserService{
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     /**
-     * {@code public boolean emailVerification(String email)}
+     * {@code public boolean isEmailAlreadyInUse(String email)}
      * A method checks the existence of a user with email address.
      * @param email - email of user as String.
      * @return true if a user with given email id exists in {@link com.qburst.spherooadmin.user.UsersRepository};
      *  else false.
      */
-    public boolean emailVerification(String email){
+    public boolean isEmailAlreadyInUse(String email){
         return usersRepository.existsByEmailId(email);
     }
 
