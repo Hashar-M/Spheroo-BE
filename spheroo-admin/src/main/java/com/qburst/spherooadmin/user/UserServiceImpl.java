@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  * Service class used for user specific operations.
  */
 @Service
-public class UserServiceImp implements UserService{
+public class UserServiceImpl implements UserService{
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
@@ -39,6 +39,6 @@ public class UserServiceImp implements UserService{
 
     @Override
     public Users getUserByEmailId(String email) {
-        return null;
+        return usersRepository.findByEmailId(email);
     }
 }
