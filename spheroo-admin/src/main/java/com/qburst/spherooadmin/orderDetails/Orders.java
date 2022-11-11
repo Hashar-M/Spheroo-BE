@@ -21,7 +21,6 @@ import java.util.Date;
  * It will contain order details which are available at the order placing time.
  *
  */
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -38,7 +37,7 @@ public class Orders
 
     @NotNull
     @Column(name="customer_name",nullable = false)
-    private String customerName;  //many to one mapping, customer table is not available
+    private String customerName;
 
     @NotNull
     @Column(name="category_id",nullable = false)  //not null
@@ -77,6 +76,5 @@ public class Orders
 
     @Column (name = "issue_attached_image")
     private String issuePicture;
-
 
 }
