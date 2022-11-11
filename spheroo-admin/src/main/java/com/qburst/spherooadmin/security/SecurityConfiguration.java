@@ -30,8 +30,7 @@ public class SecurityConfiguration {
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(authenticationFilter)
-                .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+                .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class);
         return http.build();
     }
 }
