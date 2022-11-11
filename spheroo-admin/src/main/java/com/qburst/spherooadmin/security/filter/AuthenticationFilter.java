@@ -21,11 +21,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
-
+/**
+ * When a user attempts authentication, the request goes through the authentication filter first
+ * and provides a response based on whether the authentication was successful or not.
+ */
 @AllArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    @Autowired
+
     private CustomAuthenticationManager authenticationManager;
+
+    /**
+     * Attempts user authentication.
+     * @param request The request from the client
+     * @param response  The response to the client
+     * @return Authentication object that contains the result of the authentication
+     */
     @Override
     public Authentication attemptAuthentication(@NonNull HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -37,6 +47,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         }
     }
 
+    /**
+     * Method is called on unsuccessful authentication
+     * @param request The request from the client
+     * @param response The response to the client
+     * @param failed The AuthenticationException object
+     */
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -44,6 +60,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         response.getWriter().flush();
     }
 
+    /**
+     * Method is called on successful authentication.
+     * Creates a JWT token and adds it to the response header.
+     * @param request The request from the client
+     * @param response The response to the client
+     * @param chain The FilterChain object
+     * @param authResult The result of the authentication
+     */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String token = JWT.create()

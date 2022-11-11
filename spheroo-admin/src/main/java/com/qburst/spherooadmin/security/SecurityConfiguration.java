@@ -12,12 +12,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security configuration class that is used to configure spring security.
+ */
 @Configuration
 @AllArgsConstructor
 public class SecurityConfiguration {
 
     private CustomAuthenticationManager customAuthenticationManager;
 
+    /**
+     * Each request is passed through the SecurityFilterChain and is processed to authenticate
+     * and authorize each and every request.
+     * @inheritDoc
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         AuthenticationFilter authenticationFilter= new AuthenticationFilter(customAuthenticationManager);

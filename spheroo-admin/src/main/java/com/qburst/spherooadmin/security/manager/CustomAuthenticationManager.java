@@ -13,12 +13,22 @@ import org.springframework.stereotype.Component;
 
 
 import java.util.Optional;
+
+/**
+ * Custom authentication manager that authenticates the user.
+ */
 @AllArgsConstructor
 @Component
 public class CustomAuthenticationManager implements AuthenticationManager {
+
     private UserService userService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    /**
+     * Authenticates the user.
+     * @param authentication authentication object that contains the user details
+     * @return Returns a username password authentication token.
+     */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Optional<Users> user = Optional.ofNullable(userService.getUserByEmailId(authentication.getName()));
