@@ -30,8 +30,8 @@ import java.util.List;
 @Table(name = "service")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Service
-{
+public class Service {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long serviceId;
@@ -39,16 +39,13 @@ public class Service
     @Column(name = "service_name", length = 64, nullable = false, unique = true)
     private String serviceName;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     @Column(name = "description", length = 1024)
     private String description;
 
     @Column(name="variable_price")
     private String variablePrice;
 
-    @OneToMany(targetEntity = ServiceCharge.class)
+    @OneToMany(targetEntity = ServiceCharge.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_id")
     private List<ServiceCharge>  serviceChargeList;
 }

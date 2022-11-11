@@ -25,16 +25,12 @@ import javax.persistence.Table;
 @Table(name = "service_charge")
 @AllArgsConstructor
 @NoArgsConstructor
-public class ServiceCharge
-{
+public class ServiceCharge {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "charge_id")
     private long chargeId;
-
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinColumn(name = "service_id")
-    private Service service;
 
     @Column(name = "service_priority")
     private String servicePriority;
