@@ -33,8 +33,6 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Optional<Users> user = Optional.ofNullable(userService.getUserByEmailId(authentication.getName()));
         if (user.isPresent()) {
-            System.out.println(authentication.getName());
-            System.out.println(authentication.getCredentials());
             if (authentication.getCredentials() != null && !bCryptPasswordEncoder.matches(authentication.getCredentials().toString(), user.get().getPassword())) {
                 throw new BadCredentialsException("Invalid Username or Password!");
             }
