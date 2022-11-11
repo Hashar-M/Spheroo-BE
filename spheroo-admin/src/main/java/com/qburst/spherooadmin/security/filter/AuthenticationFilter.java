@@ -3,7 +3,7 @@ package com.qburst.spherooadmin.security.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qburst.spherooadmin.security.SecurityConstants;
+import com.qburst.spherooadmin.constants.SecurityConstants;
 import com.qburst.spherooadmin.security.manager.CustomAuthenticationManager;
 import com.qburst.spherooadmin.user.Users;
 import lombok.AllArgsConstructor;

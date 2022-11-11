@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.security;
 
+import com.qburst.spherooadmin.constants.SecurityConstants;
 import com.qburst.spherooadmin.security.filter.AuthenticationFilter;
 import com.qburst.spherooadmin.security.filter.JWTAuthorizationFilter;
 import com.qburst.spherooadmin.security.manager.CustomAuthenticationManager;

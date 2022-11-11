@@ -2,7 +2,7 @@ package com.qburst.spherooadmin.security.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.qburst.spherooadmin.security.SecurityConstants;
+import com.qburst.spherooadmin.constants.SecurityConstants;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
