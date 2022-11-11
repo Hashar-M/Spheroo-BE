@@ -8,13 +8,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
-public class OrdersServiceImpl implements OrdersService
-{
-    private OrdersRepository ordersRepo;
+public class OrdersServiceImpl implements OrdersService {
 
+    private OrdersRepository ordersRepo;
 
     @Override
     public Orders getOrderById(long id) {
@@ -27,47 +27,36 @@ public class OrdersServiceImpl implements OrdersService
     }
 
     @Override
-    public void addOrder(Orders order)
-    {
+    public void addOrder(Orders order) {
         ordersRepo.save(order);
     }
 
     @Override
-    public Page<Orders> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc,String status)
-    {
+    public Page<Orders> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc,String status) {
         Pageable pageWithRequiredElements;
-        if(isAsc)
-        {
+        if(isAsc) {
             pageWithRequiredElements = PageRequest.of(pageNo,noOfElements, Sort.by(columnToSort));
-        }
-        else
-        {
+        } else {
             pageWithRequiredElements = PageRequest.of(pageNo,noOfElements, Sort.by(columnToSort).descending());
         }
-        if(status.equalsIgnoreCase("open"))
-        {
+
+        if(status.equalsIgnoreCase("open")) {
             return ordersRepo.findByOpenOrderStatus(pageWithRequiredElements);
-
-        } else if (status.equalsIgnoreCase("closed"))
-        {
+        } else if (status.equalsIgnoreCase("closed")) {
             return ordersRepo.findByClosedOrderStatus(pageWithRequiredElements);
-        } else if (status.equalsIgnoreCase("overdue"))
-        {
-            return ordersRepo.getOrderByDuePeriod(2,pageWithRequiredElements); // 2 days from due date considered as overdue
-
-        } else
-        {
-
-            return ordersRepo.getOrderByDuePeriod(4,pageWithRequiredElements); //4 days from due date considered as Escalation
+        } else if (status.equalsIgnoreCase("overdue")) {
+            // 2 days from due date considered as overdue
+            return ordersRepo.getOrderByDuePeriod(2,pageWithRequiredElements);
+        } else {
+            //4 days from due date considered as Escalation
+            return ordersRepo.getOrderByDuePeriod(4,pageWithRequiredElements);
         }
     }
 
     @Override
-    public boolean updateOrdersById(Orders orders)
-    {
+    public boolean updateOrdersById(Orders orders) {
         Orders existingOrder= ordersRepo.getReferenceById(orders.getOrderId());
-        if(existingOrder == null)
-        {
+        if(Objects.isNull(existingOrder)) {
             return false;
         }
         ordersRepo.save(orders);

@@ -14,13 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
-@Slf4j
-@RestController
-@AllArgsConstructor
-@RequestMapping("/orders")
-public class OrdersController
-{
     /*
     Controller for the Order entity
     Done:
@@ -34,6 +27,11 @@ public class OrdersController
     DELETE delete order by id
     upload picture if needed
      */
+@Slf4j
+@RestController
+@AllArgsConstructor
+@RequestMapping("/orders")
+public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;
@@ -47,12 +45,9 @@ public class OrdersController
     public ResponseEntity<?> getOrderById(@PathVariable long id) {
 
         Orders orders = ordersService.getOrderById(id);
-        if(orders != null)
-        {
+        if(orders != null) {
             return ResponseEntity.status(HttpStatus.OK).body(orders);
-        }
-        else
-        {
+        } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }
     }
@@ -71,12 +66,11 @@ public class OrdersController
                                            @RequestParam String columnToSort, @RequestParam boolean isAsc, @RequestParam String status) {
         log.info("page: "+page+"qty: "+noOfElements+" columnToSort: "+columnToSort+" isAsc: "+isAsc+" status: "+status);
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
-                status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue"))
-        {
+                status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue")) {
             return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page,noOfElements,columnToSort,isAsc,status));
-        }
-        else
+        } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
+        }
     }
 
     /**
@@ -100,8 +94,8 @@ public class OrdersController
     public ResponseEntity<?> updateOrder(@RequestBody Orders orders, @PathVariable long id) {
         orders.setOrderId(id);
         boolean status =ordersService.updateOrdersById(orders);
-        if(!status) //false
-        {
+
+        if(!status) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }
         return ResponseEntity.status(HttpStatus.OK).body("order updated");

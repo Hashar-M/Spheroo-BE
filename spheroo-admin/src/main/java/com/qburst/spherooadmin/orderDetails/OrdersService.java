@@ -4,8 +4,8 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public interface OrdersService
-{
+public interface OrdersService {
+
     Orders getOrderById(long id);
     List<Orders> getOrderByEscalation(int escalationPeriod);
     void addOrder(Orders order);
