@@ -16,6 +16,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
+/**
+ * Represents the orders entity
+ * It will contain order details which are available at the order placing time.
+ *
+ */
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -31,8 +37,8 @@ public class Orders
     private long orderId;
 
     @NotNull
-    @Column(name="customer_id",nullable = false)
-    private long customerId;  //many to one mapping, customer table is not available
+    @Column(name="customer_name",nullable = false)
+    private String customerName;  //many to one mapping, customer table is not available
 
     @NotNull
     @Column(name="category_id",nullable = false)  //not null
@@ -59,6 +65,12 @@ public class Orders
     @Column(name = "zip_code",nullable = false)
     private String zipCode; // from user table
 
+    /** status may have unassigned, unaccepted, accepted, rejected, closed
+     * open orders:
+     *      unassigned,unaccepted
+     * closed orders:
+     *      accepted,rejected,closed
+     */
     @NotNull
     @Column(name = "order_status",nullable = false)
     private String orderStatus;

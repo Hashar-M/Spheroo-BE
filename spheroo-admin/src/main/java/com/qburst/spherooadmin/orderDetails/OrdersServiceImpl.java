@@ -15,6 +15,7 @@ public class OrdersServiceImpl implements OrdersService
 {
     private OrdersRepository ordersRepo;
 
+
     @Override
     public Orders getOrderById(long id) {
         return ordersRepo.getReferenceById(id);
@@ -32,7 +33,7 @@ public class OrdersServiceImpl implements OrdersService
     }
 
     @Override
-    public Page<Orders> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc)
+    public Page<Orders> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc,String status)
     {
         Pageable pageWithRequiredElements;
         if(isAsc)
@@ -43,7 +44,22 @@ public class OrdersServiceImpl implements OrdersService
         {
             pageWithRequiredElements = PageRequest.of(pageNo,noOfElements, Sort.by(columnToSort).descending());
         }
-        return ordersRepo.findAll(pageWithRequiredElements);
+        if(status.equalsIgnoreCase("open"))
+        {
+            return ordersRepo.findByOpenOrderStatus(pageWithRequiredElements);
+
+        } else if (status.equalsIgnoreCase("closed"))
+        {
+            return ordersRepo.findByClosedOrderStatus(pageWithRequiredElements);
+        } else if (status.equalsIgnoreCase("overdue"))
+        {
+            return ordersRepo.getOrderByDuePeriod(2,pageWithRequiredElements); // 2 days from due date considered as overdue
+
+        } else
+        {
+
+            return ordersRepo.getOrderByDuePeriod(4,pageWithRequiredElements); //4 days from due date considered as Escalation
+        }
     }
 
     @Override
