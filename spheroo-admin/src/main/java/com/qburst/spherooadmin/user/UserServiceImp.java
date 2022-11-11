@@ -39,6 +39,6 @@ public class UserServiceImp implements UserService{
 
     @Override
     public Users getUserByEmailId(String email) {
-        return null;
+        return usersRepository.findByEmailId(email);
     }
 }
