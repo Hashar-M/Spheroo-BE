@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  * Service class used for user specific operations.
  */
 @Service
-public class UserServiceImp implements UserService{
+public class UserServiceImpl implements UserService{
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
