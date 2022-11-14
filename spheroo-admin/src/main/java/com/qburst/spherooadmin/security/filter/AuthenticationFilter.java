@@ -8,7 +8,6 @@ import com.qburst.spherooadmin.security.manager.CustomAuthenticationManager;
 import com.qburst.spherooadmin.user.Users;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
