@@ -50,6 +50,16 @@ public class CategoryController {
     public ResponseEntity<Page<Category>> findAllById(@PathVariable int page, @PathVariable int noOfElements){
         return new ResponseEntity<>(categoryService.getAllCategoriesPaged(page, noOfElements), HttpStatus.OK);
     }
+    /**
+     * API for getting manage category page details.
+     * @param page page number in pagination
+     * @param noOfElements for pagination
+     * @return manage category details in the form of array.
+     */
+    @GetMapping(path="/manage_categories")
+    public ResponseEntity<?> getManageCategoryDetails (@RequestParam int page,@RequestParam int noOfElements){
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.getManageCategoryDetails(page,noOfElements));
+    }
 
     /**
      * Update an existing category by providing its id.
@@ -59,8 +69,13 @@ public class CategoryController {
      */
     @PutMapping("/id={id}")
     public ResponseEntity<HttpStatus> updateCategory(@RequestBody Category category, @PathVariable Long id) {
-        categoryService.updateCategoryById(id, category);
-        return new ResponseEntity<>(HttpStatus.OK);
+        boolean statusOk = categoryService.updateCategoryById(id, category);
+        if(statusOk){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     /**
@@ -81,6 +96,7 @@ public class CategoryController {
      */
     @PostMapping("/new")
     public ResponseEntity<HttpStatus> createCategory(@RequestBody Category category) {
+
         categoryService.saveCategory(category);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

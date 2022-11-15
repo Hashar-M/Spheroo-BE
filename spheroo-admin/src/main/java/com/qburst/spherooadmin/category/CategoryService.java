@@ -25,7 +25,7 @@ public interface CategoryService {
      * @param categoryId the id of the category to update.
      * @param category The category to update the existing category with.
      */
-    void updateCategoryById(Long categoryId, Category category);
+    boolean updateCategoryById(Long categoryId, Category category);
 
     /**
      * Deletes a category from the database.
@@ -47,4 +47,6 @@ public interface CategoryService {
      * @param categoryIconPath the path to the icon of the category.
      */
     void updateCategoryIconById(Long categoryId, String categoryIconPath);
+
+    ManageCategoryDTO getManageCategoryDetails(int pageNo, int noOfElements);
 }
