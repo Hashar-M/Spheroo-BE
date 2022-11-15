@@ -29,12 +29,12 @@ import java.util.Objects;
 @RequestMapping("/category")
 public class CategoryController {
     private CategoryService categoryService;
+
     /**
      * Get a category by providing its id.
      * @param id the category_id to retrieve from the database.
      * @return Returns the category serialized in JSON along with HTTP status OK.
      */
-
     @GetMapping("/id={id}")
     public ResponseEntity<Category> getById(@PathVariable long id){
         return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
@@ -50,6 +50,7 @@ public class CategoryController {
     public ResponseEntity<Page<Category>> findAllById(@PathVariable int page, @PathVariable int noOfElements){
         return new ResponseEntity<>(categoryService.getAllCategoriesPaged(page, noOfElements), HttpStatus.OK);
     }
+
     /**
      * API for getting manage category page details.
      * @param page page number in pagination

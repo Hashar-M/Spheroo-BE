@@ -40,7 +40,6 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public boolean updateCategoryById(Long categoryId, Category category) {
-//        categoryRepository.updateCategoryById(category.getCategoryName(), category.getCategoryDescription(), category.getCategoryIcon(), categoryId);
         boolean isExist = categoryRepository.existsById(categoryId);
         if(isExist){
             category.setCategoryId(categoryId);
