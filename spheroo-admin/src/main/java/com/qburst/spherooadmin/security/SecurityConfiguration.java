@@ -31,7 +31,7 @@ public class SecurityConfiguration {
         AuthenticationFilter authenticationFilter= new AuthenticationFilter(customAuthenticationManager);
         authenticationFilter.setFilterProcessesUrl("/authenticate");
         http
-                .cors().and().csrf().disable()
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, SecurityConstants.REGISTER_PATH).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.LOGIN_PATH).permitAll()
