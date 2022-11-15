@@ -1,5 +1,7 @@
 package com.qburst.spherooadmin.category;
 
+import com.qburst.spherooadmin.service.ServiceChargeRepository;
+import com.qburst.spherooadmin.service.ServiceRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -7,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @inheritDoc
@@ -18,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryServiceImpl implements CategoryService{
 
     private CategoryRepository categoryRepository;
+    private ServiceRepository serviceRepository;
+    private ServiceChargeRepository serviceChargeRepository;
 
     @Override
     @Transactional
@@ -33,7 +39,12 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public void updateCategoryById(Long categoryId, Category category) {
-        categoryRepository.updateCategoryById(category.getCategoryName(), category.getCategoryDescription(), category.getCategoryIcon(), categoryId);
+//        categoryRepository.updateCategoryById(category.getCategoryName(), category.getCategoryDescription(), category.getCategoryIcon(), categoryId);
+        categoryRepository.save(category);
+        List<Long> noReferenceChargeIds = serviceChargeRepository.findNullServiceCharges();
+        serviceChargeRepository.deleteAllById(noReferenceChargeIds);
+        List<Long> noReferenceServiceIds = serviceRepository.findNullCategoryServices();
+        serviceRepository.deleteAllById(noReferenceServiceIds);
     }
 
     @Override
