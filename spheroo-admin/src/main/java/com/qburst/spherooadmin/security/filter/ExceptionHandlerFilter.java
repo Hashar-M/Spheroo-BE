@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.security.filter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.qburst.spherooadmin.constants.ResponseConstants;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,11 +25,11 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (JWTVerificationException e) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getWriter().write("JWT NOT VALID");
+            response.getWriter().write(ResponseConstants.JWT_VALIDITY_EXCEPTION_RESPONSE);
             response.getWriter().flush();
         } catch (RuntimeException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("BAD REQUEST");
+            response.getWriter().write(ResponseConstants.FILTER_RUNTIME_EXCEPTION_RESPONSE);
             response.getWriter().flush();
         }
     }
