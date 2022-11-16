@@ -11,4 +11,6 @@ public interface OrdersService {
     void addOrder(Orders order);
     Page<Orders> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc, String status);
     boolean updateOrdersById(Orders orders);
+    boolean deleteOrderById(long Id);
+    OrderStatisticsDTO getOrdersStatistics();
 }

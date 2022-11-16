@@ -1,10 +1,13 @@
 package com.qburst.spherooadmin.orderDetails;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,6 +76,11 @@ public class OrdersController {
         }
     }
 
+    @GetMapping("/orders-statistics")
+    public ResponseEntity<?> getOrdersStatistics(){
+        return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
+    }
+
     /**
      * add a new order by providing its id.
      * @param order the order data to add to the database.
@@ -99,5 +107,14 @@ public class OrdersController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }
         return ResponseEntity.status(HttpStatus.OK).body("order updated");
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity <?> deleteOrder(@PathVariable long id){
+        boolean deleteStatus = ordersService.deleteOrderById(id);
+        if(deleteStatus){
+            return ResponseEntity.status(HttpStatus.OK).body("order deleted successfully");
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no order details with this Id");
+        }
     }
 }
