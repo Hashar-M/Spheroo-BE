@@ -1,9 +1,29 @@
 package com.qburst.spherooadmin;
 
+import com.qburst.spherooadmin.supplier.Supplier;
+import com.qburst.spherooadmin.supplier.SupplierRepository;
+import com.qburst.spherooadmin.supplieruser.SupplierUserRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Optional;
 
 @SpringBootTest
 class SpherooAdminApplicationTests {
+    @Autowired
+    SupplierUserRepository supplierUserRepository;
+    @Autowired
+    SupplierRepository supplierRepository;
+    @Test
+    public void getSupplier(){
+        Optional<Supplier> list=supplierRepository.findById(1L);
+//        System.out.println(list.get);
+    }
+    @Test
+    public void getUsers(){
+        System.out.println(supplierUserRepository.findAll());
+    }
 	/*@Autowired
 	private SupplierRepository supplierRepository;
 	@Autowired

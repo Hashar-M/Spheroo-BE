@@ -1,4 +1,4 @@
-package com.qburst.spherooadmin.supplier;
+package com.qburst.spherooadmin.supplieruser;
 
 public enum SupplierUserType {MANAGER,AGENTS
 }
