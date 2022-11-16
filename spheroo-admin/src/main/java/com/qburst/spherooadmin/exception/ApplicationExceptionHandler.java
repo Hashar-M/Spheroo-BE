@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.exception;
 
+import com.qburst.spherooadmin.constants.ResponseConstants;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -33,13 +34,13 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<Object> handleDataAccessException(EmptyResultDataAccessException ex) {
-        ErrorResponse error = new ErrorResponse(Arrays.asList("Cannot delete non-existing resource"), HttpStatus.NOT_FOUND);
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.DATA_ACCESS_EXCEPTION_RESPONSE), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        ErrorResponse error = new ErrorResponse(Arrays.asList("Data Integrity Violation: we cannot process your request."), HttpStatus.BAD_REQUEST);
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.DATA_INTEGRITY_EXCEPTION_RESPONSE), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
