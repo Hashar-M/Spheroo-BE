@@ -1,5 +1,6 @@
-package com.qburst.spherooadmin.supplier;
+package com.qburst.spherooadmin.supplieruser;
 
+import com.qburst.spherooadmin.supplier.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,11 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,16 +31,16 @@ public class SupplierUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "supplierUser_id")
-    private int supplierUserId;
+    private long supplierUserId;
 
     @Column(name = "supplier_user_name",nullable = false)
     private String name;
 
     @Column(name = "supplier_user_mob_no",nullable = false)
-    private long mobileNumber;
+    private String mobileNumber;
 
     @Column(name = "supplier_user_fixed_mob_no",nullable = false)
-    private long fixedLineNumber;
+    private String fixedLineNumber;
 
     @Column(name = "supplier_user_email",nullable = false)
     private String supplierUserEmail;
@@ -51,7 +49,7 @@ public class SupplierUser {
     @Enumerated(EnumType.ORDINAL)
     private SupplierUserType supplierUserType;
 
-    @ManyToOne(optional = false,fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "supplier_id",
                referencedColumnName = "supplier_id")
     private Supplier supplier;

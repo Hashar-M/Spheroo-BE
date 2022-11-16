@@ -61,5 +61,4 @@ public class Category {
 
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Supplier> suppliers;
-
 }

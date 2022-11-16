@@ -27,19 +27,19 @@ import javax.persistence.Table;
 @Embeddable
 @ToString
 @AttributeOverrides({@AttributeOverride(name = "country",
-                    column = @Column(name = "country")),
+                    column = @Column(name = "country",nullable = false)),
                     @AttributeOverride(name = "town",
-                    column = @Column(name = "town")),
+                    column = @Column(name = "town",nullable = false)),
                     @AttributeOverride(name = "district",
-                    column = @Column(name = "district")),
+                    column = @Column(name = "district",nullable = false)),
                     @AttributeOverride(name = "pinCode",
-                    column = @Column(name = "pinCode")),
+                    column = @Column(name = "pinCode",nullable = false)),
                     @AttributeOverride(name = "buildNo",
-                    column =@Column(name = "buildNo"))})
+                    column =@Column(name = "buildNo",nullable = false))})
 public class SupplierAddress {
     private String country;
     private String town;
     private String district;
-    private String pinCode;
-    private String buildNo;
+    private int pinCode;
+    private long buildNo;
 }

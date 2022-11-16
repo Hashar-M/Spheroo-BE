@@ -1,6 +1,6 @@
 package com.qburst.spherooadmin.supplier;
 
-import com.qburst.spherooadmin.category.Category;
+import com.qburst.spherooadmin.supplieruser.SupplierUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -16,8 +17,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@ToString(/*exclude = "category"*/)
+@ToString
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,12 +47,12 @@ public class Supplier {
     @Embedded
     private SupplierAddress supplierAddress;
 
-    @ManyToOne(optional = false,cascade = CascadeType.ALL,
-              fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id",
-                referencedColumnName = "category_id")
-    private Category category;
+    @Column(name = "category_id",nullable = false)
+    private long categoryId;
+
+    @Column(name = "category_name",nullable = false)
+    private String categoryNames;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "supplier",fetch = FetchType.EAGER)
     private List<SupplierUser> supplierUsers;
-}
+  }

@@ -2,6 +2,7 @@ package com.qburst.spherooadmin.category;
 
 import com.qburst.spherooadmin.upload.UploadCategoryIconUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @RequestMapping("/category")
 public class CategoryController {
+    //@Autowired
     private CategoryService categoryService;
 
     /**
