@@ -9,12 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SupplierGetDTO {
-    private long supplierId;
+public class SupplierDeleteDTO {
     private String supplierName;
-    private String contactName;
-    private String contactNumber;
-    private String emailId;
-    private String category;
-    private int pinCode;
 }

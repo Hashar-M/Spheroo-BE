@@ -28,7 +28,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@ToString
+//@ToString
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
