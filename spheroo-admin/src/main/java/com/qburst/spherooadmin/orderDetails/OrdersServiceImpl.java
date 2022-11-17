@@ -97,4 +97,9 @@ public class OrdersServiceImpl implements OrdersService {
         orderStatisticsDTO.setEscalationsCount(ordersRepo.getOrdersCountByDuePeriod("96 HOURS"));
         return orderStatisticsDTO;
     }
+
+    @Override
+    public List<Orders> getOrdersByStatus() {
+        return ordersRepo.findByOpenOrderStatus();
+    }
 }

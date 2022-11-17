@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.orderDetails;
 
+import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,6 +37,8 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
      */
     @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED')",nativeQuery = true)
     Page<Orders> findByOpenOrderStatus(Pageable pageable);
+    @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED') LIMIT 3",nativeQuery = true)
+    List<Orders> findByOpenOrderStatus();
 
     /**
      * function for getting open order count.

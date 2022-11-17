@@ -13,4 +13,5 @@ public interface OrdersService {
     boolean updateOrdersById(Orders orders);
     boolean deleteOrderById(long Id);
     OrderStatisticsDTO getOrdersStatistics();
+    List<Orders> getOrdersByStatus();
 }

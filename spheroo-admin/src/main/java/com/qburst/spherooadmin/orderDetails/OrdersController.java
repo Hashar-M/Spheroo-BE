@@ -1,5 +1,8 @@
 package com.qburst.spherooadmin.orderDetails;
 
+import com.qburst.spherooadmin.category.Category;
+import com.qburst.spherooadmin.category.CategoryRepository;
+import com.qburst.spherooadmin.category.CategoryService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -16,20 +19,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
-    /*
-    Controller for the Order entity
-    Done:
-    GET order by id
-    GET pageable order by different status OPEN, CLOSED,ESCALATION sorted by due date ASC and DSC
-    POST add new order
-    PUT update the existing order
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-    TODO:
-    API for download as CSV
-    DELETE delete order by id
-    upload picture if needed
-     */
+/*
+Controller for the Order entity
+Done:
+GET order by id
+GET pageable order by different status OPEN, CLOSED,ESCALATION sorted by due date ASC and DSC
+POST add new order
+PUT update the existing order
+
+TODO:
+API for download as CSV
+DELETE delete order by id
+upload picture if needed
+ */
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -38,6 +49,7 @@ public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;
+    private CategoryService categoryService;
 
     /**
      * Get an order details by providing its id
@@ -79,6 +91,38 @@ public class OrdersController {
     @GetMapping("/orders-statistics")
     public ResponseEntity<?> getOrdersStatistics(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
+    }
+    @GetMapping("/orders-export")
+    public void  exportOrdersToCSV(HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        String fileName= "users.csv";
+        String headerKey = "Content-Disposition";
+        String headerValue ="attachment; filename="+fileName;
+        response.setHeader(headerKey,headerValue);
+
+        List<Orders> ordersList = ordersService.getOrdersByStatus();
+        List<OrdersDisplayDTO> ordersDisplayDTOList = new ArrayList<>();
+        for (Orders order: ordersList) {
+            OrdersDisplayDTO ordersDisplayDTO = new OrdersDisplayDTO();
+            ordersDisplayDTO.setOrderId(order.getOrderId());
+            ordersDisplayDTO.setCustomerName(order.getCustomerName());
+            ordersDisplayDTO.setCreatedDate(order.getCreatedDate());
+            ordersDisplayDTO.setDeliveryFromDate(order.getDeliveryFromDate());
+            ordersDisplayDTO.setComments(order.getComments());
+            ordersDisplayDTO.setZipCode(order.getZipCode());
+            ordersDisplayDTO.setOrderStatus(order.getOrderStatus());
+            ordersDisplayDTO.setCategoryName(categoryService.getCategoryNameById(order.getCategoryId()));
+        }
+        ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+        String[] csvHeader = {"order_id","customer_name","category_id","service_id","created_date","delivery_from_date","delivery_to_date",
+                "comments","zip_code","order_status","issue_attached_image"};
+        String[] nameMapping= {"orderId","customerName","categoryId","serviceId","createdDate","deliveryFromDate","deliveryToDate","comments",
+                "zipCode","orderStatus","issuePicture"};
+        csvBeanWriter.writeHeader(csvHeader);
+        for(Orders order: ordersList){
+            csvBeanWriter.write(order,nameMapping);
+        }
+        csvBeanWriter.close();
     }
 
     /**
