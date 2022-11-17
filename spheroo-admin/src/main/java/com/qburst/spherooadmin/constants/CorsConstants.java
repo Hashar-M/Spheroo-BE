@@ -11,4 +11,5 @@ public class CorsConstants {
     public static final String CORS_ORIGIN = "*";
     public static final String CORS_ALLOWED_HEADERS = "authorization, content-type, xsrf-token";
     public static final String CORS_EXPOSED_HEADERS = "xsrf-token";
+    public static final String OPTIONS_METHOD = "OPTIONS";
 }

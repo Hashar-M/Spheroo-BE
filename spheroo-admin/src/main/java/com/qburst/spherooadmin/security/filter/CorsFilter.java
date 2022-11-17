@@ -21,7 +21,7 @@ public class CorsFilter extends OncePerRequestFilter {
         response.setHeader(CorsConstants.CORS_ACCESS_MAX_AGE_HEADER, CorsConstants.CORS_MAX_AGE);
         response.setHeader(CorsConstants.CORS_ALLOWED_HEADERS, CorsConstants.CORS_ALLOWED_HEADERS);
         response.addHeader(CorsConstants.CORS_EXPOSED_HEADERS, CorsConstants.CORS_ACCESS_EXPOSE_HEADERS);
-        if ("OPTIONS".equals(request.getMethod())) {
+        if (CorsConstants.OPTIONS_METHOD.equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
             filterChain.doFilter(request, response);
