@@ -51,22 +51,4 @@ public class SecurityConfiguration {
                 .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class);
         return http.build();
     }
-
-    @Bean
-    public CorsConfigurationSource corsConfiguration() {
-        CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.applyPermitDefaultValues();
-        corsConfig.setAllowCredentials(true);
-        corsConfig.addAllowedMethod("GET");
-        corsConfig.addAllowedMethod("PATCH");
-        corsConfig.addAllowedMethod("POST");
-        corsConfig.addAllowedMethod("OPTIONS");
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type"));
-        corsConfig.setExposedHeaders(Arrays.asList("X-Get-Header"));
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
-        return source;
-    }
 }
