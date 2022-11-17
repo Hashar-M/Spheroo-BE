@@ -6,7 +6,12 @@ import com.qburst.spherooadmin.supplieruser.SupplierUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -17,12 +22,28 @@ class SpherooAdminApplicationTests {
     SupplierRepository supplierRepository;
     @Test
     public void getSupplier(){
-        Optional<Supplier> list=supplierRepository.findById(1L);
-//        System.out.println(list.get);
+        Optional<Supplier> supplier=supplierRepository.findById(6L);
+        System.out.println(supplier);
+        //System.out.println(supplier.get());
+        if(supplier.isPresent()){
+            Supplier supplier1=supplier.get();
+            System.out.println(supplier1);
+            System.out.println(supplier1.getSupplierUsers().get(1).getSupplier());
+        }
     }
     @Test
     public void getUsers(){
         System.out.println(supplierUserRepository.findAll());
+    }
+    @Test
+    void pagination(){
+        Pageable page= PageRequest.of(0,4);
+        Slice<Supplier> suppliers=supplierRepository.findAll(page);
+/*
+        System.out.println(suppliers.forEach(););
+*/
+        //System.out.println(suppliers.n());
+
     }
 	/*@Autowired
 	private SupplierRepository supplierRepository;

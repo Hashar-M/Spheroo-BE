@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.supplieruser;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qburst.spherooadmin.supplier.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,14 +20,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "supplier_user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-@ToString
+//@ToString
 public class SupplierUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +51,7 @@ public class SupplierUser {
     @Column(name = "supplier_user_roles",nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private SupplierUserType supplierUserType;
-
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "supplier_id",
                referencedColumnName = "supplier_id")

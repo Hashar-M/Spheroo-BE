@@ -25,7 +25,7 @@ import javax.persistence.Table;
 @Setter
 @Builder
 @Embeddable
-@ToString
+//@ToString
 @AttributeOverrides({@AttributeOverride(name = "country",
                     column = @Column(name = "country",nullable = false)),
                     @AttributeOverride(name = "town",
@@ -33,7 +33,7 @@ import javax.persistence.Table;
                     @AttributeOverride(name = "district",
                     column = @Column(name = "district",nullable = false)),
                     @AttributeOverride(name = "pinCode",
-                    column = @Column(name = "pinCode",nullable = false)),
+                    column = @Column(name = "pinCode",nullable = false,unique = true)),
                     @AttributeOverride(name = "buildNo",
                     column =@Column(name = "buildNo",nullable = false))})
 public class SupplierAddress {

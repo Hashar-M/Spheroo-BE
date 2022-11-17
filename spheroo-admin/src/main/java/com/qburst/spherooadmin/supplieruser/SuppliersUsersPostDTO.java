@@ -29,6 +29,7 @@ public class SuppliersUsersPostDTO {
 
     @NotNull
     @NotEmpty
+    @Pattern(regexp = "^\\\\s?((\\\\+[1-9]{1,4}[ \\\\-]*)|(\\\\([0-9]{2,3}\\\\)[ \\\\-]*)|([0-9]{2,4})[ \\\\-]*)*?[0-9]{3,4}?[ \\\\-]*[0-9]{3,4}?\\\\s?",message = "not a valid phone number")
     private String supplierUserFixedMobileNumber;
 
     @NotNull
