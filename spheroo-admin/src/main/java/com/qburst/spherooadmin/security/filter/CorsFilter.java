@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.security.filter;
 
+import com.qburst.spherooadmin.constants.CorsConstants;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -15,11 +16,11 @@ public class CorsFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token");
-        response.addHeader("Access-Control-Expose-Headers", "xsrf-token");
+        response.setHeader(CorsConstants.CORS_ACCESS_ORIGIN_HEADER, CorsConstants.CORS_ORIGIN);
+        response.setHeader(CorsConstants.CORS_ACCESS_METHOD_HEADER, CorsConstants.CORS_METHODS);
+        response.setHeader(CorsConstants.CORS_ACCESS_MAX_AGE_HEADER, CorsConstants.CORS_MAX_AGE);
+        response.setHeader(CorsConstants.CORS_ALLOWED_HEADERS, CorsConstants.CORS_ALLOWED_HEADERS);
+        response.addHeader(CorsConstants.CORS_EXPOSED_HEADERS, CorsConstants.CORS_ACCESS_EXPOSE_HEADERS);
         if ("OPTIONS".equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
