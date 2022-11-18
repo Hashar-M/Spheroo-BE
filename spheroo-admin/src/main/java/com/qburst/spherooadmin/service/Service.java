@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
@@ -32,19 +33,35 @@ import java.util.List;
 @NoArgsConstructor
 public class Service {
 
+    /**
+     * The id of the service entity
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long serviceId;
 
+    /**
+     * Name of the service
+     */
     @Column(name = "service_name", length = 64, nullable = false, unique = true)
     private String serviceName;
 
+    /**
+     * Description of the service
+     */
     @Column(name = "description", length = 1024)
     private String description;
 
+    /**
+     * Variable price field, when set to true, that indicates that the price for the service
+     * can vary from the initial charge shown to the user.
+     */
     @Column(name="variable_price")
-    private String variablePrice;
+    private Boolean variablePrice;
 
+    /**
+     * Each service can have a set of different charges depending on various different factors
+     */
     @OneToMany(targetEntity = ServiceCharge.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
     private List<ServiceCharge>  serviceChargeList;
