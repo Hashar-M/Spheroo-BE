@@ -12,4 +12,6 @@ public interface ServiceChargeRepository extends JpaRepository<ServiceCharge,Lon
      */
     @Query(value = "SELECT charge_id FROM service_charge WHERE service_id IS NULL",nativeQuery = true)
     List<Long> findNullServiceCharges();
+    @Query(value ="SELECT charge FROM service_charge where service_id=?1 AND service_priority=?2",nativeQuery = true)
+    double findChargeByPriority(long serviceId, String priority);
 }

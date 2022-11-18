@@ -1,12 +1,8 @@
 package com.qburst.spherooadmin.orderDetails;
-
-import com.qburst.spherooadmin.category.Category;
-import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.category.CategoryService;
-import com.qburst.spherooadmin.service.ServiceService;
+import com.qburst.spherooadmin.service.ServiceEntityService;
+
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,11 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
 Controller for the Order entity
@@ -51,8 +44,6 @@ public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;
-    private CategoryService categoryService;
-    private ServiceService serviceService;
 
     /**
      * Get an order details by providing its id
@@ -104,14 +95,14 @@ public class OrdersController {
             String headerValue ="attachment; filename="+fileName;
             response.setHeader(headerKey,headerValue);
 
-            List<OrdersDisplayDTO> ordersDisplayDTOList =ordersService.getOrdersByStatusToExport(status);
+            Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,"delivery_to_date",false,status);
             ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
             String[] csvHeader = {"order id","customer name","created date","delivery from_date","delivery to date",
                     "comments","zip code","order status","category name","service name","charge","assigned supplier"};
             String[] nameMapping= {"orderId","customerName","createdDate","deliveryFromDate","deliveryToDate","comments",
                     "zipCode","orderStatus","categoryName","serviceName","charge","assignedSupplier"};
             csvBeanWriter.writeHeader(csvHeader);
-            for(OrdersDisplayDTO orderDisplay: ordersDisplayDTOList){
+            for(OrdersDisplayDTO orderDisplay: ordersDisplayDTOPage){
                 csvBeanWriter.write(orderDisplay,nameMapping);
             }
             csvBeanWriter.close();

@@ -5,6 +5,7 @@ import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -29,17 +30,12 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public List<Orders> getOrderByEscalation(int escalationPeriod) {
-        return null;
-    }
-
-    @Override
     public void addOrder(Orders order) {
         ordersRepo.save(order);
     }
 
     @Override
-    public Page<Orders> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc,String status) {
+    public Page<OrdersDisplayDTO> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc,String status) {
         Pageable pageWithRequiredElements;
         if(isAsc) {
             pageWithRequiredElements = PageRequest.of(pageNo,noOfElements, Sort.by(columnToSort));
@@ -58,7 +54,6 @@ public class OrdersServiceImpl implements OrdersService {
             //4 days (96 hours) from due date considered as Escalation
             ordersPage = ordersRepo.getOrderByDuePeriod("96 HOURS",pageWithRequiredElements);
         }
-        Page<OrdersDisplayDTO> ordersDisplayDTOPage;
         List<OrdersDisplayDTO> ordersDisplayDTOList = new ArrayList<>();
         for (Orders order: ordersPage) {
             OrdersDisplayDTO ordersDisplayDTO = new OrdersDisplayDTO();
@@ -76,7 +71,8 @@ public class OrdersServiceImpl implements OrdersService {
             ordersDisplayDTO.setAssignedSupplier("Not available");
             ordersDisplayDTOList.add(ordersDisplayDTO);
         }
-        return ordersPage;
+        Page<OrdersDisplayDTO> ordersDisplayDTOPage = new PageImpl<>(ordersDisplayDTOList,pageWithRequiredElements,ordersDisplayDTOList.size());
+        return ordersDisplayDTOPage;
     }
 
     @Override
@@ -124,31 +120,4 @@ public class OrdersServiceImpl implements OrdersService {
         return orderStatisticsDTO;
     }
 
-    @Override
-    public List<OrdersDisplayDTO> getOrdersByStatusToExport(String status) {
-////        return ordersRepo.findByOpenOrderStatus();
-//        Pageable pageable;
-//        pageable =PageRequest.of(0,100);
-//        return ordersRepo.findByOpenOrderStatus(pageable);
-
-        Page<Orders> ordersPage = getAllOrdersPaged(0,100,"delivery_to_date",false,status);
-        List<OrdersDisplayDTO> ordersDisplayDTOList = new ArrayList<>();
-        for (Orders order: ordersPage) {
-            OrdersDisplayDTO ordersDisplayDTO = new OrdersDisplayDTO();
-            ordersDisplayDTO.setOrderId(order.getOrderId());
-            ordersDisplayDTO.setCustomerName(order.getCustomerName());
-            ordersDisplayDTO.setCreatedDate(order.getCreatedDate());
-            ordersDisplayDTO.setDeliveryFromDate(order.getDeliveryFromDate());
-            ordersDisplayDTO.setDeliveryToDate(order.getDeliveryToDate());
-            ordersDisplayDTO.setComments(order.getComments());
-            ordersDisplayDTO.setZipCode(order.getZipCode());
-            ordersDisplayDTO.setOrderStatus(order.getOrderStatus());
-            ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(order.getCategoryId()).getCategoryName());
-            ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(order.getServiceId()).getServiceName());
-            ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(order.getServiceId(), "NORMAL"));
-            ordersDisplayDTO.setAssignedSupplier("Not available");
-            ordersDisplayDTOList.add(ordersDisplayDTO);
-        }
-        return ordersDisplayDTOList;
-    }
 }
