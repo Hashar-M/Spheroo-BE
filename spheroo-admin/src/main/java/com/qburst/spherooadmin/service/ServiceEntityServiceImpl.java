@@ -14,9 +14,14 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class ServiceServiceImpl implements ServiceService{
+public class ServiceEntityServiceImpl implements ServiceEntityService {
 
+
+    /**
+     * The repository object of the Service entity
+     */
     private ServiceRepository serviceRepository;
+
     /**
      * Returns a service by its id
      * @param id ID of the service to return
@@ -70,6 +75,11 @@ public class ServiceServiceImpl implements ServiceService{
         return serviceRepository.getServicesByCategoryId(category_id, pageableCriteria);
     }
 
+    /**
+     * Gets the names of services under a category specified by its ID.
+     * @param category_id The id of the category under whose services you want to get.
+     * @return a List of strings containing the names of services under the category
+     */
     @Override
     public List<String> getServiceNameByCategoryId(Long category_id) {
         return serviceRepository.getServiceNameByCategoryId(category_id);

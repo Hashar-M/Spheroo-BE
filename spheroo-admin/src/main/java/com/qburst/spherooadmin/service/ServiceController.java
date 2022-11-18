@@ -16,14 +16,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Controller for Service
+ * Controller for Service Entity
  */
 @RestController
 @AllArgsConstructor
 @RequestMapping("/service")
 public class ServiceController {
 
-    private ServiceService serviceService;
+    /**
+     *  The Service for the Service Entity
+     */
+    private ServiceEntityService serviceEntityService;
 
     /**
      * Returns a service by id
@@ -32,7 +35,7 @@ public class ServiceController {
      */
     @GetMapping("/id={id}")
     ResponseEntity<Optional<Service>> getById(@PathVariable long id) {
-        return new ResponseEntity<>(serviceService.getServiceById(id), HttpStatus.OK);
+        return new ResponseEntity<>(serviceEntityService.getServiceById(id), HttpStatus.OK);
     }
 
     /**
@@ -43,7 +46,7 @@ public class ServiceController {
      */
     @PutMapping("/id={id}")
     ResponseEntity<HttpStatus> updateService(@RequestBody Service service, @PathVariable long id) {
-        serviceService.updateServiceById(service.getServiceName(), service.getDescription(), service.getVariablePrice(), service.getServiceChargeList(), id);
+        serviceEntityService.updateServiceById(service.getServiceName(), service.getDescription(), service.getVariablePrice(), service.getServiceChargeList(), id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -54,7 +57,7 @@ public class ServiceController {
      */
     @DeleteMapping("/id={id}")
     ResponseEntity<HttpStatus> deleteService(@PathVariable long id) {
-        serviceService.deleteServiceById(id);
+        serviceEntityService.deleteServiceById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -67,7 +70,7 @@ public class ServiceController {
      */
     @GetMapping("/page={page}&qty={noOfElements}&id={id}")
     ResponseEntity<Page<Service>> getServicesByCategoryId(@PathVariable long id, @PathVariable int page, @PathVariable int noOfElements) {
-        return new ResponseEntity<>(serviceService.getServiceByCategoryId(id, page, noOfElements), HttpStatus.OK);
+        return new ResponseEntity<>(serviceEntityService.getServiceByCategoryId(id, page, noOfElements), HttpStatus.OK);
     }
 
     /**
@@ -77,6 +80,6 @@ public class ServiceController {
      */
     @GetMapping("/category_id={id}")
     ResponseEntity<List<String>> getServiceNamesByCategoryId(@PathVariable long id) {
-        return new ResponseEntity<>(serviceService.getServiceNameByCategoryId(id), HttpStatus.OK);
+        return new ResponseEntity<>(serviceEntityService.getServiceNameByCategoryId(id), HttpStatus.OK);
     }
 }
