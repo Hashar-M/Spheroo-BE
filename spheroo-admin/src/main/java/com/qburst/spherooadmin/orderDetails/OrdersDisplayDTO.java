@@ -23,5 +23,4 @@ public class OrdersDisplayDTO {
     private String serviceName;
     private double charge;
     private String assignedSupplier;
-
 }

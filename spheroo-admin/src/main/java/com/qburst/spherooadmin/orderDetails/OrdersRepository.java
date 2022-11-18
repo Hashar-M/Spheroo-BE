@@ -37,7 +37,7 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
      */
     @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED')",nativeQuery = true)
     Page<Orders> findByOpenOrderStatus(Pageable pageable);
-    @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED') LIMIT 3",nativeQuery = true)
+    @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED') LIMIT 100",nativeQuery = true)
     List<Orders> findByOpenOrderStatus();
 
     /**

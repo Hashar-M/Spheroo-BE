@@ -3,11 +3,13 @@ package com.qburst.spherooadmin.orderDetails;
 import com.qburst.spherooadmin.category.Category;
 import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.category.CategoryService;
+import com.qburst.spherooadmin.service.ServiceService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +52,7 @@ public class OrdersController {
     @Autowired
     private OrdersService ordersService;
     private CategoryService categoryService;
+    private ServiceService serviceService;
 
     /**
      * Get an order details by providing its id
@@ -79,10 +82,9 @@ public class OrdersController {
     @GetMapping
     public ResponseEntity<?> findAllOrders(@RequestParam int page, @RequestParam int noOfElements,
                                            @RequestParam String columnToSort, @RequestParam boolean isAsc, @RequestParam String status) {
-        log.info("page: "+page+"qty: "+noOfElements+" columnToSort: "+columnToSort+" isAsc: "+isAsc+" status: "+status);
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
                 status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue")) {
-            return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page,noOfElements,columnToSort,isAsc,status));
+            return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page,noOfElements,columnToSort,isAsc,status.toUpperCase()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
@@ -93,36 +95,31 @@ public class OrdersController {
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
     }
     @GetMapping("/orders-export")
-    public void  exportOrdersToCSV(HttpServletResponse response) throws IOException {
-        response.setContentType("text/csv");
-        String fileName= "users.csv";
-        String headerKey = "Content-Disposition";
-        String headerValue ="attachment; filename="+fileName;
-        response.setHeader(headerKey,headerValue);
+    public ResponseEntity<?>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) throws IOException {
+        if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
+                status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue")) {
+            response.setContentType("text/csv");
+            String fileName= status+" order details.csv";
+            String headerKey = "Content-Disposition";
+            String headerValue ="attachment; filename="+fileName;
+            response.setHeader(headerKey,headerValue);
 
-        List<Orders> ordersList = ordersService.getOrdersByStatus();
-        List<OrdersDisplayDTO> ordersDisplayDTOList = new ArrayList<>();
-        for (Orders order: ordersList) {
-            OrdersDisplayDTO ordersDisplayDTO = new OrdersDisplayDTO();
-            ordersDisplayDTO.setOrderId(order.getOrderId());
-            ordersDisplayDTO.setCustomerName(order.getCustomerName());
-            ordersDisplayDTO.setCreatedDate(order.getCreatedDate());
-            ordersDisplayDTO.setDeliveryFromDate(order.getDeliveryFromDate());
-            ordersDisplayDTO.setComments(order.getComments());
-            ordersDisplayDTO.setZipCode(order.getZipCode());
-            ordersDisplayDTO.setOrderStatus(order.getOrderStatus());
-            ordersDisplayDTO.setCategoryName(categoryService.getCategoryNameById(order.getCategoryId()));
+            List<OrdersDisplayDTO> ordersDisplayDTOList =ordersService.getOrdersByStatusToExport(status);
+            ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+            String[] csvHeader = {"order id","customer name","created date","delivery from_date","delivery to date",
+                    "comments","zip code","order status","category name","service name","charge","assigned supplier"};
+            String[] nameMapping= {"orderId","customerName","createdDate","deliveryFromDate","deliveryToDate","comments",
+                    "zipCode","orderStatus","categoryName","serviceName","charge","assignedSupplier"};
+            csvBeanWriter.writeHeader(csvHeader);
+            for(OrdersDisplayDTO orderDisplay: ordersDisplayDTOList){
+                csvBeanWriter.write(orderDisplay,nameMapping);
+            }
+            csvBeanWriter.close();
+            return ResponseEntity.status(HttpStatus.OK).body("success");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
-        ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
-        String[] csvHeader = {"order_id","customer_name","category_id","service_id","created_date","delivery_from_date","delivery_to_date",
-                "comments","zip_code","order_status","issue_attached_image"};
-        String[] nameMapping= {"orderId","customerName","categoryId","serviceId","createdDate","deliveryFromDate","deliveryToDate","comments",
-                "zipCode","orderStatus","issuePicture"};
-        csvBeanWriter.writeHeader(csvHeader);
-        for(Orders order: ordersList){
-            csvBeanWriter.write(order,nameMapping);
-        }
-        csvBeanWriter.close();
+
     }
 
     /**
