@@ -2,11 +2,77 @@ package com.qburst.spherooadmin.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class ServiceServiceImpl implements ServiceService{
 
+    private ServiceRepository serviceRepository;
+    /**
+     * Returns a service by its id
+     * @param id ID of the service to return
+     * @return Service of the specified ID
+     */
+    @Override
+    public Optional<com.qburst.spherooadmin.service.Service> getServiceById(Long id) {
+        if (serviceRepository.findById(id).isEmpty()) {
+            throw new EntityNotFoundException();
+    }
+        return serviceRepository.findById(id);
+    }
+
+    /**
+     * Stores a new service into the database
+     * @param service The service entity to store
+     */
+    @Override
+    public void saveService(com.qburst.spherooadmin.service.Service service) {
+        serviceRepository.save(service);
+    }
+
+    /**
+     * Deletes a service based on its ID
+     * @param id The id of the service to delete
+     */
+    @Override
+    public void deleteServiceById(Long id) {
+        serviceRepository.deleteByServiceId(id);
+    }
+
+    /**
+     * Update an existing service according to its ID
+     * @param id the id of the service to update
+     */
+    @Override
+    public void updateServiceById(String serviceName, String description, String variablePrice, List<ServiceCharge> serviceChargeList, Long id) {
+        serviceRepository.updateService(serviceName, description, variablePrice, serviceChargeList, id);
+    }
+
+    /**
+     * Returns a page of services for the specified category
+     * @param category_id the id of the category to return services of
+     * @param pageNo pageable object
+     * @param qty Quantity of entities to return at a time
+     * @return Page with the needed details
+     */
+    @Override
+    public Page<com.qburst.spherooadmin.service.Service> getServiceByCategoryId(Long category_id, int pageNo, int qty) {
+        Pageable pageableCriteria = PageRequest.of(pageNo, qty);
+        return serviceRepository.getServicesByCategoryId(category_id, pageableCriteria);
+    }
+
+    @Override
+    public List<String> getServiceNameByCategoryId(Long category_id) {
+        return serviceRepository.getServiceNameByCategoryId(category_id);
+    }
 }

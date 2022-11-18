@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.qburst.spherooadmin.category.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
@@ -44,6 +46,7 @@ public class Service {
 
     @Column(name="variable_price")
     private String variablePrice;
+
 
     @OneToMany(targetEntity = ServiceCharge.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
