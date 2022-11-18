@@ -19,7 +19,7 @@ public class CorsFilter extends OncePerRequestFilter {
         response.setHeader(CorsConstants.CORS_ACCESS_ORIGIN_HEADER, CorsConstants.CORS_ORIGIN);
         response.setHeader(CorsConstants.CORS_ACCESS_METHOD_HEADER, CorsConstants.CORS_METHODS);
         response.setHeader(CorsConstants.CORS_ACCESS_MAX_AGE_HEADER, CorsConstants.CORS_MAX_AGE);
-        response.setHeader(CorsConstants.CORS_ALLOWED_HEADERS, CorsConstants.CORS_ALLOWED_HEADERS);
+        response.setHeader(CorsConstants.CORS_ACCESS_ALLOW_HEADERS, CorsConstants.CORS_ALLOWED_HEADERS);
         response.addHeader(CorsConstants.CORS_EXPOSED_HEADERS, CorsConstants.CORS_ACCESS_EXPOSE_HEADERS);
         if (CorsConstants.OPTIONS_METHOD.equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
