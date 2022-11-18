@@ -1,6 +1,4 @@
 package com.qburst.spherooadmin.orderDetails;
-import com.qburst.spherooadmin.category.CategoryService;
-import com.qburst.spherooadmin.service.ServiceEntityService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,19 +21,6 @@ import org.supercsv.prefs.CsvPreference;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/*
-Controller for the Order entity
-Done:
-GET order by id
-GET pageable order by different status OPEN, CLOSED,ESCALATION sorted by due date ASC and DSC
-POST add new order
-PUT update the existing order
-
-TODO:
-API for download as CSV
-DELETE delete order by id
-upload picture if needed
- */
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -81,10 +66,22 @@ public class OrdersController {
         }
     }
 
+    /**
+     * function for getting orders statistics data.
+     * @return returs order statistics data in the form of OrderStatisticsDTO class.
+     */
     @GetMapping("/orders-statistics")
     public ResponseEntity<?> getOrdersStatistics(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
     }
+
+    /**
+     * function for getting orders details as CSV file
+     * @param response
+     * @param status status for filtering order data
+     * @return return orders details as CSV file or error message with HTTP status.
+     * @throws IOException
+     */
     @GetMapping("/orders-export")
     public ResponseEntity<?>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) throws IOException {
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
@@ -110,7 +107,6 @@ public class OrdersController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
-
     }
 
     /**
@@ -140,6 +136,12 @@ public class OrdersController {
         }
         return ResponseEntity.status(HttpStatus.OK).body("order updated");
     }
+
+    /**
+     * function for deleting order data by order id.
+     * @param id accepts order id
+     * @return message with HTTP status.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity <?> deleteOrder(@PathVariable long id){
         boolean deleteStatus = ordersService.deleteOrderById(id);

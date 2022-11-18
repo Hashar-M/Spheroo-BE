@@ -34,6 +34,15 @@ public class OrdersServiceImpl implements OrdersService {
         ordersRepo.save(order);
     }
 
+    /**
+     * function for getting order details based on status in pageable format.
+     * @param pageNo accepts page number.
+     * @param noOfElements no of data required in single page
+     * @param columnToSort accept column name to sort.
+     * @param isAsc accept sorting direction.
+     * @param status accept status for filtering.
+     * @return orders details in the page format.
+     */
     @Override
     public Page<OrdersDisplayDTO> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc,String status) {
         Pageable pageWithRequiredElements;
@@ -119,5 +128,4 @@ public class OrdersServiceImpl implements OrdersService {
         orderStatisticsDTO.setEscalationsCount(ordersRepo.getOrdersCountByDuePeriod("96 HOURS"));
         return orderStatisticsDTO;
     }
-
 }

@@ -1,18 +1,16 @@
 package com.qburst.spherooadmin.orderDetails;
 
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import java.util.List;
+
 /**
  * The repository for Orders entity.
  */
-
 public interface OrdersRepository extends JpaRepository<Orders,Long> {
+
     /**
      * to get all orders by order status.
      * @param orderStatus describes the status value.
@@ -28,7 +26,6 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
      */
     @Query(value = "SELECT * FROM orders WHERE (delivery_to_date <= NOW() - CAST(?1 AS INTERVAL) and order_status IN ('UNASSIGNED','UNACCEPTED'))",nativeQuery = true)
     Page<Orders> getOrderByDuePeriod(String duePeriodInHours, Pageable pageable);
-    //check status closed or not,  priority
 
     /**
      * function for selecting orders which are included in open order category.

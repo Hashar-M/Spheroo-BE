@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * model for storing order statistics data.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,5 +30,4 @@ public class OrderStatisticsDTO {
     private int overdueOrdersUnaccepted;
 
     private int escalationsCount;
-
 }
