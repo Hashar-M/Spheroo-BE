@@ -23,7 +23,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
-    //@Autowired
     private CategoryRepository categoryRepository;
     private ServiceRepository serviceRepository;
     private ServiceChargeRepository serviceChargeRepository;

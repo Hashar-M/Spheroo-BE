@@ -1,4 +1,10 @@
 package com.qburst.spherooadmin.supplieruser;
 
-public enum SupplierUserType {MANAGER,AGENTS
+/**
+ * enum for specifying position of employees under a supplier
+ */
+
+public enum SupplierUserType {
+    MANAGER,
+    AGENTS
 }

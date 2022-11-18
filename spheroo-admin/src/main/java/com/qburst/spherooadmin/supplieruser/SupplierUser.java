@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.supplieruser;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.qburst.spherooadmin.supplier.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,38 +23,56 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_ID;
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.EMAIL_ID;
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.FIXED_MOBILE_NUMBER;
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.ID;
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.MOBILE_NUMBER;
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.NAME;
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.SUPPLIER_JOIN_COLUMN;
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.TABLE_NAME;
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.USER_TYPE;
+
+/**
+ * This class represent employees under a supplier{@link Supplier}
+ */
 @Entity
-@Table(name = "supplier_user")
+@Table(name = TABLE_NAME)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
-//@ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SupplierUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "supplierUser_id")
+    @Column(name = ID)
     private long supplierUserId;
 
-    @Column(name = "supplier_user_name",nullable = false)
+    @Column(name = NAME,nullable = false)
     private String name;
 
-    @Column(name = "supplier_user_mob_no",nullable = false)
+    @Column(name = MOBILE_NUMBER,nullable = false)
     private String mobileNumber;
 
-    @Column(name = "supplier_user_fixed_mob_no",nullable = false)
+    @Column(name = FIXED_MOBILE_NUMBER,nullable = false)
     private String fixedLineNumber;
 
-    @Column(name = "supplier_user_email",nullable = false)
+    @Column(name = EMAIL_ID,nullable = false)
     private String supplierUserEmail;
 
-    @Column(name = "supplier_user_roles",nullable = false)
+    /**
+     * {@code  @Enumerated(EnumType.ORDINAL) store enum type as a integer value.}
+     */
+    @Column(name = USER_TYPE,nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private SupplierUserType supplierUserType;
+    /**
+     * Many to one mapping with supplier {@link Supplier}
+     */
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinColumn(name = "supplier_id",
-               referencedColumnName = "supplier_id")
+    @JoinColumn(name = SUPPLIER_JOIN_COLUMN,
+               referencedColumnName = SUPPLIER_ID)
     private Supplier supplier;
 }

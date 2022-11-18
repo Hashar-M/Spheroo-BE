@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.supplier;
 
+import com.qburst.spherooadmin.constants.SecurityConstants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,23 +20,33 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.BUILD_NO;
+import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.COUNTRY;
+import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.DISTRICT;
+import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.PINCODE;
+import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.TOWN;
+
+/**
+ * This class is used to represent the address of supplier
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
 @Embeddable
-//@ToString
+/**
+ * Attributes of {@link SupplierAddress} is specified for make it include in supplier table as a field.
+ */
 @AttributeOverrides({@AttributeOverride(name = "country",
-                    column = @Column(name = "country",nullable = false)),
+                    column = @Column(name = COUNTRY,nullable = false)),
                     @AttributeOverride(name = "town",
-                    column = @Column(name = "town",nullable = false)),
+                    column = @Column(name = TOWN,nullable = false)),
                     @AttributeOverride(name = "district",
-                    column = @Column(name = "district",nullable = false)),
+                    column = @Column(name = DISTRICT,nullable = false)),
                     @AttributeOverride(name = "pinCode",
-                    column = @Column(name = "pinCode",nullable = false,unique = true)),
+                    column = @Column(name = PINCODE,nullable = false,unique = true)),
                     @AttributeOverride(name = "buildNo",
-                    column =@Column(name = "buildNo",nullable = false))})
+                    column =@Column(name = BUILD_NO,nullable = false))})
 public class SupplierAddress {
     private String country;
     private String town;
