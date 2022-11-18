@@ -9,11 +9,14 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * It carries informations of {@link SupplierAddress} and associate with {@link SupplierAddDTO} for adding a new supplier.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class SupplierAddressPostDTO {
+public class SupplierAddressAddDTO {
     @NotNull
     @NotEmpty
     @Size(max = 48)
@@ -30,10 +33,8 @@ public class SupplierAddressPostDTO {
     private String district;
 
     @NotNull
-    //@Size(max = 255)
     private int pinCode;
 
     @NotNull
-   // @Size(max = 255)
     private long buildNo;
 }

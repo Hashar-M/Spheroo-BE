@@ -1,6 +1,5 @@
 package com.qburst.spherooadmin.supplieruser;
 
-import com.qburst.spherooadmin.supplieruser.SupplierUserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +11,16 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import static com.qburst.spherooadmin.constants.SupplierUserModelConstants.MOBILE_NUMBER_REGEX;
+
+/**
+ * It carries all necessary informations for {@link SupplierUser} while addind a new supplier{@link com.qburst.spherooadmin.supplier.Supplier}
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class SuppliersUsersPostDTO {
+public class SupplierUsersAddDTO {
     @NotNull
     @NotEmpty
     @Size(min = 6,max = 30)
@@ -24,12 +28,12 @@ public class SuppliersUsersPostDTO {
 
     @NotNull
     @NotEmpty
-    @Pattern(regexp = "^\\\\s?((\\\\+[1-9]{1,4}[ \\\\-]*)|(\\\\([0-9]{2,3}\\\\)[ \\\\-]*)|([0-9]{2,4})[ \\\\-]*)*?[0-9]{3,4}?[ \\\\-]*[0-9]{3,4}?\\\\s?",message = "not a valid phone number")
+    @Pattern(regexp = MOBILE_NUMBER_REGEX,message = "not a valid phone number")
     private String supplierUserMobileNumber;
 
     @NotNull
     @NotEmpty
-    @Pattern(regexp = "^\\\\s?((\\\\+[1-9]{1,4}[ \\\\-]*)|(\\\\([0-9]{2,3}\\\\)[ \\\\-]*)|([0-9]{2,4})[ \\\\-]*)*?[0-9]{3,4}?[ \\\\-]*[0-9]{3,4}?\\\\s?",message = "not a valid phone number")
+    @Pattern(regexp = MOBILE_NUMBER_REGEX,message = "not a valid phone number")
     private String supplierUserFixedMobileNumber;
 
     @NotNull

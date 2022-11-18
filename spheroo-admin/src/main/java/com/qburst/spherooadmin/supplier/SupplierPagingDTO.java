@@ -11,6 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+/**
+ * It stores a list of supplier, used in GET request for supplier as a page.
+ */
 public class SupplierPagingDTO {
     private List<SupplierGetDTO> supplierGetDTO;
 }

@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
-    //@Autowired
     private CategoryRepository categoryRepository;
 
     @Override

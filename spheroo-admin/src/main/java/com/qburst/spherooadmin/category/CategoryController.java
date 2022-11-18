@@ -29,7 +29,6 @@ import java.util.Objects;
 @AllArgsConstructor
 @RequestMapping("/category")
 public class CategoryController {
-    //@Autowired
     private CategoryService categoryService;
     /**
      * Get a category by providing its id.
