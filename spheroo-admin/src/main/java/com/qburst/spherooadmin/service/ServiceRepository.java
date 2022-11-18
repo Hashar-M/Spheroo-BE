@@ -11,6 +11,10 @@ import java.util.List;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<Service,Long> {
+
+    /**
+     * Updates an existing service with the specified id
+     */
     @Transactional
     @Modifying
     @Query("update Service s set s.serviceName = ?1, s.description = ?2, s.variablePrice = ?3, s.serviceChargeList = ?4 where s.serviceId = ?5")
@@ -25,6 +29,11 @@ public interface ServiceRepository extends JpaRepository<Service,Long> {
     @Query(value = "SELECT * FROM service WHERE category_id = ?1", nativeQuery = true)
     Page<Service> getServicesByCategoryId(Long category_id, Pageable pageable);
 
+    /**
+     * Gets the list of service names under a category
+     * @param id id of the category to return the name of
+     * @return List of strings
+     */
     @Query(value = "SELECT service_name FROM service WHERE category_id = ?1", nativeQuery = true)
     List<String> getServiceNameByCategoryId(Long id);
 
