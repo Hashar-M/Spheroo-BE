@@ -27,17 +27,29 @@ import javax.persistence.Table;
 @NoArgsConstructor
 public class ServiceCharge {
 
+    /**
+     * The id for the ServiceCharge Entity
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "charge_id")
     private long chargeId;
 
+    /**
+     * The priority for the service, depending on the type, the charge can vary.
+     */
     @Column(name = "service_priority")
     private String servicePriority;
 
+    /**
+     * The time frame for the service to occur.
+     */
     @Column(name = "time_frame")
     private String timeFrame;
 
+    /**
+     * The charge for the service
+     */
     @Column(name = "charge")
     private double charge;
 
