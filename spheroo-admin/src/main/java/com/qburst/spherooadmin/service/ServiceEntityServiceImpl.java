@@ -58,7 +58,7 @@ public class ServiceEntityServiceImpl implements ServiceEntityService {
      * @param id the id of the service to update
      */
     @Override
-    public void updateServiceById(String serviceName, String description, String variablePrice, List<ServiceCharge> serviceChargeList, Long id) {
+    public void updateServiceById(String serviceName, String description, Boolean variablePrice, List<ServiceCharge> serviceChargeList, Long id) {
         serviceRepository.updateService(serviceName, description, variablePrice, serviceChargeList, id);
     }
 

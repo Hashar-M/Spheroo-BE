@@ -34,7 +34,7 @@ public interface ServiceEntityService {
      * Update an existing service according to its ID
      * @param id the id of the service to update
      */
-    void updateServiceById(String serviceName, String description, String variablePrice, List<ServiceCharge> serviceChargeList, Long id);
+    void updateServiceById(String serviceName, String description, Boolean variablePrice, List<ServiceCharge> serviceChargeList, Long id);
 
     /**
      * Returns a page of services for the specified category

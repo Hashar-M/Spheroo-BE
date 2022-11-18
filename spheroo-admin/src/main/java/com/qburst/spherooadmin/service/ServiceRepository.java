@@ -18,7 +18,7 @@ public interface ServiceRepository extends JpaRepository<Service,Long> {
     @Transactional
     @Modifying
     @Query("update Service s set s.serviceName = ?1, s.description = ?2, s.variablePrice = ?3, s.serviceChargeList = ?4 where s.serviceId = ?5")
-    void updateService(String serviceName, String description, String variablePrice, List<ServiceCharge> serviceChargeList, Long id);
+    void updateService(String serviceName, String description, Boolean variablePrice, List<ServiceCharge> serviceChargeList, Long id);
 
     /**
      * Gets all services under a category
