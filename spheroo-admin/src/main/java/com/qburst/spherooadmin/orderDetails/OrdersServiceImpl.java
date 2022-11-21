@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.orderDetails;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
+import com.qburst.spherooadmin.constants.OrdersConstants;
 import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -58,10 +58,10 @@ public class OrdersServiceImpl implements OrdersService {
             ordersPage = ordersRepo.findByClosedOrderStatus(pageWithRequiredElements);
         } else if (status.equalsIgnoreCase("overdue")) {
             // 2 days (48 hrs) from due date considered as overdue
-            ordersPage = ordersRepo.getOrderByDuePeriod("48 HOURS",pageWithRequiredElements);
+            ordersPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.OVERDUE_STARTING,pageWithRequiredElements);
         } else {
             //4 days (96 hours) from due date considered as Escalation
-            ordersPage = ordersRepo.getOrderByDuePeriod("96 HOURS",pageWithRequiredElements);
+            ordersPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.ESCALATIONS_STARTING,pageWithRequiredElements);
         }
         List<OrdersDisplayDTO> ordersDisplayDTOList = new ArrayList<>();
         for (Orders order: ordersPage) {
@@ -112,20 +112,20 @@ public class OrdersServiceImpl implements OrdersService {
         orderStatisticsDTO.setOpenOrdersCount(ordersRepo.findOpenOrderStatusCount());
         orderStatisticsDTO.setOpenOrdersUnassigned(ordersRepo.findUnassignedOrderStatusCount());
         orderStatisticsDTO.setOpenOrdersUnaccepted(ordersRepo.findUnacceptedOrderStatusCount());
-        orderStatisticsDTO.setOpenOrdersGreenFlag(ordersRepo.getOpenOrderCountByDuePeriod("0 HOURS","16 HOURS"));
-        orderStatisticsDTO.setOpenOrdersBlueFlag(ordersRepo.getOpenOrderCountByDuePeriod("16 HOURS","32 HOURS"));
-        orderStatisticsDTO.setOpenOrdersRedFlag(ordersRepo.getOpenOrderCountByDuePeriod("32 HOURS","48 HOURS"));
+        orderStatisticsDTO.setOpenOrdersGreenFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.GREEN_FLAG_STARTING,OrdersConstants.BLUE_FLAG_STARTING));
+        orderStatisticsDTO.setOpenOrdersBlueFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.BLUE_FLAG_STARTING,OrdersConstants.RED_FLAG_STARTING));
+        orderStatisticsDTO.setOpenOrdersRedFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.RED_FLAG_STARTING,OrdersConstants.OVERDUE_STARTING));
         //ongoing order
         orderStatisticsDTO.setOngoingOrdersCount(ordersRepo.findOngoingOrderStatusCount());
-        orderStatisticsDTO.setOngoingOrdersGreenFlag(ordersRepo.getOngoingOrderCountByDuePeriod("0 HOURS","16 HOURS"));
-        orderStatisticsDTO.setOngoingOrdersBlueFlag(ordersRepo.getOngoingOrderCountByDuePeriod("16 HOURS","32 HOURS"));
-        orderStatisticsDTO.setOngoingOrdersRedFlag(ordersRepo.getOngoingOrderCountByDuePeriod("32 HOURS","48 HOURS"));
+        orderStatisticsDTO.setOngoingOrdersGreenFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.GREEN_FLAG_STARTING,OrdersConstants.BLUE_FLAG_STARTING));
+        orderStatisticsDTO.setOngoingOrdersBlueFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.BLUE_FLAG_STARTING,OrdersConstants.RED_FLAG_STARTING));
+        orderStatisticsDTO.setOngoingOrdersRedFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.RED_FLAG_STARTING,OrdersConstants.OVERDUE_STARTING));
         //overdue order
-        orderStatisticsDTO.setOverdueOrdersCount(ordersRepo.findOverdueOrderStatusCount("48 HOURS","96 HOURS"));
-        orderStatisticsDTO.setOverdueOrdersUnassigned(ordersRepo.findOverdueUnassignedCount("48 HOURS","96 HOURS"));
-        orderStatisticsDTO.setOverdueOrdersUnaccepted(ordersRepo.findOverdueUnacceptedCount("48 HOURS","96 HOURS"));
+        orderStatisticsDTO.setOverdueOrdersCount(ordersRepo.findOverdueOrderStatusCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
+        orderStatisticsDTO.setOverdueOrdersUnassigned(ordersRepo.findOverdueUnassignedCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
+        orderStatisticsDTO.setOverdueOrdersUnaccepted(ordersRepo.findOverdueUnacceptedCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
         //escalations
-        orderStatisticsDTO.setEscalationsCount(ordersRepo.getOrdersCountByDuePeriod("96 HOURS"));
+        orderStatisticsDTO.setEscalationsCount(ordersRepo.getOrdersCountByDuePeriod(OrdersConstants.ESCALATIONS_STARTING));
         return orderStatisticsDTO;
     }
 }

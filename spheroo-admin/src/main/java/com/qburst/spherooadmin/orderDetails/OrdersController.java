@@ -21,6 +21,9 @@ import org.supercsv.prefs.CsvPreference;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Controller for order entity
+ */
 @Slf4j
 @RestController
 @AllArgsConstructor
