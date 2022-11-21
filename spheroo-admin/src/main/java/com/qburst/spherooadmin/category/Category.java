@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.qburst.spherooadmin.service.Service;
 import com.qburst.spherooadmin.supplier.Supplier;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -23,6 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 import javax.persistence.GenerationType;
 import java.util.List;
+import javax.persistence.*;
 
 
 /**
@@ -52,7 +51,6 @@ public class Category {
 
     @Column(name = "category_description", length = 1024)
     private String categoryDescription;
-<<<<<<< HEAD
 
     @OneToMany(targetEntity = Service.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -60,6 +58,4 @@ public class Category {
 
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Supplier> suppliers;
-=======
->>>>>>> a90c63f (Provided documentation comments)
 }
