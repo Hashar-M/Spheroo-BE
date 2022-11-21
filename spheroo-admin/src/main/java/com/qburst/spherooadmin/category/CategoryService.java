@@ -1,6 +1,5 @@
 package com.qburst.spherooadmin.category;
 
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 /**
