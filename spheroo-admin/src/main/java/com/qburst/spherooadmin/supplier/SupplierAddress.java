@@ -1,30 +1,16 @@
 package com.qburst.spherooadmin.supplier;
 
-import com.qburst.spherooadmin.constants.SecurityConstants;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
-import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.BUILD_NO;
-import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.COUNTRY;
-import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.DISTRICT;
-import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.PINCODE;
-import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.TOWN;
+import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.*;
 
 /**
  * This class is used to represent the address of supplier
