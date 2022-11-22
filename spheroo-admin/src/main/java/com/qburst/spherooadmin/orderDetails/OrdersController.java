@@ -41,9 +41,9 @@ public class OrdersController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrderById(@PathVariable long id) {
 
-        Orders orders = ordersService.getOrderById(id);
-        if(orders != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(orders);
+        OrdersDisplayDTO ordersDisplayDTO = ordersService.getOrderById(id);
+        if(ordersDisplayDTO  != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(ordersDisplayDTO );
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }
@@ -111,7 +111,15 @@ public class OrdersController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
     }
-
+//    @GetMapping("/getsuppliers-byorder")
+//    public ResponseEntity<?> getSupplierByCategoryIdAndZip(@RequestParam long categoryId, @RequestParam String Zipcode){
+//
+//    }
+    @PostMapping("/assign-order")
+    public ResponseEntity<?> assignOrder(@RequestBody AssignedOrder assignedOrder){
+        ordersService.assignOrder(assignedOrder);
+        return ResponseEntity.status(HttpStatus.OK).body("saved successfully");
+    }
     /**
      * add a new order by providing its id.
      * @param order the order data to add to the database.
