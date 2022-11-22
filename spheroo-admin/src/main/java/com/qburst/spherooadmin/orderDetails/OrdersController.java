@@ -3,8 +3,10 @@ package com.qburst.spherooadmin.orderDetails;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,20 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-    /*
-    Controller for the Order entity
-    Done:
-    GET order by id
-    GET pageable order by different status OPEN, CLOSED,ESCALATION sorted by due date ASC and DSC
-    POST add new order
-    PUT update the existing order
-
-    TODO:
-    API for download as CSV
-    DELETE delete order by id
-    upload picture if needed
-     */
+/**
+ * Controller for order entity
+ */
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -64,10 +61,52 @@ public class OrdersController {
     @GetMapping
     public ResponseEntity<?> findAllOrders(@RequestParam int page, @RequestParam int noOfElements,
                                            @RequestParam String columnToSort, @RequestParam boolean isAsc, @RequestParam String status) {
-        log.info("page: "+page+"qty: "+noOfElements+" columnToSort: "+columnToSort+" isAsc: "+isAsc+" status: "+status);
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
                 status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue")) {
-            return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page,noOfElements,columnToSort,isAsc,status));
+            return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page,noOfElements,columnToSort,isAsc,status.toUpperCase()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
+        }
+    }
+
+    /**
+     * function for getting orders statistics data.
+     * @return returs order statistics data in the form of OrderStatisticsDTO class.
+     */
+    @GetMapping("/orders-statistics")
+    public ResponseEntity<?> getOrdersStatistics(){
+        return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
+    }
+
+    /**
+     * function for getting orders details as CSV file
+     * @param response
+     * @param status status for filtering order data
+     * @return return orders details as CSV file or error message with HTTP status.
+     * @throws IOException
+     */
+    @GetMapping("/orders-export")
+    public ResponseEntity<?>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) throws IOException {
+        if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
+                status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue")) {
+            response.setContentType("text/csv");
+            String fileName= status+" order details.csv";
+            String headerKey = "Content-Disposition";
+            String headerValue ="attachment; filename="+fileName;
+            response.setHeader(headerKey,headerValue);
+
+            Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,"delivery_to_date",false,status);
+            ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+            String[] csvHeader = {"order id","customer name","created date","delivery from_date","delivery to date",
+                    "comments","zip code","order status","category name","service name","charge","assigned supplier"};
+            String[] nameMapping= {"orderId","customerName","createdDate","deliveryFromDate","deliveryToDate","comments",
+                    "zipCode","orderStatus","categoryName","serviceName","charge","assignedSupplier"};
+            csvBeanWriter.writeHeader(csvHeader);
+            for(OrdersDisplayDTO orderDisplay: ordersDisplayDTOPage){
+                csvBeanWriter.write(orderDisplay,nameMapping);
+            }
+            csvBeanWriter.close();
+            return ResponseEntity.status(HttpStatus.OK).body("success");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
@@ -99,5 +138,20 @@ public class OrdersController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }
         return ResponseEntity.status(HttpStatus.OK).body("order updated");
+    }
+
+    /**
+     * function for deleting order data by order id.
+     * @param id accepts order id
+     * @return message with HTTP status.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity <?> deleteOrder(@PathVariable long id){
+        boolean deleteStatus = ordersService.deleteOrderById(id);
+        if(deleteStatus){
+            return ResponseEntity.status(HttpStatus.OK).body("order deleted successfully");
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no order details with this Id");
+        }
     }
 }
