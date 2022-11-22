@@ -46,4 +46,8 @@ public interface ServiceRepository extends JpaRepository<Service,Long> {
     @Query(value = "SELECT service_id FROM service WHERE category_id IS NULL",nativeQuery = true)
     List<Long> findNullCategoryServices();
 
+    public boolean existsByServiceName(String serviceName);
+
+    public Service findByServiceName(String serviceName);
+
 }
