@@ -10,8 +10,4 @@ public final class SupplierUserModelConstants {
     public static final String USER_TYPE="user_type";
     public static final String SUPPLIER_JOIN_COLUMN="supplier_id";
     public static final String MOBILE_NUMBER_REGEX="supplier_id";
-
-
-
-
 }
