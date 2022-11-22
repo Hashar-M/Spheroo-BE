@@ -9,5 +9,5 @@ public interface OrdersService {
     boolean updateOrdersById(Orders orders);
     boolean deleteOrderById(long Id);
     OrderStatisticsDTO getOrdersStatistics();
-    void assignOrder(AssignedOrder assignedOrder);
+    boolean assignOrder(AssignedOrder assignedOrder);
 }

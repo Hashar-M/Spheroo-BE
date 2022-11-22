@@ -51,8 +51,14 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public void assignOrder(AssignedOrder assignedOrder) {
-        assignedOrderRepository.save(assignedOrder);
+    public boolean assignOrder(AssignedOrder assignedOrder) {
+        if(ordersRepo.existsById(assignedOrder.getOrderId())){
+            assignedOrderRepository.save(assignedOrder);
+            return true;
+        } else{
+            return false;
+        }
+
     }
 
     /**
