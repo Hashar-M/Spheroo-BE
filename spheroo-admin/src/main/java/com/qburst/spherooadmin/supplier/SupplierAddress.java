@@ -30,7 +30,7 @@ import static com.qburst.spherooadmin.constants.SupplierAddressModelConstants.*;
                     @AttributeOverride(name = "district",
                     column = @Column(name = DISTRICT,nullable = false)),
                     @AttributeOverride(name = "pinCode",
-                    column = @Column(name = PINCODE,nullable = false,unique = true)),
+                    column = @Column(name = PINCODE,nullable = false)),
                     @AttributeOverride(name = "buildNo",
                     column =@Column(name = BUILD_NO,nullable = false))})
 public class SupplierAddress {
