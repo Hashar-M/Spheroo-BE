@@ -7,4 +7,6 @@ public class SecurityConstants {
     public static final int TOKEN_EXPIRATION = 7200000; //  2 hours in ms;
     public static final String REGISTER_PATH = "/registration";
     public static final String LOGIN_PATH = "/login";
+    public static final String CONTENT_TYPE = "application/json";
+    public static final String CHARACTER_ENCODING = "UTF-8";
 }
