@@ -159,15 +159,13 @@ public class OrdersController {
 
     /**
      * Update an existing order by providing its id.
-     * @param orders the category that we're updating the old category with.
-     * @param id the category_id to retrieve from the database.
+     * @param amendOrderDTO the details to update to the specific order.
+     * @param orderId the order_id to retrieve from the database.
      * @return Returns the HTTP status OK/BAD_REQUEST with status message
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrder(@RequestBody Orders orders, @PathVariable long id) {
-        orders.setOrderId(id);
-        boolean status =ordersService.updateOrdersById(orders);
-
+    public ResponseEntity<?> updateOrder(@RequestBody AmendOrderDTO amendOrderDTO, @PathVariable long orderId) {
+        boolean status =ordersService.updateOrdersById(amendOrderDTO,orderId);
         if(!status) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }
