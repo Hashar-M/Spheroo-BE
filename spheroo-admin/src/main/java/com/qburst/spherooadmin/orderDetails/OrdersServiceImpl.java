@@ -85,9 +85,9 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public boolean updateOrdersById(AmendOrderDTO amendOrderDTO, long orderId) {
-        if(ordersRepo.existsById(orderId)){
-            Orders orders = ordersRepo.getReferenceById(orderId);
+    public boolean updateOrdersById(AmendOrderDTO amendOrderDTO) {
+        if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
+            Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
             orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
             orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
             ordersRepo.save(orders);

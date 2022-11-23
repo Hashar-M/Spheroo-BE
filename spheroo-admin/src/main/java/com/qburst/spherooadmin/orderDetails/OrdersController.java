@@ -19,6 +19,7 @@ import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 
 /**
@@ -118,7 +119,7 @@ public class OrdersController {
      * @return Returns the HTTP status CREATED.
      */
     @PostMapping("/new-order")
-    public ResponseEntity<HttpStatus> addOrder(@RequestBody Orders order) {
+    public ResponseEntity<HttpStatus> addOrder(@Valid @RequestBody Orders order) {
         ordersService.addOrder(order);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -126,12 +127,11 @@ public class OrdersController {
     /**
      * Update an existing order by providing its id.
      * @param amendOrderDTO the details to update to the specific order.
-     * @param orderId the order_id to retrieve from the database.
      * @return Returns the HTTP status OK/BAD_REQUEST with status message
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrder(@RequestBody AmendOrderDTO amendOrderDTO, @PathVariable long orderId) {
-        boolean status =ordersService.updateOrdersById(amendOrderDTO,orderId);
+    @PutMapping("/amend-order")
+    public ResponseEntity<?> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
+        boolean status =ordersService.updateOrdersById(amendOrderDTO);
         if(!status) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }
