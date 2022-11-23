@@ -8,15 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.GenerationType;
 import java.util.List;
 
 
@@ -38,10 +38,13 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     private long categoryId;
+
     @Column(name = "category_name", length = 64, nullable = false, unique = true)
     private String categoryName;
+
     @Column(name = "category_icon")
     private String categoryIcon;
+
     @Column(name = "category_description", length = 1024)
     private String categoryDescription;
 

@@ -37,4 +37,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Modifying
     @Query("UPDATE Category c SET c.categoryIcon = ?1 WHERE c.categoryId = ?2")
     void updateCategoryIconByCategoryId(String categoryIconPath, Long categoryId);
+    boolean existsByCategoryName(String categoryName);
+    @Query(nativeQuery = true,value = "SELECT category_id FROM category WHERE category.category_name=?1")
+    long getCategoryIdFromCategoryName(String categoryName);
 }
