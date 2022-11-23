@@ -54,6 +54,8 @@ public class OrdersServiceImpl implements OrdersService {
     public boolean assignOrder(AssignedOrder assignedOrder) {
         if(ordersRepo.existsById(assignedOrder.getOrderId())){
             assignedOrderRepository.save(assignedOrder);
+            Orders orders = ordersRepo.getReferenceById(assignedOrder.getOrderId());
+            orders.setOrderStatus(OrderStatus.UNACCEPTED.toString());
             return true;
         } else{
             return false;
