@@ -51,7 +51,6 @@ public class SupplierController {
         Optional<Supplier> supplier=supplierService.getTheSupplier(supplierName);
         if (supplier.isPresent()){
             Supplier supplier1=supplier.get();
-            System.out.println(supplier1);
             return ResponseEntity.ok(supplier1);
         }
         return ResponseEntity.ok(null);
