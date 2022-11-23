@@ -85,13 +85,16 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public boolean updateOrdersById(Orders orders) {
-        Orders existingOrder= ordersRepo.getReferenceById(orders.getOrderId());
-        if(Objects.isNull(existingOrder)) {
+    public boolean updateOrdersById(AmendOrderDTO amendOrderDTO, long orderId) {
+        if(ordersRepo.existsById(orderId)){
+            Orders orders = ordersRepo.getReferenceById(orderId);
+            orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
+            orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
+            ordersRepo.save(orders);
+            return true;
+        }else {
             return false;
         }
-        ordersRepo.save(orders);
-        return true;
     }
 
     @Override
