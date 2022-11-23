@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -85,13 +84,16 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public boolean updateOrdersById(Orders orders) {
-        Orders existingOrder= ordersRepo.getReferenceById(orders.getOrderId());
-        if(Objects.isNull(existingOrder)) {
+    public boolean updateOrdersById(AmendOrderDTO amendOrderDTO) {
+        if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
+            Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
+            orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
+            orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
+            ordersRepo.save(orders);
+            return true;
+        }else {
             return false;
         }
-        ordersRepo.save(orders);
-        return true;
     }
 
     @Override
