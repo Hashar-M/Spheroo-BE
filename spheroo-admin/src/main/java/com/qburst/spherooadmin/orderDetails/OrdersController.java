@@ -20,6 +20,7 @@ import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 
 /**
@@ -113,7 +114,7 @@ public class OrdersController {
         }
     }
     @PostMapping("/assign-order")
-    public ResponseEntity<?> assignOrder(@RequestBody AssignedOrder assignedOrder){
+    public ResponseEntity<?> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
         if(ordersService.assignOrder(assignedOrder)){
             return ResponseEntity.status(HttpStatus.OK).body("saved successfully");
         }else {
