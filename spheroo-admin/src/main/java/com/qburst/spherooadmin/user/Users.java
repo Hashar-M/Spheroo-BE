@@ -45,7 +45,7 @@ public class Users
     @NotNull
     @NotEmpty
     @Column(name = USER_NAME, nullable = false)
-    @Size(min = 6,max = 30)
+    @Size(min = 3,max = 20)
     private String userName;
 
     @NotNull
@@ -58,7 +58,7 @@ public class Users
     @NotNull
     @NotEmpty
     @Column(name=PASSWORD,length = 20,nullable = false)
-    @Size(min = 8,max = 100)
+    @Size(min = 8,max = 15)
     private String password;
 
     @Column(name=USER_ROLE, nullable = false)
