@@ -1,4 +1,5 @@
 package com.qburst.spherooadmin.security.manager;
+
 import com.qburst.spherooadmin.user.UserService;
 import com.qburst.spherooadmin.user.Users;
 import lombok.AllArgsConstructor;
@@ -7,10 +8,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-
 
 import java.util.Optional;
 
