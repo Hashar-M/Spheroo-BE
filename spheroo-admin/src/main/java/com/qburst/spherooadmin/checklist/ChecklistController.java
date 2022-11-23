@@ -41,6 +41,14 @@ public class ChecklistController {
     }
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getAChecklist(@PathVariable Long id){
-
+        Checklist checklist=checklistService.getChecklistById(id);
+        if(checklist!=null){
+            return new ResponseEntity<>(checklist,HttpStatus.FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @PutMapping("/update")
+    public ResponseEntity<?> updateChecklist(@RequestBody Checklist checklist){
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

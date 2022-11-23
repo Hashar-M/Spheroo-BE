@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +21,7 @@ import java.util.List;
 public class ChecklistServiceImp implements ChecklistService{
     private ServiceRepository serviceRepository;
     private ChecklistRepository checklistRepository;
+    private ChecklistConverter checklistConverter;
     public ResponseDTO addChecklist(ChecklistAddDTO checklistAddDTO){
         String serviceName=checklistAddDTO.getServiceName();
         String checklistName=checklistAddDTO.getName();
@@ -49,7 +51,7 @@ public class ChecklistServiceImp implements ChecklistService{
     }
     public Page<CheclistPagingDTO> pageChecklist(int pageNumber,int pageSize){
         Pageable pageable= PageRequest.of(pageNumber,pageSize);
-        return checklistRepository.findAll(pageable).map(ChecklistConverter::converter);
+        return checklistRepository.findAll(pageable).map(checklistConverter::converter);
     }
     @Modifying
     @Transactional
@@ -65,6 +67,20 @@ public class ChecklistServiceImp implements ChecklistService{
         responseDTO.setMessage("Checklist NOT FOUND");
         return responseDTO;
     }
-
+    public Checklist getChecklistById(Long id){
+        Optional<Checklist> optionalChecklist=checklistRepository.findById(id);
+        if(optionalChecklist.isPresent()){
+           Checklist checklist=optionalChecklist.get();
+           List<ChecklistItem> checklistItems=checklist.getChecklistItem();
+           checklist.setChecklistItem(checklistItems);
+           return checklist;
+        }
+        return null;
+    }
+    public ResponseDTO updateTheChecklist(Checklist checklist){
+        ResponseDTO responseDTO=new ResponseDTO();
+        responseDTO.setSuccess(true);
+        return responseDTO;
+    }
 
 }

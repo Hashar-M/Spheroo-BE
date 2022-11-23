@@ -9,4 +9,6 @@ public interface ChecklistService {
     public ResponseDTO addChecklist(ChecklistAddDTO checklistAddDTO);
     public Page<CheclistPagingDTO> pageChecklist(int pageNumber, int pageSize);
     public ResponseDTO deleteChecklistAndChecklistItemFromId(Long id);
+    public Checklist getChecklistById(Long id);
+    public ResponseDTO updateTheChecklist(Checklist checklist);
 }
