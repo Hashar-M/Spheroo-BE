@@ -4,8 +4,13 @@ import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,5 +47,24 @@ public class ChecklistServiceImp implements ChecklistService{
         responseDTO.setSuccess(false);
         return responseDTO;
     }
+    public Page<CheclistPagingDTO> pageChecklist(int pageNumber,int pageSize){
+        Pageable pageable= PageRequest.of(pageNumber,pageSize);
+        return checklistRepository.findAll(pageable).map(ChecklistConverter::converter);
+    }
+    @Modifying
+    @Transactional
+    public ResponseDTO deleteChecklistAndChecklistItemFromId(Long id){
+        if(checklistRepository.existsById(id)){
+            checklistRepository.deleteById(id);
+            ResponseDTO responseDTO=new ResponseDTO();
+            responseDTO.setSuccess(true);
+            return responseDTO;
+        }
+        ResponseDTO responseDTO=new ResponseDTO();
+        responseDTO.setSuccess(false);
+        responseDTO.setMessage("Checklist NOT FOUND");
+        return responseDTO;
+    }
+
 
 }

@@ -2,11 +2,12 @@ package com.qburst.spherooadmin.checklist;
 
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/checklist")
@@ -18,5 +19,28 @@ public class ChecklistController {
         ResponseDTO responseDTO;
         responseDTO=checklistService.addChecklist(checklistAddDTO);
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("/get/all/list")
+    public ResponseEntity<List<CheclistPagingDTO>> pageOfChecklistWithNoCriteria(@RequestParam("pageNo") int pageNumber, @RequestParam("/pageSize") int pageSize){
+        Page<CheclistPagingDTO> checlistPagingDTOPage=checklistService.pageChecklist(pageNumber,pageSize);
+        if (checlistPagingDTOPage.hasContent()){
+            List<CheclistPagingDTO> list=checlistPagingDTOPage.getContent();
+            return ResponseEntity.ok(list);
+        }
+        return null;
+    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteChecklist(@PathVariable Long id){
+        ResponseDTO responseDTO;
+        responseDTO=checklistService.deleteChecklistAndChecklistItemFromId(id);
+        if(responseDTO.isSuccess()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getAChecklist(@PathVariable Long id){
+
     }
 }

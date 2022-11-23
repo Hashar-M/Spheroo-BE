@@ -49,5 +49,7 @@ public interface ServiceRepository extends JpaRepository<Service,Long> {
     public boolean existsByServiceName(String serviceName);
 
     public Service findByServiceName(String serviceName);
+    @Query(nativeQuery = true,value = "SELECT category_id FROM service WHERE service_id=?1")
+    public long findCategoryIdFromServiceId(long serviceId);
 
 }
