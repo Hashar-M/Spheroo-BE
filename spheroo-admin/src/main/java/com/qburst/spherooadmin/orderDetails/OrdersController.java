@@ -15,12 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Controller for order entity
@@ -111,6 +116,22 @@ public class OrdersController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
+    }
+    @GetMapping("/download/{orderId}")
+    public StreamingResponseBody downloadAttachedFile(HttpServletResponse response,@PathVariable long orderId) throws FileNotFoundException {
+        String fileName = "order#"+String.valueOf(orderId)+"image.jpeg";
+        response.setContentType("image/jpg");
+        response.setHeader("Content-Disposition","attachment;filename="+fileName);
+        String url =ordersService.getOrderById(orderId).getIssueImagesList().get(0).getIssueImages();
+//        String url ="/home/hashar/Pictures/Screenshots/Screenshot from 2022-11-22 11-40-14.png";
+        InputStream inputStream  = new FileInputStream(new File(url));
+        return outputStream -> {
+            int nRead;
+            byte[] data = new byte[1024];
+            while ((nRead = inputStream.read(data,0,data.length))!=-1){
+                outputStream.write(data,0,nRead);
+            }
+        };
     }
 //    @GetMapping("/getsuppliers-byorder")
 //    public ResponseEntity<?> getSupplierByCategoryIdAndZip(@RequestParam long categoryId, @RequestParam String Zipcode){
