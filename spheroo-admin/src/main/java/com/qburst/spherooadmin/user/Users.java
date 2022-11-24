@@ -57,8 +57,8 @@ public class Users
 
     @NotNull
     @NotEmpty
-    @Column(name=PASSWORD,length = 20,nullable = false)
-    @Size(min = 8,max = 15)
+    @Column(name=PASSWORD,nullable = false)
+    @Size(min = 8)
     private String password;
 
     @Column(name=USER_ROLE, nullable = false)
