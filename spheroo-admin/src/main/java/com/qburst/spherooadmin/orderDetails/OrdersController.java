@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -151,22 +152,19 @@ public class OrdersController {
      * @return Returns the HTTP status CREATED.
      */
     @PostMapping("/new-order")
-    public ResponseEntity<HttpStatus> addOrder(@RequestBody Orders order) {
+    public ResponseEntity<HttpStatus> addOrder(@Valid @RequestBody Orders order) {
         ordersService.addOrder(order);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /**
      * Update an existing order by providing its id.
-     * @param orders the category that we're updating the old category with.
-     * @param id the category_id to retrieve from the database.
+     * @param amendOrderDTO the details to update to the specific order.
      * @return Returns the HTTP status OK/BAD_REQUEST with status message
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrder(@RequestBody Orders orders, @PathVariable long id) {
-        orders.setOrderId(id);
-        boolean status =ordersService.updateOrdersById(orders);
-
+    @PutMapping("/amend-order")
+    public ResponseEntity<?> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
+        boolean status =ordersService.updateOrdersById(amendOrderDTO);
         if(!status) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }

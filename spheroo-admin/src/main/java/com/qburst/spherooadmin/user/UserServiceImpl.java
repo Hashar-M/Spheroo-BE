@@ -15,6 +15,7 @@ public class UserServiceImpl implements UserService{
     private UsersRepository usersRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     /**
      * {@code public boolean isEmailAlreadyInUse(String email)}
      * A method checks the existence of a user with email address.

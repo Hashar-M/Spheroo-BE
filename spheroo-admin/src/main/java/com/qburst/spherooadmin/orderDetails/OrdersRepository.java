@@ -41,7 +41,6 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
      * function for getting open order count.
      * @return count of open orders in int data type.
      */
-    //region open orders
     @Query(value = "SELECT COUNT(order_id) AS open_order_count from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED')",nativeQuery = true)
     int findOpenOrderStatusCount();
 
@@ -67,9 +66,7 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
      */
     @Query(value = "SELECT COUNT(order_id) FROM orders WHERE (delivery_to_date <= NOW() - CAST(?1 AS INTERVAL) AND (delivery_to_date > NOW() - CAST(?2 AS INTERVAL)) AND order_status IN ('UNASSIGNED','UNACCEPTED'))",nativeQuery = true)
     int getOpenOrderCountByDuePeriod(String dueStartPeriodInHours, String dueEndPeriodInHours);
-    //endregion
 
-    //region Ongoing orders
     /**
      * function for getting ongoing order count (status as ACCEPTED)
      * @return count of ongoing order in int format.
@@ -78,9 +75,7 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
     int findOngoingOrderStatusCount();
     @Query(value = "SELECT COUNT(order_id) FROM orders WHERE (delivery_to_date <= NOW() - CAST(?1 AS INTERVAL) AND (delivery_to_date > NOW() - CAST(?2 AS INTERVAL)) AND order_status IN ('ACCEPTED'))",nativeQuery = true)
     int getOngoingOrderCountByDuePeriod(String dueStartPeriodInHours, String dueEndPeriodInHours);
-    //endregion
 
-    //region Overdue
     /**
      *function for getting count of overdue orders (oder status ACCEPTED/ UNASSIGNED/ UNACCEPTED and due period from 2 hours to 4 hours
      * @return count of overdue orders in int format.
@@ -105,8 +100,6 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
      */
     @Query(value = "SELECT COUNT(order_id) AS overdue_unaccepted_order_count from orders WHERE ( delivery_to_date <= NOW() - CAST(?1 AS INTERVAL) AND (delivery_to_date > NOW() - CAST(?2 AS INTERVAL))  AND order_status IN ('UNACCEPTED'))",nativeQuery = true)
     int findOverdueUnacceptedCount(String noOfDueInHours, String escalationDueInHours);
-    //endregion
-    //region Escalation
 
     /**
      * function for getting count of ESCALATION orders.

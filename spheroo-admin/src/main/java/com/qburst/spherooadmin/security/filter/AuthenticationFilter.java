@@ -8,7 +8,6 @@ import com.qburst.spherooadmin.security.manager.CustomAuthenticationManager;
 import com.qburst.spherooadmin.user.Users;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -63,6 +62,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     /**
      * Method is called on successful authentication.
      * Creates a JWT token and adds it to the response header.
+     * It will also send back the JWT token in the response body.
      * @param request The request from the client
      * @param response The response to the client
      * @param chain The FilterChain object
@@ -75,5 +75,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.TOKEN_EXPIRATION))
                 .sign(Algorithm.HMAC512(SecurityConstants.SECRET_KEY));
         response.addHeader(SecurityConstants.AUTHORIZATION, SecurityConstants.BEARER + token);
+        response.setContentType(SecurityConstants.CONTENT_TYPE);
+        response.setCharacterEncoding(SecurityConstants.CHARACTER_ENCODING);
+        response.getWriter().write(
+                "{\"" + SecurityConstants.AUTHORIZATION + "\":\"" + SecurityConstants.BEARER + token + "\"}"
+        );
     }
 }

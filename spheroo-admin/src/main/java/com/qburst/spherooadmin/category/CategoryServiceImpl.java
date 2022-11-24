@@ -21,7 +21,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
-
     private CategoryRepository categoryRepository;
     private ServiceRepository serviceRepository;
     private ServiceChargeRepository serviceChargeRepository;
