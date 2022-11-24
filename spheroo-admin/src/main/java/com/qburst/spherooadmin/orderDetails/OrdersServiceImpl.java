@@ -2,9 +2,11 @@ package com.qburst.spherooadmin.orderDetails;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.constants.OrdersConstants;
+import com.qburst.spherooadmin.search.OrderFilter;
 import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -127,5 +129,11 @@ public class OrdersServiceImpl implements OrdersService {
         //escalations
         orderStatisticsDTO.setEscalationsCount(ordersRepo.getOrdersCountByDuePeriod(OrdersConstants.ESCALATIONS_STARTING));
         return orderStatisticsDTO;
+    }
+
+    @Override
+    public Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements) {
+        Pageable pageable = PageRequest.of(pageNo, noOfElements);
+        return ordersRepo.findAll(orderFilter, pageable);
     }
 }

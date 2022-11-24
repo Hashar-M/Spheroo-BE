@@ -1,4 +1,5 @@
 package com.qburst.spherooadmin.orderDetails;
+import com.qburst.spherooadmin.search.OrderFilter;
 import org.springframework.data.domain.Page;
 
 public interface OrdersService {
@@ -9,4 +10,5 @@ public interface OrdersService {
     boolean updateOrdersById(Orders orders);
     boolean deleteOrderById(long Id);
     OrderStatisticsDTO getOrdersStatistics();
+    Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
 }
