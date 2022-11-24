@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService{
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     /**
      * {@code public boolean isEmailAlreadyInUse(String email)}
      * A method checks the existence of a user with email address.
