@@ -4,6 +4,7 @@ import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.constants.OrdersConstants;
 import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
+import com.qburst.spherooadmin.supplier.SupplierRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,6 +24,7 @@ public class OrdersServiceImpl implements OrdersService {
     private ServiceRepository serviceRepository;
     private ServiceChargeRepository serviceChargeRepository;
     private AssignedOrderRepository assignedOrderRepository;
+    private SupplierRepository supplierRepository;
 
     @Override
     public OrdersDisplayDTO getOrderById(long id) {
@@ -50,14 +52,25 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public boolean assignOrder(AssignedOrder assignedOrder) {
+    public int assignOrder(AssignedOrder assignedOrder) {
         if(ordersRepo.existsById(assignedOrder.getOrderId())){
-            assignedOrderRepository.save(assignedOrder);
-            Orders orders = ordersRepo.getReferenceById(assignedOrder.getOrderId());
-            orders.setOrderStatus(OrderStatus.UNACCEPTED.toString());
-            return true;
-        } else{
-            return false;
+            if(supplierRepository.existsById(assignedOrder.getSupplierId())){
+
+                assignedOrderRepository.save(assignedOrder);
+                Orders orders = ordersRepo.getReferenceById(assignedOrder.getOrderId());
+                orders.setOrderStatus(OrderStatus.UNACCEPTED.toString());
+                ordersRepo.save(orders);
+                //return 0: denotes saved successfully
+                return 0;
+            }
+            //return 1 : denotes supplier id doesn't exist
+            return 1;
+        } else if (supplierRepository.existsById(assignedOrder.getSupplierId())) {
+            //return 2: denotes order id doesn't exist;
+            return 2;
+        }else {
+            //return 3: denotes both order id and supplier id do not exist.
+            return 3;
         }
 
     }
