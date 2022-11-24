@@ -22,6 +22,7 @@ public class ChecklistServiceImp implements ChecklistService{
     private ServiceRepository serviceRepository;
     private ChecklistRepository checklistRepository;
     private ChecklistConverter checklistConverter;
+    private ChecklistItemRepository checklistItemRepository;
     public ResponseDTO addChecklist(ChecklistAddDTO checklistAddDTO){
         String serviceName=checklistAddDTO.getServiceName();
         String checklistName=checklistAddDTO.getName();
@@ -41,6 +42,7 @@ public class ChecklistServiceImp implements ChecklistService{
             checklist.setService(service);
             checklist.setChecklistItem(checklistItems);
 
+            checklistRepository.save(checklist);
             ResponseDTO responseDTO=new ResponseDTO();
             responseDTO.setSuccess(true);
             return responseDTO;
@@ -58,8 +60,10 @@ public class ChecklistServiceImp implements ChecklistService{
     public ResponseDTO deleteChecklistAndChecklistItemFromId(Long id){
         if(checklistRepository.existsById(id)){
             checklistRepository.deleteById(id);
+
             ResponseDTO responseDTO=new ResponseDTO();
             responseDTO.setSuccess(true);
+            responseDTO.setMessage("deleted");
             return responseDTO;
         }
         ResponseDTO responseDTO=new ResponseDTO();
@@ -67,19 +71,34 @@ public class ChecklistServiceImp implements ChecklistService{
         responseDTO.setMessage("Checklist NOT FOUND");
         return responseDTO;
     }
-    public Checklist getChecklistById(Long id){
+    public Optional<Checklist> getChecklistById(Long id){
         Optional<Checklist> optionalChecklist=checklistRepository.findById(id);
-        if(optionalChecklist.isPresent()){
+      /*  if(optionalChecklist.isPresent()){
            Checklist checklist=optionalChecklist.get();
            List<ChecklistItem> checklistItems=checklist.getChecklistItem();
            checklist.setChecklistItem(checklistItems);
            return checklist;
-        }
-        return null;
+        }*/
+        return optionalChecklist;
     }
-    public ResponseDTO updateTheChecklist(Checklist checklist){
+    @Modifying
+    @Transactional
+    public ResponseDTO updateTheChecklist(Checklist checklist,String serviceName){
+        if (serviceRepository.existsByServiceName(serviceName)){
+            com.qburst.spherooadmin.service.Service service=serviceRepository.findByServiceName(serviceName);
+            checklist.setService(service);
+            checklistRepository.save(checklist);
+
+            List<Long> checklistItemIds= checklistItemRepository.findByChecklistIdNull();
+            checklistItemRepository.deleteAllById(checklistItemIds);
+
+            ResponseDTO responseDTO=new ResponseDTO();
+            responseDTO.setSuccess(true);
+            return responseDTO;
+        }
         ResponseDTO responseDTO=new ResponseDTO();
-        responseDTO.setSuccess(true);
+        responseDTO.setSuccess(false);
+        responseDTO.setMessage("NO SERVICE FOUND");
         return responseDTO;
     }
 

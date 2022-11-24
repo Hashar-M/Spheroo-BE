@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/checklist")
@@ -22,33 +23,43 @@ public class ChecklistController {
     }
 
     @GetMapping("/get/all/list")
-    public ResponseEntity<List<CheclistPagingDTO>> pageOfChecklistWithNoCriteria(@RequestParam("pageNo") int pageNumber, @RequestParam("/pageSize") int pageSize){
+    public ResponseEntity<List<CheclistPagingDTO>> pageOfChecklistWithNoCriteria(@RequestParam("pageNo") int pageNumber, @RequestParam("pageSize") int pageSize){
         Page<CheclistPagingDTO> checlistPagingDTOPage=checklistService.pageChecklist(pageNumber,pageSize);
         if (checlistPagingDTOPage.hasContent()){
             List<CheclistPagingDTO> list=checlistPagingDTOPage.getContent();
             return ResponseEntity.ok(list);
         }
-        return null;
+        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteChecklist(@PathVariable Long id){
         ResponseDTO responseDTO;
         responseDTO=checklistService.deleteChecklistAndChecklistItemFromId(id);
-        if(responseDTO.isSuccess()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        String message= responseDTO.getMessage();
+        if(message.equals("Checklist NOT FOUND")){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> getAChecklist(@PathVariable Long id){
-        Checklist checklist=checklistService.getChecklistById(id);
-        if(checklist!=null){
+    public ResponseEntity<?> getAChecklist(@PathVariable Long id) {
+        Optional<Checklist> checklist = checklistService.getChecklistById(id);
+      /*  if(checklist!=null){
             return new ResponseEntity<>(checklist,HttpStatus.FOUND);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }*/
+        return new ResponseEntity<>(checklist, HttpStatus.OK);
     }
-    @PutMapping("/update")
-    public ResponseEntity<?> updateChecklist(@RequestBody Checklist checklist){
-        return new ResponseEntity<>(HttpStatus.OK);
+
+    @PutMapping("/update/{serviceName}")
+    public ResponseEntity<?> updateChecklist(@RequestBody Checklist checklist,@PathVariable String serviceName){
+        ResponseDTO responseDTO;
+        responseDTO=checklistService.updateTheChecklist(checklist,serviceName);
+        String message= responseDTO.getMessage();
+        if(message.equals("NO SERVICE FOUND")){
+            return new ResponseEntity<>(responseDTO,HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
