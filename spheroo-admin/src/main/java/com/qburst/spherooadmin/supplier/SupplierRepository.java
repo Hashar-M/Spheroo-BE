@@ -3,6 +3,9 @@ package com.qburst.spherooadmin.supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
 /**
 import java.util.Optional;
 Repository for managing {@link Supplier} entity.
@@ -24,4 +27,6 @@ public interface SupplierRepository extends JpaRepository<Supplier,Long> {
    */
   @Query(nativeQuery = true,value = "SELECT supplier_id FROM supplier WHERE supplier_name=?1")
   long getSupplierIdFromSupplierName(String supplierName);
+  @Query(value = "SELECT * FROM supplier WHERE category_id =?1 and pin_code=?2",nativeQuery = true)
+  List<Supplier> findByCategoryId(long categoryId,int pinCode);
 }

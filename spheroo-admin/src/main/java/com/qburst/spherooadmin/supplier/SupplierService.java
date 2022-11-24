@@ -13,4 +13,5 @@ public interface SupplierService {
     public boolean deleteSupplierFromSupplierName(String supplierName);
     public Optional<Supplier> getTheSupplier(String supplierName);
     public boolean editTheSupplier(Supplier supplier);
+    public List<SupplierToAssignDTO> getSuppliersToAssign(long categoryId,long orderId,String zipcode);
 }

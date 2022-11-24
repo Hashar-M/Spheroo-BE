@@ -2,6 +2,7 @@ package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,10 @@ public class SupplierController {
         SupplierPagingDTO supplierPagingDTO=new SupplierPagingDTO();
         supplierPagingDTO.setSupplierGetDTO(supplierGetDTOS);
         return ResponseEntity.ok(supplierPagingDTO);
+    }
+    @GetMapping("/get-suppliers")
+    public ResponseEntity<?> getSupplierByCategoryIdAndZip(@RequestParam long categoryId,@RequestParam long orderId,@RequestParam String zipcode){
+        return ResponseEntity.status(HttpStatus.OK).body(supplierService.getSuppliersToAssign(categoryId,orderId,zipcode));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDTO> deleteASupplier(@RequestBody SupplierDeleteDTO supplierDeleteDTO){
