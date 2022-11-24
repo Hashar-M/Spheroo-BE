@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService{
      */
     public void createNewUser(Users users){
         users.setUserRole(UserRole.ADMIN);
+        users.setPassword(passwordEncoder.encode(users.getPassword()));
         usersRepository.save(users);
     }
 
