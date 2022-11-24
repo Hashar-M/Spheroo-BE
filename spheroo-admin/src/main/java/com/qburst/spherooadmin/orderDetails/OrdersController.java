@@ -118,6 +118,14 @@ public class OrdersController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
     }
+
+    /**
+     * API for download attached image with order.
+     * @param response for sending image.
+     * @param orderId access order_id
+     * @return return image attached with order.
+     * @throws FileNotFoundException
+     */
     @GetMapping("/download/{orderId}")
     public StreamingResponseBody downloadAttachedFile(HttpServletResponse response,@PathVariable long orderId) throws FileNotFoundException {
         String fileName = "order#"+String.valueOf(orderId)+"image.jpeg";
@@ -134,16 +142,26 @@ public class OrdersController {
             }
         };
     }
-//    @GetMapping("/getsuppliers-byorder")
-//    public ResponseEntity<?> getSupplierByCategoryIdAndZip(@RequestParam long categoryId, @RequestParam String Zipcode){
-//
-//    }
+
+    /**
+     * API for assign order to supplier.
+     * @param assignedOrder details of order and supplier.
+     * @return Http status with message.
+     */
     @PostMapping("/assign-order")
     public ResponseEntity<?> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
-        if(ordersService.assignOrder(assignedOrder)){
+        int status= ordersService.assignOrder(assignedOrder);
+        //0 denotes saved successfully.
+        if(status == 0){
             return ResponseEntity.status(HttpStatus.OK).body("saved successfully");
-        }else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order id or supplier id not exist");
+        } else if (status == 1) {
+            // 1 denotes supplier id doesn't exist
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("supplier id doesn't exist");
+        } else if (status ==2) {
+            // 2: denotes order id doesn't exist
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order id doesn't exist");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" both order id and supplier id do not exist");
         }
     }
     /**
