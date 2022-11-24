@@ -121,18 +121,17 @@ public class OrdersController {
 
     /**
      * API for download attached image with order.
-     * @param response for sending image.
-     * @param orderId access order_id
-     * @return return image attached with order.
+     * @RequestParam orderId accepts order id.
+     * @RequestParam index accepts image index.
+     * @return return image for download.
      * @throws FileNotFoundException
      */
-    @GetMapping("/download/{orderId}")
-    public StreamingResponseBody downloadAttachedFile(HttpServletResponse response,@PathVariable long orderId) throws FileNotFoundException {
-        String fileName = "order#"+String.valueOf(orderId)+"image.jpeg";
+    @GetMapping("/download")
+    public StreamingResponseBody downloadAttachedFile(HttpServletResponse response,@RequestParam long orderId,@RequestParam int index) throws FileNotFoundException {
+        String fileName = "order#"+String.valueOf(orderId)+"image"+String.valueOf(index)+".jpeg";
         response.setContentType("image/jpg");
         response.setHeader("Content-Disposition","attachment;filename="+fileName);
-        String url =ordersService.getOrderById(orderId).getIssueImagesList().get(0).getIssueImages();
-//        String url ="/home/hashar/Pictures/Screenshots/Screenshot from 2022-11-22 11-40-14.png";
+        String url =ordersService.getOrderById(orderId).getIssueImagesList().get(index-1).getIssueImages();
         InputStream inputStream  = new FileInputStream(new File(url));
         return outputStream -> {
             int nRead;
