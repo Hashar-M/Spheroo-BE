@@ -15,12 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Controller for order entity
@@ -42,9 +47,9 @@ public class OrdersController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrderById(@PathVariable long id) {
 
-        Orders orders = ordersService.getOrderById(id);
-        if(orders != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(orders);
+        OrdersDisplayDTO ordersDisplayDTO = ordersService.getOrderById(id);
+        if(ordersDisplayDTO  != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(ordersDisplayDTO );
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
         }
@@ -113,6 +118,50 @@ public class OrdersController {
         }
     }
 
+    /**
+     * API for download attached image with order.
+     * @RequestParam orderId accepts order id.
+     * @RequestParam index accepts image index.
+     * @return return image for download.
+     * @throws FileNotFoundException
+     */
+    @GetMapping("/download")
+    public StreamingResponseBody downloadAttachedFile(HttpServletResponse response,@RequestParam long orderId,@RequestParam int index) throws FileNotFoundException {
+        String fileName = "order_" + orderId + "_image" + index + ".jpg";
+        response.setContentType("image/jpg");
+        response.setHeader("Content-Disposition","attachment;filename="+fileName);
+        String url =ordersService.getOrderById(orderId).getIssueImagesList().get(index-1).getIssueImages();
+        InputStream inputStream  = new FileInputStream(new File(url));
+        return outputStream -> {
+            int nRead;
+            byte[] data = new byte[1024];
+            while ((nRead = inputStream.read(data,0,data.length))!=-1){
+                outputStream.write(data,0,nRead);
+            }
+        };
+    }
+
+    /**
+     * API for assign order to supplier.
+     * @param assignedOrder details of order and supplier.
+     * @return Http status with message.
+     */
+    @PostMapping("/assign-order")
+    public ResponseEntity<?> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
+        int status= ordersService.assignOrder(assignedOrder);
+        //0 denotes saved successfully.
+        if(status == 0){
+            return ResponseEntity.status(HttpStatus.OK).body("saved successfully");
+        } else if (status == 1) {
+            // 1 denotes supplier id doesn't exist
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("supplier id doesn't exist");
+        } else if (status ==2) {
+            // 2: denotes order id doesn't exist
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order id doesn't exist");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" both order id and supplier id do not exist");
+        }
+    }
     /**
      * add a new order by providing its id.
      * @param order the order data to add to the database.

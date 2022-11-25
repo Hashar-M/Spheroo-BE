@@ -4,6 +4,7 @@ import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.constants.OrdersConstants;
 import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
+import com.qburst.spherooadmin.supplier.SupplierRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,15 +23,56 @@ public class OrdersServiceImpl implements OrdersService {
     private CategoryRepository categoryRepository;
     private ServiceRepository serviceRepository;
     private ServiceChargeRepository serviceChargeRepository;
+    private AssignedOrderRepository assignedOrderRepository;
+    private SupplierRepository supplierRepository;
 
     @Override
-    public Orders getOrderById(long id) {
-        return ordersRepo.getReferenceById(id);
+    public OrdersDisplayDTO getOrderById(long id) {
+        Orders orders = ordersRepo.getReferenceById(id);
+        OrdersDisplayDTO ordersDisplayDTO= new OrdersDisplayDTO();
+        ordersDisplayDTO.setOrderId(orders.getOrderId());
+        ordersDisplayDTO.setCustomerName(orders.getCustomerName());
+        ordersDisplayDTO.setCreatedDate(orders.getCreatedDate());
+        ordersDisplayDTO.setDeliveryFromDate(orders.getDeliveryFromDate());
+        ordersDisplayDTO.setDeliveryToDate(orders.getDeliveryToDate());
+        ordersDisplayDTO.setComments(orders.getComments());
+        ordersDisplayDTO.setZipCode(orders.getZipCode());
+        ordersDisplayDTO.setOrderStatus(orders.getOrderStatus());
+        ordersDisplayDTO.setCategoryId(orders.getCategoryId());
+        ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(orders.getCategoryId()).getCategoryName());
+        ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
+        ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
+        ordersDisplayDTO.setIssueImagesList(orders.getImagesList());
+        return ordersDisplayDTO;
     }
 
     @Override
     public void addOrder(Orders order) {
         ordersRepo.save(order);
+    }
+
+    @Override
+    public int assignOrder(AssignedOrder assignedOrder) {
+        if(ordersRepo.existsById(assignedOrder.getOrderId())){
+            if(supplierRepository.existsById(assignedOrder.getSupplierId())){
+
+                assignedOrderRepository.save(assignedOrder);
+                Orders orders = ordersRepo.getReferenceById(assignedOrder.getOrderId());
+                orders.setOrderStatus(OrderStatus.UNACCEPTED.toString());
+                ordersRepo.save(orders);
+                //return 0: denotes saved successfully
+                return 0;
+            }
+            //return 1 : denotes supplier id doesn't exist
+            return 1;
+        } else if (supplierRepository.existsById(assignedOrder.getSupplierId())) {
+            //return 2: denotes order id doesn't exist;
+            return 2;
+        }else {
+            //return 3: denotes both order id and supplier id do not exist.
+            return 3;
+        }
+
     }
 
     /**
