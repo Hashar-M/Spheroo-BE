@@ -128,7 +128,7 @@ public class OrdersController {
      */
     @GetMapping("/download")
     public StreamingResponseBody downloadAttachedFile(HttpServletResponse response,@RequestParam long orderId,@RequestParam int index) throws FileNotFoundException {
-        String fileName = "order#"+String.valueOf(orderId)+"image"+String.valueOf(index)+".jpeg";
+        String fileName = "order_" + orderId + "_image" + index + ".jpg";
         response.setContentType("image/jpg");
         response.setHeader("Content-Disposition","attachment;filename="+fileName);
         String url =ordersService.getOrderById(orderId).getIssueImagesList().get(index-1).getIssueImages();
