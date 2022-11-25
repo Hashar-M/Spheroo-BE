@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import static com.qburst.spherooadmin.constants.ChecklistItemConstants.*;
+
 
 /**
  * @author Hameel
@@ -24,7 +26,7 @@ import javax.persistence.Table;
 @Setter
 // When hibernate fetches the data these fields are included in the json which can be ignored when we serialize it.
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "checklist_item")
+@Table(name = TABLE)
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChecklistItem {
@@ -34,13 +36,13 @@ public class ChecklistItem {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "checklist_item_id")
+    @Column(name = ID)
     private long checklistItemId;
 
     /**
      * The description for a checklist item.
      */
-    @Column(name = "checklist_item_description")
+    @Column(name = DESCRIPTION)
     private String checklistItemDescription;
 
 }

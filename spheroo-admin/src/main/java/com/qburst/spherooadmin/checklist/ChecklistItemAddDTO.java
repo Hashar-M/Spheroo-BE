@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * DTO contains data for adding a new checklist item.
+ */
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

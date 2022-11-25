@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * It possesses data of a {@link Checklist} in the pagination for checklist.
+ */
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

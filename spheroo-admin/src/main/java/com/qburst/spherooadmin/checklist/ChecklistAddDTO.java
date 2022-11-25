@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * DTO contains data for create a new {@link Checklist}.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter

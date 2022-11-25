@@ -11,6 +11,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.List;
 
+import static com.qburst.spherooadmin.constants.ChecklistConstants.*;
+
 /**
  * @author Hameel
  * A Checklist is a list of actions for an agent to do under a service.
@@ -22,7 +24,7 @@ import java.util.List;
 @Setter
 // When hibernate fetches the data these fields are included in the json which can be ignored when we serialize it.
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "checklist")
+@Table(name = TABLE)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Checklist {
@@ -32,20 +34,20 @@ public class Checklist {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "checklist_id", nullable = false)
+    @Column(name = ID, nullable = false)
     private Long checklistId;
 
     /**
      * The name for a checklist
      */
     @Size(min = 1, max = 64)
-    @Column(name = "checklist_name", nullable = false, unique = true)
+    @Column(name = NAME, nullable = false, unique = true)
     private String checklistName;
 
     /**
      * The description for a checklist
      */
-    @Column(name = "checklist_description")
+    @Column(name = DESCRIPTION)
     private String checklistDescription;
 
     /**
@@ -54,13 +56,13 @@ public class Checklist {
      */
     @Basic(fetch = FetchType.LAZY)
     @ManyToOne(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id")
+    @JoinColumn(name = SERVICE)
     private Service service;
 
     /**
      * A checklist can have multiple items under it.
      */
     @OneToMany(targetEntity = ChecklistItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "checklist_id")
+    @JoinColumn(name = ID)
     private List<ChecklistItem> checklistItem;
 }
