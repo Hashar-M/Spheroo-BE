@@ -1,9 +1,13 @@
 package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
+import com.qburst.spherooadmin.orderDetails.AssignedOrderRepository;
+import com.qburst.spherooadmin.orderDetails.OrdersRepository;
+import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.supplieruser.SupplierUser;
 import com.qburst.spherooadmin.supplieruser.SupplierUserType;
 import com.qburst.spherooadmin.supplieruser.SupplierUsersAddDTO;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,11 +25,15 @@ import java.util.Optional;
  * Service layer provides services related to supplier model.
  */
 @Service
+@AllArgsConstructor
 public class SupplierServiceImp implements SupplierService {
     @Autowired
     private SupplierRepository supplierRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    private ServiceRepository serviceRepository;
+    private OrdersRepository ordersRepository;
+    private AssignedOrderRepository assignedOrderRepository;
 
     /**
      * Method is used for persist a new supplier.
@@ -179,6 +187,30 @@ public class SupplierServiceImp implements SupplierService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * function for returning supplier list with given categories.
+     * @param categoryId accepts category id.
+     * @param orderId accepts order id.
+     * @return list of supplier data which matches criteria.
+     */
+    @Override
+    public List<SupplierToAssignDTO> getSuppliersToAssign(long categoryId, long orderId,String zipcode) {
+        List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,Integer.parseInt(zipcode));
+        List<SupplierToAssignDTO> supplierToAssignDTOList = new ArrayList<>();
+        for (Supplier supplier : supplierList) {
+            SupplierToAssignDTO supplierToAssignDTO = new SupplierToAssignDTO();
+            supplierToAssignDTO.setSupplierId(supplier.getSupplierId());
+            supplierToAssignDTO.setSupplierName(supplier.getSupplierName());
+            supplierToAssignDTO.setCategoryName(supplier.getCategoryNames());
+            supplierToAssignDTO.setServiceName(serviceRepository.getReferenceById(ordersRepository.getReferenceById(orderId).getServiceId()).getServiceName());
+            supplierToAssignDTO.setTier(supplier.getTier());
+            supplierToAssignDTO.setRating(supplier.getRating());
+            supplierToAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(supplier.getSupplierId()));
+            supplierToAssignDTOList.add(supplierToAssignDTO);
+        }
+        return supplierToAssignDTOList;
     }
 
 

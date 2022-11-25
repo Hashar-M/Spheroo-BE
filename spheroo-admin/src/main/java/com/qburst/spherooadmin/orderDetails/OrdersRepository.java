@@ -116,5 +116,4 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
      */
     @Query(value = "SELECT * from orders WHERE order_status IN ('ACCEPTED','SERVICED','REJECTED')",nativeQuery = true)
     Page<Orders> findByClosedOrderStatus(Pageable pageable);
-
 }
