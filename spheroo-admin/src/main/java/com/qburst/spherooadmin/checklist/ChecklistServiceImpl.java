@@ -26,7 +26,7 @@ import static com.qburst.spherooadmin.constants.ChecklistConstants.SERVICE_NOT_F
 @Service
 @AllArgsConstructor
 @Slf4j
-public class ChecklistServiceImp implements ChecklistService{
+public class ChecklistServiceImpl implements ChecklistService{
     private ServiceRepository serviceRepository;
     private ChecklistRepository checklistRepository;
     private ChecklistConverter checklistConverter;

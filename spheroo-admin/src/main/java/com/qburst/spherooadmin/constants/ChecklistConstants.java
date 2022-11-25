@@ -10,5 +10,4 @@ public final class ChecklistConstants {
     public static final String NAME="checklist_name";
     public static final String DESCRIPTION="checklist_description";
     public static final String SERVICE="service_id";
-
 }

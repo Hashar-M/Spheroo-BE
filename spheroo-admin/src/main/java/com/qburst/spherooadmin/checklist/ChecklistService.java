@@ -3,9 +3,6 @@ package com.qburst.spherooadmin.checklist;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
  * interface have abstract methods for service layer for {@link Checklist} and {@link ChecklistItem}.
  */
