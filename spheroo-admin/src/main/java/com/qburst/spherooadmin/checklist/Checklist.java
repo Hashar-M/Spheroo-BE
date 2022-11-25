@@ -54,7 +54,6 @@ public class Checklist {
      * A checklist comes under a service. We build a relation by providing the id of
      * the service as a foreign key
      */
-    @Basic(fetch = FetchType.LAZY)
     @ManyToOne(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinColumn(name = SERVICE)
     private Service service;

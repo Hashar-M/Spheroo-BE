@@ -13,6 +13,6 @@ public interface ChecklistService {
     public ResponseDTO addChecklist(ChecklistAddDTO checklistAddDTO);
     public Page<CheclistPagingDTO> pageChecklist(int pageNumber, int pageSize);
     public ResponseDTO deleteChecklistAndChecklistItemFromId(Long id);
-    public Optional<Checklist> getChecklistById(Long id);
+    public ChecklistGetDTO getChecklistById(Long id);
     public ResponseDTO updateTheChecklist(Checklist checklist,String serviceName);
 }

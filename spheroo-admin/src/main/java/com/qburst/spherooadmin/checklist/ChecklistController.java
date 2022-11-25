@@ -75,9 +75,9 @@ public class ChecklistController {
      */
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getAChecklist(@PathVariable Long id) {
-        Optional<Checklist> checklist = checklistService.getChecklistById(id);
-        if(checklist.isPresent()) {
-            return new ResponseEntity<>(checklist, HttpStatus.OK);
+        ChecklistGetDTO checklistGetDTO = checklistService.getChecklistById(id);
+        if(checklistGetDTO!=null) {
+            return new ResponseEntity<>(checklistGetDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

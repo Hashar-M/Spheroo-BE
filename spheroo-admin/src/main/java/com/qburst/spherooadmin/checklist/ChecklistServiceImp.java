@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.checklist;
 
+import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class ChecklistServiceImp implements ChecklistService{
     private ChecklistRepository checklistRepository;
     private ChecklistConverter checklistConverter;
     private ChecklistItemRepository checklistItemRepository;
+    private CategoryRepository categoryRepository;
 
     /**
      * method for creating new {@link Checklist}
@@ -120,9 +122,22 @@ public class ChecklistServiceImp implements ChecklistService{
      * @param id
      * @return
      */
-    public Optional<Checklist> getChecklistById(Long id){
+    public ChecklistGetDTO getChecklistById(Long id){
         Optional<Checklist> optionalChecklist=checklistRepository.findById(id);
-        return optionalChecklist;
+        ChecklistGetDTO checklistGetDTO = new ChecklistGetDTO();
+        if(optionalChecklist.isPresent()) {
+            Checklist checklist = optionalChecklist.get();
+            long categoryId = serviceRepository.findCategoryIdFromServiceId(checklist.getService().getServiceId());
+            String categoryName = categoryRepository.getCategoryNameFromCategoryId(categoryId);
+            String serviceName = checklist.getService().getServiceName();
+
+            checklist.setService(null);
+            checklistGetDTO.setChecklist(checklist);
+            checklistGetDTO.setServiceName(serviceName);
+            checklistGetDTO.setCategoryName(categoryName);
+            return checklistGetDTO;
+        }
+        return null;
     }
 
     /**
