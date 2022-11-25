@@ -28,16 +28,28 @@ import java.util.Date;
 @Table(name="assigned_order")
 public class AssignedOrder {
 
+    /**
+     * this field represents assign id, primary key for assigned_order.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="assign_id")
     private long assignId;
+    /**
+     * order_id field stores the id of assigned order.
+     */
     @NotNull
     @Column(name="order_id",nullable = false,unique = true)
     private long orderId;
+    /**
+     * supplier_id field stores the id of assigned supplier.
+     */
     @NotNull
     @Column(name="supplier_id",nullable = false)
     private long supplierId;
+    /**
+     * assigned_date field stores the assignation completed date.
+     */
     @NotNull
     @Column(name = "assigned_date",nullable = false)
     private Date assignedDate;
