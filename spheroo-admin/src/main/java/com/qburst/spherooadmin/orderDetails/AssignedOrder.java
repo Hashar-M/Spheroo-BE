@@ -15,6 +15,10 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+/**
+ * Represents assigned order entity.
+ * it will contain all details related to order assign process.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
