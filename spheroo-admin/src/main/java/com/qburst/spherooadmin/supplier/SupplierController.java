@@ -30,11 +30,11 @@ public class SupplierController {
         return ResponseEntity.ok(responseDTO);
     }
     @GetMapping("/get/list")
-    public ResponseEntity<SupplierPagingDTO> getSuppliersAsAList(@RequestParam int pageNo, @RequestParam int pageSize){
-        List<SupplierGetDTO> supplierGetDTOS=supplierService.getAListOfSupplier(pageNo,pageSize);
-        SupplierPagingDTO supplierPagingDTO=new SupplierPagingDTO();
-        supplierPagingDTO.setSupplierGetDTO(supplierGetDTOS);
-        return ResponseEntity.ok(supplierPagingDTO);
+    public ResponseEntity<?> getSuppliersAsPage(@RequestParam int pageNo, @RequestParam int pageSize){
+//        List<SupplierGetDTO> supplierGetDTOS=supplierService.getPageOfSupplier(pageNo,pageSize);
+//        SupplierPagingDTO supplierPagingDTO=new SupplierPagingDTO();
+//        supplierPagingDTO.setSupplierGetDTO(supplierGetDTOS);
+        return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo,pageSize));
     }
 
     /**
