@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -45,5 +46,15 @@ public interface ServiceRepository extends JpaRepository<Service,Long> {
      */
     @Query(value = "SELECT service_id FROM service WHERE category_id IS NULL",nativeQuery = true)
     List<Long> findNullCategoryServices();
+
+    /**
+     * method for getting a list of service name for a given category ID value as a content of {@link Page}
+     * The names are listed in ascending order.
+     * @param categoryId
+     * @param pageable contain data for page number and page size.
+     * @return {@link Page}
+     */
+    @Query(value = "SELECT s.service_name FROM service s WHERE s.category_id=?1 ORDER BY s.service_name",nativeQuery = true)
+    Page<String> findServiceNameForACategory(long categoryId, Pageable pageable);
 
 }

@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.service;
 
 
+import com.qburst.spherooadmin.signup.ResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -51,4 +52,13 @@ public interface ServiceEntityService {
      * @return a List of strings containing the names of services under the category
      */
     List<String> getServiceNameByCategoryId(Long category_id);
+
+    /**
+     * fetch the data for service name along with the status of operation is added to the DTO {@link ResponseDTO}
+     * @param categoryName
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    public ResponseDTO getListOfServiceNamesForTheGivenCategory(String categoryName,int pageNo,int pageSize);
 }
