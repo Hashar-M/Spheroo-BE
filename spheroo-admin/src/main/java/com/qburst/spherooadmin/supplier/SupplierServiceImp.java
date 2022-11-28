@@ -109,6 +109,7 @@ public class SupplierServiceImp implements SupplierService {
     public Page<SupplierGetDTO> getPageOfSupplier(int pageNo, int pageSize){
         Pageable pageable= PageRequest.of(pageNo,pageSize);
         Page<Supplier> suppliersPage=supplierRepository.findAll(pageable);
+//        List<Supplier> suppliersPage = supplierRepository.findAll();
         List<SupplierGetDTO> supplierGetDTOList=new ArrayList<>();
 //        Page<SupplierGetDTO> supplierGetDTOPage;
         suppliersPage.forEach(supplier -> {
