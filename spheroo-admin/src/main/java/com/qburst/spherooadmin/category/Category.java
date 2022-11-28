@@ -62,7 +62,4 @@ public class Category {
     @OneToMany(targetEntity = Service.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private List<Service> serviceList;
-
-    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private List<Supplier> suppliers;
 }
