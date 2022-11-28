@@ -6,16 +6,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+
+import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
 
@@ -94,6 +96,13 @@ public class Orders {
     @NotNull
     @Column(name = "order_status",nullable = false)
     private String orderStatus;
+
+    /**
+     * Retrieves the name of the service from the service table.
+     */
+    @Formula("(SELECT Service.service_name FROM Service where Service.service_id = service_id)")
+    private String serviceName;
+
     /**
      * it stores the list of image source path which is uploaded with order.
      */

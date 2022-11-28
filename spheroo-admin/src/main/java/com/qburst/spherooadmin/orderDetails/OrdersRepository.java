@@ -3,13 +3,14 @@ package com.qburst.spherooadmin.orderDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 /**
  * The repository for Orders entity.
  */
-public interface OrdersRepository extends JpaRepository<Orders,Long> {
+public interface OrdersRepository extends JpaRepository<Orders,Long>, JpaSpecificationExecutor<Orders> {
 
     /**
      * to get all orders by order status.
