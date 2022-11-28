@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OverdueOrderStatistics {
-    private int OrdersCount;
-    private int OrdersUnassigned;
-    private int OrdersUnaccepted;
+    private int ordersCount;
+    private int ordersUnassigned;
+    private int ordersUnaccepted;
 }

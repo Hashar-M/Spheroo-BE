@@ -16,6 +16,6 @@ public class OrderStatisticsDTO {
 
     private OpenOrderStatistics open;
     private OngoingOrderStatistics ongoing;
-    private OverdueOrderStatistics Overdue;
+    private OverdueOrderStatistics overdue;
     private int escalationsCount;
 }

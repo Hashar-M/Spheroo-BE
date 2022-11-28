@@ -13,10 +13,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OpenOrderStatistics {
-    private int OrdersCount;
-    private int OrdersUnassigned;
-    private int OrdersUnaccepted;
-    private int OrdersRedFlag;
-    private int OrdersBlueFlag;
-    private int OrdersGreenFlag;
+    private int ordersCount;
+    private int ordersUnassigned;
+    private int ordersUnaccepted;
+    private int ordersRedFlag;
+    private int ordersBlueFlag;
+    private int ordersGreenFlag;
 }

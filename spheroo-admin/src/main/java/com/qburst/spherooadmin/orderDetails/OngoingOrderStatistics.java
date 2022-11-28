@@ -13,8 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OngoingOrderStatistics {
-    private int OrdersCount;
-    private int OrdersRedFlag;
-    private int OrdersBlueFlag;
-    private int OrdersGreenFlag;
+    private int ordersCount;
+    private int ordersRedFlag;
+    private int ordersBlueFlag;
+    private int ordersGreenFlag;
 }
