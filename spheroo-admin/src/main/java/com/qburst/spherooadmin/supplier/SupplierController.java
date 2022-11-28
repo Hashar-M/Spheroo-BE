@@ -37,13 +37,7 @@ public class SupplierController {
             responseDTO.setMessage(" page size must be greater than 0 ");
             return ResponseEntity.ok(responseDTO);
         }
-//        List<SupplierGetDTO> supplierGetDTOS=supplierService.getPageOfSupplier(pageNo,pageSize);
-//        SupplierPagingDTO supplierPagingDTO=new SupplierPagingDTO();
-//        supplierPagingDTO.setSupplierGetDTO(supplierGetDTOS);
-        responseDTO.setSuccess(true);
-        responseDTO.setData(supplierService.getPageOfSupplier(pageNo,pageSize));
-        return ResponseEntity.ok(responseDTO);
-//        return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo,pageSize));
+        return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo,pageSize));
     }
 
     /**

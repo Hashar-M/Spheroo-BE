@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface SupplierService {
     public void addSupplier(SupplierAddDTO supplierAddDTO);
-    public Page<SupplierGetDTO> getPageOfSupplier(int pageNo, int pageSize);
+    public SupplierPageDTO getPageOfSupplier(int pageNo, int pageSize);
     public boolean deleteSupplierFromSupplierName(String supplierName);
     public Optional<Supplier> getTheSupplier(String supplierName);
     public boolean editTheSupplier(Supplier supplier);
