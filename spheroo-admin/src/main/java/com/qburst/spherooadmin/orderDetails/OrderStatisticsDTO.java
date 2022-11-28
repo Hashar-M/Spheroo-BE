@@ -13,21 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderStatisticsDTO {
-    private int openOrdersCount;
-    private int openOrdersUnassigned;
-    private int openOrdersUnaccepted;
-    private int openOrdersRedFlag;
-    private int openOrdersBlueFlag;
-    private int openOrdersGreenFlag;
 
-    private int ongoingOrdersCount;
-    private int ongoingOrdersRedFlag;
-    private int ongoingOrdersBlueFlag;
-    private int ongoingOrdersGreenFlag;
-
-    private int overdueOrdersCount;
-    private int overdueOrdersUnassigned;
-    private int overdueOrdersUnaccepted;
-
+    private OpenOrderStatistics open;
+    private OngoingOrderStatistics ongoing;
+    private OverdueOrderStatistics overdue;
     private int escalationsCount;
 }
