@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -74,4 +76,10 @@ public class Orders {
 
     @Column (name = "issue_attached_image")
     private String issuePicture;
+
+    /**
+     * Retrieves the name of the service from the service table.
+     */
+    @Formula("(SELECT Service.service_name FROM Service where Service.service_id = service_id)")
+    private String serviceName;
 }
