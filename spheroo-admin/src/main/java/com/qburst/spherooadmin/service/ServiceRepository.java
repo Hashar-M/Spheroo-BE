@@ -48,6 +48,24 @@ public interface ServiceRepository extends JpaRepository<Service,Long> {
     List<Long> findNullCategoryServices();
 
     /**
+     * the method checks if a {@link Service} of given name exists.
+     * @param serviceName
+     * @return true if a Service of name exists, otherwise false.
+     */
+
+    public boolean existsByServiceName(String serviceName);
+
+    /**
+     * Search a Service using service name.
+     * @param serviceName
+     * @return {@link Service} for given service name.
+     */
+
+    public Service findByServiceName(String serviceName);
+    @Query(nativeQuery = true,value = "SELECT category_id FROM service WHERE service_id=?1")
+    public long findCategoryIdFromServiceId(long serviceId);
+
+    /**
      * method for getting a list of service name for a given category ID value as a content of {@link Page}
      * The names are listed in ascending order.
      * @param categoryId
