@@ -153,21 +153,27 @@ public class OrdersServiceImpl implements OrdersService {
     public OrderStatisticsDTO getOrdersStatistics() {
         //open order
         OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
-        orderStatisticsDTO.setOpenOrdersCount(ordersRepo.findOpenOrderStatusCount());
-        orderStatisticsDTO.setOpenOrdersUnassigned(ordersRepo.findUnassignedOrderStatusCount());
-        orderStatisticsDTO.setOpenOrdersUnaccepted(ordersRepo.findUnacceptedOrderStatusCount());
-        orderStatisticsDTO.setOpenOrdersGreenFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.GREEN_FLAG_STARTING,OrdersConstants.BLUE_FLAG_STARTING));
-        orderStatisticsDTO.setOpenOrdersBlueFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.BLUE_FLAG_STARTING,OrdersConstants.RED_FLAG_STARTING));
-        orderStatisticsDTO.setOpenOrdersRedFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.RED_FLAG_STARTING,OrdersConstants.OVERDUE_STARTING));
+        OpenOrderStatistics openOrderStatistics = new OpenOrderStatistics();
+        openOrderStatistics.setOrdersCount(ordersRepo.findOpenOrderStatusCount());
+        openOrderStatistics.setOrdersUnassigned(ordersRepo.findUnassignedOrderStatusCount());
+        openOrderStatistics.setOrdersUnaccepted(ordersRepo.findUnacceptedOrderStatusCount());
+        openOrderStatistics.setOrdersGreenFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.GREEN_FLAG_STARTING,OrdersConstants.BLUE_FLAG_STARTING));
+        openOrderStatistics.setOrdersBlueFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.BLUE_FLAG_STARTING,OrdersConstants.RED_FLAG_STARTING));
+        openOrderStatistics.setOrdersRedFlag(ordersRepo.getOpenOrderCountByDuePeriod(OrdersConstants.RED_FLAG_STARTING,OrdersConstants.OVERDUE_STARTING));
+        orderStatisticsDTO.setOpen(openOrderStatistics);
         //ongoing order
-        orderStatisticsDTO.setOngoingOrdersCount(ordersRepo.findOngoingOrderStatusCount());
-        orderStatisticsDTO.setOngoingOrdersGreenFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.GREEN_FLAG_STARTING,OrdersConstants.BLUE_FLAG_STARTING));
-        orderStatisticsDTO.setOngoingOrdersBlueFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.BLUE_FLAG_STARTING,OrdersConstants.RED_FLAG_STARTING));
-        orderStatisticsDTO.setOngoingOrdersRedFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.RED_FLAG_STARTING,OrdersConstants.OVERDUE_STARTING));
+        OngoingOrderStatistics ongoingOrderStatistics = new OngoingOrderStatistics();
+        ongoingOrderStatistics.setOrdersCount(ordersRepo.findOngoingOrderStatusCount());
+        ongoingOrderStatistics.setOrdersGreenFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.GREEN_FLAG_STARTING,OrdersConstants.BLUE_FLAG_STARTING));
+        ongoingOrderStatistics.setOrdersBlueFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.BLUE_FLAG_STARTING,OrdersConstants.RED_FLAG_STARTING));
+        ongoingOrderStatistics.setOrdersRedFlag(ordersRepo.getOngoingOrderCountByDuePeriod(OrdersConstants.RED_FLAG_STARTING,OrdersConstants.OVERDUE_STARTING));
+        orderStatisticsDTO.setOngoing(ongoingOrderStatistics);
         //overdue order
-        orderStatisticsDTO.setOverdueOrdersCount(ordersRepo.findOverdueOrderStatusCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
-        orderStatisticsDTO.setOverdueOrdersUnassigned(ordersRepo.findOverdueUnassignedCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
-        orderStatisticsDTO.setOverdueOrdersUnaccepted(ordersRepo.findOverdueUnacceptedCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
+        OverdueOrderStatistics overdueOrderStatistics = new OverdueOrderStatistics();
+        overdueOrderStatistics.setOrdersCount(ordersRepo.findOverdueOrderStatusCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
+        overdueOrderStatistics.setOrdersUnassigned(ordersRepo.findOverdueUnassignedCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
+        overdueOrderStatistics.setOrdersUnaccepted(ordersRepo.findOverdueUnacceptedCount(OrdersConstants.OVERDUE_STARTING,OrdersConstants.ESCALATIONS_STARTING));
+        orderStatisticsDTO.setOverdue(overdueOrderStatistics);
         //escalations
         orderStatisticsDTO.setEscalationsCount(ordersRepo.getOrdersCountByDuePeriod(OrdersConstants.ESCALATIONS_STARTING));
         return orderStatisticsDTO;
