@@ -25,15 +25,36 @@ public class OrdersServiceImpl implements OrdersService {
     private CategoryRepository categoryRepository;
     private ServiceRepository serviceRepository;
     private ServiceChargeRepository serviceChargeRepository;
+    private AssignedOrderRepository assignedOrderRepository;
 
     @Override
-    public Orders getOrderById(long id) {
-        return ordersRepo.getReferenceById(id);
+    public OrdersDisplayDTO getOrderById(long id) {
+        Orders orders = ordersRepo.getReferenceById(id);
+        OrdersDisplayDTO ordersDisplayDTO= new OrdersDisplayDTO();
+        ordersDisplayDTO.setOrderId(orders.getOrderId());
+        ordersDisplayDTO.setCustomerName(orders.getCustomerName());
+        ordersDisplayDTO.setCreatedDate(orders.getCreatedDate());
+        ordersDisplayDTO.setDeliveryFromDate(orders.getDeliveryFromDate());
+        ordersDisplayDTO.setDeliveryToDate(orders.getDeliveryToDate());
+        ordersDisplayDTO.setComments(orders.getComments());
+        ordersDisplayDTO.setZipCode(orders.getZipCode());
+        ordersDisplayDTO.setOrderStatus(orders.getOrderStatus());
+        ordersDisplayDTO.setCategoryId(orders.getCategoryId());
+        ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(orders.getCategoryId()).getCategoryName());
+        ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
+        ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
+        ordersDisplayDTO.setIssueImagesList(orders.getImagesList());
+        return ordersDisplayDTO;
     }
 
     @Override
     public void addOrder(Orders order) {
         ordersRepo.save(order);
+    }
+
+    @Override
+    public void assignOrder(AssignedOrder assignedOrder) {
+        assignedOrderRepository.save(assignedOrder);
     }
 
     /**
@@ -131,6 +152,13 @@ public class OrdersServiceImpl implements OrdersService {
         return orderStatisticsDTO;
     }
 
+    /**
+     * Finds all orders in the database based on the specified criteria
+     * @param orderFilter The specification to selects the orders on
+     * @param pageNo The page number
+     * @param noOfElements The number of elements to return at a time
+     * @return A page object which contains orders based on the specified criteria
+     */
     @Override
     public Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements) {
         Pageable pageable = PageRequest.of(pageNo, noOfElements);

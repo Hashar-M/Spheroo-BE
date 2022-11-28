@@ -14,7 +14,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Represents the orders entity
@@ -40,16 +43,16 @@ public class Orders {
     private String customerName;
 
     @NotNull
-    @Column(name="category_id",nullable = false)  //not null
-    private long categoryId;    //many to one mapping
+    @Column(name="category_id",nullable = false)
+    private long categoryId;
 
     @NotNull
-    @Column(name="service_id",nullable = false)  //not null
-    private long serviceId;     //many to one mapping
+    @Column(name="service_id",nullable = false)
+    private long serviceId;
 
     @NotNull
     @Column(name = "created_date",nullable = false)
-    private Date createdDate;   //date format
+    private Date createdDate;
 
     @Column(name="delivery_from_date")
     private Date deliveryFromDate;
@@ -62,7 +65,7 @@ public class Orders {
 
     @NotNull
     @Column(name = "zip_code",nullable = false)
-    private String zipCode; // from user table
+    private String zipCode;
 
     /** status may have unassigned, unaccepted, accepted, rejected, closed
      * open orders:
@@ -82,4 +85,8 @@ public class Orders {
      */
     @Formula("(SELECT Service.service_name FROM Service where Service.service_id = service_id)")
     private String serviceName;
+
+    @OneToMany(targetEntity = IssueImages.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id")
+    private List<IssueImages> imagesList;
 }

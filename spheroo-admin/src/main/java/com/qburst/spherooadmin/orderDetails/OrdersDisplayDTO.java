@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,8 +20,10 @@ public class OrdersDisplayDTO {
     private String comments;
     private String zipCode;
     private String orderStatus;
+    private long categoryId;
     private String categoryName;
     private String serviceName;
     private double charge;
     private String assignedSupplier;
+    private List<IssueImages> issueImagesList;
 }
