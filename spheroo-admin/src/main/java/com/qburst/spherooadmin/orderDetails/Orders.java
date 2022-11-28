@@ -97,9 +97,6 @@ public class Orders {
     @Column(name = "order_status",nullable = false)
     private String orderStatus;
 
-    @Column (name = "issue_attached_image")
-    private String issuePicture;
-
     /**
      * Retrieves the name of the service from the service table.
      */
