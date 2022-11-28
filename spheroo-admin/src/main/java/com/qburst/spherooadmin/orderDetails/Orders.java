@@ -120,13 +120,4 @@ public class Orders {
     @OneToMany(targetEntity = IssueImages.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private List<IssueImages> imagesList;
-
-    @Column (name = "issue_attached_image")
-    private String issuePicture;
-
-    /**
-     * Retrieves the name of the service from the service table.
-     */
-    @Formula("(SELECT Service.service_name FROM Service where Service.service_id = service_id)")
-    private String serviceName;
 }
