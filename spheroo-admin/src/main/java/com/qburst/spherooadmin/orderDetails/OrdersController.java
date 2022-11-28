@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.orderDetails;
 
+import com.qburst.spherooadmin.search.OrderFilter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,5 +201,18 @@ public class OrdersController {
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no order details with this Id");
         }
+    }
+
+    /**
+     * Allows you to search through orders based on the criteria defined in
+     * the OrderFilter
+     * @param orderFilter The criteria by which we search for the orders.
+     * @param pageNo The page number of the list of orders.
+     * @param noOfElements The number of elements to return at a time.
+     * @return A Page of orders based on the provided criteria.
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Page<Orders>> findAllOrdersBySpecification(@RequestBody OrderFilter orderFilter, @RequestParam int pageNo, @RequestParam int noOfElements) {
+        return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo, noOfElements), HttpStatus.OK);
     }
 }
