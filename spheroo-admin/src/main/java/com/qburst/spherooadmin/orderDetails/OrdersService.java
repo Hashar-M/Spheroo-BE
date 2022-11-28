@@ -11,5 +11,5 @@ public interface OrdersService {
     boolean deleteOrderById(long Id);
     OrderStatisticsDTO getOrdersStatistics();
     Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
-    void assignOrder(AssignedOrder assignedOrder);
+    boolean assignOrder(AssignedOrder assignedOrder);
 }

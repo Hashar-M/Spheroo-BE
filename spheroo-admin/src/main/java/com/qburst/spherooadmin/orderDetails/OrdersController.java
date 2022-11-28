@@ -114,8 +114,11 @@ public class OrdersController {
     }
     @PostMapping("/assign-order")
     public ResponseEntity<?> assignOrder(@RequestBody AssignedOrder assignedOrder){
-        ordersService.assignOrder(assignedOrder);
-        return ResponseEntity.status(HttpStatus.OK).body("saved successfully");
+        if(ordersService.assignOrder(assignedOrder)){
+            return ResponseEntity.status(HttpStatus.OK).body("saved successfully");
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order id or supplier id not exist");
+        }
     }
     /**
      * add a new order by providing its id.
