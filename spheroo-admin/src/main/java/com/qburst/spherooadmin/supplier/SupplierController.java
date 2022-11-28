@@ -74,4 +74,22 @@ public class SupplierController {
         responseDTO.setSuccess(supplierService.editTheSupplier(supplier));
         return ResponseEntity.ok(responseDTO);
     }
+
+    /**
+     *It gives a {@link org.springframework.data.domain.Page} has a content of {@link List} of {@link FilterSupplierForAssignDTO} based on the filtering parameter.
+     * @param categoryId for {@link Supplier}
+     * @param pinCode of {@link Supplier}
+     * @param rating for the {@link Supplier }
+     * @param pageNumber
+     * @param pageSize
+     * @return {@link org.springframework.data.domain.Page<FilterSupplierForAssignDTO>}
+     */
+    @GetMapping("/get-suppliers/filter")
+    public ResponseEntity<?> supplerFilteringForACategory(@RequestParam(name = "category-id") long categoryId,
+                                              @RequestParam(name = "pin-code") int pinCode,
+                                              @RequestParam(name = "rating") int rating,
+                                              @RequestParam(name = "page-no",defaultValue = "0") int pageNumber,
+                                              @RequestParam(name = "page-size",defaultValue = "1") int pageSize){
+        return new ResponseEntity<>(supplierService.filteredPageOfSupplierForACategoryId(categoryId,pinCode,rating,pageNumber,pageSize),HttpStatus.FOUND);
+    }
 }

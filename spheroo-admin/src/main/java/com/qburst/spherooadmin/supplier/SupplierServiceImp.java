@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -211,6 +212,31 @@ public class SupplierServiceImp implements SupplierService {
             supplierToAssignDTOList.add(supplierToAssignDTO);
         }
         return supplierToAssignDTOList;
+    }
+
+    /**
+     * The method map the {@link Supplier} data  for the below filtering parameter into {@link FilterSupplierForAssignDTO}.
+     * @param categoryId
+     * @param pin
+     * @param rating
+     * @param pageNumber
+     * @param pageSize
+     * @return {@link Page<FilterSupplierForAssignDTO>}
+     */
+    public Page<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(long categoryId, int pin, int rating, int pageNumber, int pageSize){
+        /**sorting is for {@link Supplier} name in ascending order.*/
+        Sort sort=Sort.by("supplierName").ascending();
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);
+
+        Page<FilterSupplierForAssignDTO> page= supplierRepository.findAllOrderBySupplierName(pageable,categoryId,rating,pin);
+        /**
+         * value for assigned orders for each {@link Supplier} is taken from {@link AssignedOrderRepository}
+         * and added to {@link FilterSupplierForAssignDTO}.
+         */
+        page.get().forEach(filterSupplierForAssignDTO -> {
+            filterSupplierForAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(filterSupplierForAssignDTO.getSupplierId()));
+        });
+        return page;
     }
 
 
