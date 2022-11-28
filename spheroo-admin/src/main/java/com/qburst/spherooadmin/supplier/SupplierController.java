@@ -30,7 +30,7 @@ public class SupplierController {
         return ResponseEntity.ok(responseDTO);
     }
     @GetMapping("/get/list")
-    public ResponseEntity<?> getSuppliersAsPage(@RequestParam int pageNo, @RequestParam int pageSize){
+    public ResponseEntity<?> getSuppliersAsPage(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "1") int pageSize){
         ResponseDTO responseDTO=new ResponseDTO();
         if (pageSize<1){
             responseDTO.setSuccess(false);
