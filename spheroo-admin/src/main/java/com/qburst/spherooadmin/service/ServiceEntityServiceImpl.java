@@ -100,7 +100,10 @@ public class ServiceEntityServiceImpl implements ServiceEntityService {
     @Override
     public ResponseDTO getListOfServiceNamesForTheGivenCategory(String categoryName,int pageNo, int pageSize){
         ResponseDTO responseDTO=new ResponseDTO();
-        if(categoryRepository.existsByCategoryName(categoryName)) {
+        if(pageNo<0 || pageSize<0){
+            throw new IllegalArgumentException();
+        }
+        else if(categoryRepository.existsByCategoryName(categoryName)) {
             /**
              * category id is taken from given category name.
              */
@@ -119,8 +122,10 @@ public class ServiceEntityServiceImpl implements ServiceEntityService {
         /**
          * in case of given category doesn't exists a message is adding to {@link ResponseDTO}
          */
-        responseDTO.setSuccess(false);
-        responseDTO.setMessage(CATEGORY_NOT_FOUND);
-        return responseDTO;
+        else{
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage(CATEGORY_NOT_FOUND);
+            return responseDTO;
+        }
     }
 }
