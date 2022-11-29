@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.service;
 
+import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -81,5 +83,27 @@ public class ServiceController {
     @GetMapping("/category_id={id}")
     ResponseEntity<List<String>> getServiceNamesByCategoryId(@PathVariable long id) {
         return new ResponseEntity<>(serviceEntityService.getServiceNameByCategoryId(id), HttpStatus.OK);
+    }
+
+    /**
+     * Gives all {@link Service} names for a given {@link com.qburst.spherooadmin.category.Category} name as a {@link Page}
+     * @param categoryName
+     * @param pageNumber
+     * @param pageSize
+     * @return {@link ResponseDTO} as body of response.
+     */
+    @GetMapping
+    public ResponseEntity<?> serviceNamesForTheCategory(@RequestParam(name = "category_name",required = true) String categoryName,
+                                                        @RequestParam(name = "page_no") int pageNumber,
+                                                        @RequestParam(name = "page_size") int pageSize){
+        ResponseDTO responseDTO;
+        responseDTO=serviceEntityService.getListOfServiceNamesForTheGivenCategory(categoryName,pageNumber,pageSize);
+        if(responseDTO.isSuccess()) {
+            return new ResponseEntity<>(responseDTO, HttpStatus.FOUND);
+        }
+        /**
+         * response for the category name that doesn't exists.
+         */
+        return new ResponseEntity<>(responseDTO,HttpStatus.NOT_FOUND);
     }
 }
