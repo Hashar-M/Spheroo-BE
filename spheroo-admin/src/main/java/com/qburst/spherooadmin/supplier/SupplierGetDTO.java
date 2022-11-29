@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 /**
- * It carries mandatory informations of a single supplier, for get request.
+ * It carries mandatory information of a single supplier, for get request.
  * {It is used in @link SupplierPagingDTO for pagination. }
  */
 public class SupplierGetDTO {
