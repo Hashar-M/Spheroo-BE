@@ -106,44 +106,31 @@ public class SupplierServiceImp implements SupplierService {
      * @return a list of supplier as per the specified page number and size.
      */
     @Transactional
-    public List<SupplierGetDTO> getAListOfSupplier(int pageNo,int pageSize){
+    public SupplierPageDTO getPageOfSupplier(int pageNo, int pageSize){
         Pageable pageable= PageRequest.of(pageNo,pageSize);
         Page<Supplier> suppliersPage=supplierRepository.findAll(pageable);
-        /**
-         * a list is instantiated for list of suppliers.
-         */
-        List<Supplier> suppliers=new ArrayList<>();
-        /**
-         * if condition for check weather the page requested has content.
-         */
-        if(suppliersPage!=null && suppliersPage.hasContent()){
-            suppliers=suppliersPage.getContent();
-            /**
-             * a list is instantiated for list of suppliersGetDTO.
-             */
-            List<SupplierGetDTO> supplierGetDTOS=new ArrayList<>();
-            /**
-             * Below code convert the list of suppliers from page object to list of supplierGetDTO.
-             */
-            suppliers.forEach(supplier -> {
-                SupplierGetDTO supplierGetDTO=new SupplierGetDTO();
+        List<SupplierGetDTO> supplierGetDTOList=new ArrayList<>();
+        suppliersPage.forEach(supplier -> {
+            SupplierGetDTO supplierGetDTO=new SupplierGetDTO();
                 supplierGetDTO.setSupplierId(supplier.getSupplierId());
                 supplierGetDTO.setSupplierName(supplier.getSupplierName());
                 supplierGetDTO.setCategory(supplier.getCategoryNames());
                 supplierGetDTO.setPinCode(supplier.getSupplierAddress().getPinCode());
                 supplier.getSupplierUsers().forEach(supplierUser -> {
-                    if(supplierUser.getSupplierUserType()== SupplierUserType.MANAGER){
+                    if (supplierUser.getSupplierUserType() == SupplierUserType.MANAGER) {
                         supplierGetDTO.setContactName(supplierUser.getName());
                         supplierGetDTO.setContactNumber(supplierUser.getMobileNumber());
                         supplierGetDTO.setEmailId(supplierUser.getSupplierUserEmail());
                     }
                 });
-            supplierGetDTOS.add(supplierGetDTO);
-            });
-        return supplierGetDTOS;
-        }
-        List<SupplierGetDTO> supplierGetDTOS=new ArrayList<>();
-        return supplierGetDTOS;
+                supplierGetDTOList.add(supplierGetDTO);
+                        });
+        SupplierPageDTO supplierPageDTO = new SupplierPageDTO();
+        supplierPageDTO.setSupplierList(supplierGetDTOList);
+        supplierPageDTO.setPageSize(suppliersPage.getSize());
+        supplierPageDTO.setPageNumber(suppliersPage.getNumber());
+        supplierPageDTO.setTotalPages(suppliersPage.getTotalPages());
+        return supplierPageDTO;
     }
 
     /**

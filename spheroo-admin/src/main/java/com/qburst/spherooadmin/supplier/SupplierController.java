@@ -30,11 +30,14 @@ public class SupplierController {
         return ResponseEntity.ok(responseDTO);
     }
     @GetMapping("/get/list")
-    public ResponseEntity<SupplierPagingDTO> getSuppliersAsAList(@RequestParam int pageNo, @RequestParam int pageSize){
-        List<SupplierGetDTO> supplierGetDTOS=supplierService.getAListOfSupplier(pageNo,pageSize);
-        SupplierPagingDTO supplierPagingDTO=new SupplierPagingDTO();
-        supplierPagingDTO.setSupplierGetDTO(supplierGetDTOS);
-        return ResponseEntity.ok(supplierPagingDTO);
+    public ResponseEntity<?> getSuppliersAsPage(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "1") int pageSize){
+        ResponseDTO responseDTO=new ResponseDTO();
+        if (pageSize<1){
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage(" page size must be greater than 0 ");
+            return ResponseEntity.ok(responseDTO);
+        }
+        return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo,pageSize));
     }
 
     /**
