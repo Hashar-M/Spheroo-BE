@@ -102,7 +102,7 @@ public class OrdersController {
             String headerValue ="attachment; filename="+fileName;
             response.setHeader(headerKey,headerValue);
 
-            Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,"delivery_to_date",false,status);
+            Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,"deliveryToDate",false,status);
             ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
             String[] csvHeader = {"order id","customer name","created date","delivery from_date","delivery to date",
                     "comments","zip code","order status","category name","service name","charge","assigned supplier"};

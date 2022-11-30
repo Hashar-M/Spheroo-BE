@@ -91,46 +91,24 @@ public class OrdersServiceImpl implements OrdersService {
         } else {
             pageWithRequiredElements = PageRequest.of(pageNo,noOfElements, Sort.by(columnToSort).descending());
         }
-        Page<OrdersDisplayDTO> ordersDisplayDTOPageTest;
-        ordersDisplayDTOPageTest =ordersRepo.getOrderByDuePeriod(OrdersConstants.OVERDUE_STARTING, pageWithRequiredElements);
-        ordersDisplayDTOPageTest.forEach(order->{
+        Page<OrdersDisplayDTO> ordersDisplayDTOPage;
+        if(status.equalsIgnoreCase("open")) {
+            ordersDisplayDTOPage = ordersRepo.findByOpenOrderStatus(pageWithRequiredElements);
+        } else if (status.equalsIgnoreCase("closed")) {
+            ordersDisplayDTOPage = ordersRepo.findByClosedOrderStatus(pageWithRequiredElements);
+        } else if (status.equalsIgnoreCase("overdue")) {
+            // 2 days (48 hrs) from due date considered as overdue
+            ordersDisplayDTOPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.OVERDUE_STARTING_INT,pageWithRequiredElements);
+        } else {
+            //4 days (96 hours) from due date considered as Escalation
+            ordersDisplayDTOPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.ESCALATIONS_STARTING_INT,pageWithRequiredElements);
+        }
+        ordersDisplayDTOPage.forEach(order-> {
             order.setCharge(serviceChargeRepository.findChargeByPriority(order.getServiceId(),"NORMAL"));
-            order.setAssignedSupplier("Not Assigned");
+            order.setAssignedSupplier(assignedOrderRepository.findSupplierByOrderId(order.getOrderId()));
             order.setImagesList(issueImagesRepository.findIssueImagesByOrderId(order.getOrderId()));
         });
-//        Page<Orders> ordersPage;
-//        if(status.equalsIgnoreCase("open")) {
-//            ordersPage = ordersRepo.findByOpenOrderStatus(pageWithRequiredElements);
-//        } else if (status.equalsIgnoreCase("closed")) {
-//            ordersPage = ordersRepo.findByClosedOrderStatus(pageWithRequiredElements);
-//        } else if (status.equalsIgnoreCase("overdue")) {
-//            // 2 days (48 hrs) from due date considered as overdue
-//            ordersPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.OVERDUE_STARTING,pageWithRequiredElements);
-//            return ordersDisplayDTOPageTest;
-//        } else {
-//            //4 days (96 hours) from due date considered as Escalation
-//            ordersPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.ESCALATIONS_STARTING,pageWithRequiredElements);
-//        }
-//        List<OrdersDisplayDTO> ordersDisplayDTOList = new ArrayList<>();
-//        for (Orders order: ordersPage) {
-//            OrdersDisplayDTO ordersDisplayDTO = new OrdersDisplayDTO();
-//            ordersDisplayDTO.setOrderId(order.getOrderId());
-//            ordersDisplayDTO.setCustomerName(order.getCustomerName());
-//            ordersDisplayDTO.setCreatedDate(order.getCreatedDate());
-//            ordersDisplayDTO.setDeliveryFromDate(order.getDeliveryFromDate());
-//            ordersDisplayDTO.setDeliveryToDate(order.getDeliveryToDate());
-//            ordersDisplayDTO.setComments(order.getComments());
-//            ordersDisplayDTO.setZipCode(order.getZipCode());
-//            ordersDisplayDTO.setOrderStatus(order.getOrderStatus());
-//            ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(order.getCategoryId()).getCategoryName());
-//            ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(order.getServiceId()).getServiceName());
-//            ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(order.getServiceId(), "NORMAL"));
-//            ordersDisplayDTO.setAssignedSupplier("Not available");
-//            ordersDisplayDTOList.add(ordersDisplayDTO);
-//        }
-//        Page<OrdersDisplayDTO> ordersDisplayDTOPage = new PageImpl<>(ordersDisplayDTOList,pageWithRequiredElements,ordersDisplayDTOList.size());
-//        return ordersDisplayDTOPage;
-        return ordersDisplayDTOPageTest;
+        return ordersDisplayDTOPage;
     }
 
     @Override

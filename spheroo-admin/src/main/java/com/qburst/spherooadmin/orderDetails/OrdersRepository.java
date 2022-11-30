@@ -35,18 +35,23 @@ public interface OrdersRepository extends JpaRepository<Orders,Long>, JpaSpecifi
             "FROM Orders ord " +
             "INNER JOIN Category cat ON (ord.categoryId = cat.categoryId)" +
             " INNER JOIN Service ser ON ord.serviceId = ser.serviceId " +
-            " where ord.orderStatus in ('UNASSIGNED','UNACCEPTED','ACCEPTED') and Extract(epoch from(current_timestamp-ord.deliveryToDate))/(60*60) >= 48")
-    Page<OrdersDisplayDTO> getOrderByDuePeriod(String duePeriodInHours, Pageable pageable);
+            " where ord.orderStatus in ('UNASSIGNED','UNACCEPTED','ACCEPTED') and Extract(epoch from(current_timestamp-ord.deliveryToDate))/(60*60) >= ?1")
+    Page<OrdersDisplayDTO> getOrderByDuePeriod(int duePeriodInHours, Pageable pageable);
 
     /**
      * function for selecting orders which are included in open order category.
      * @param pageable giving the pagination criteria.
      * @return return orders in the form of page.
      */
-    @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED')",nativeQuery = true)
-    Page<Orders> findByOpenOrderStatus(Pageable pageable);
-    @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED') LIMIT 100",nativeQuery = true)
-    List<Orders> findByOpenOrderStatus();
+//    @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED')",nativeQuery = true)
+    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName)  " +
+            "FROM Orders ord " +
+            "INNER JOIN Category cat ON (ord.categoryId = cat.categoryId)" +
+            " INNER JOIN Service ser ON ord.serviceId = ser.serviceId " +
+            " where ord.orderStatus in ('UNASSIGNED','UNACCEPTED')")
+    Page<OrdersDisplayDTO> findByOpenOrderStatus(Pageable pageable);
+//    @Query(value = "SELECT * from orders WHERE order_status IN ('UNASSIGNED','UNACCEPTED') LIMIT 100",nativeQuery = true)
+//    List<Orders> findByOpenOrderStatus();
 
     /**
      * function for getting open order count.
@@ -125,6 +130,10 @@ public interface OrdersRepository extends JpaRepository<Orders,Long>, JpaSpecifi
      * @param pageable giving the pagination criteria.
      * @return return orders in the form of page.
      */
-    @Query(value = "SELECT * from orders WHERE order_status IN ('ACCEPTED','SERVICED','REJECTED')",nativeQuery = true)
-    Page<Orders> findByClosedOrderStatus(Pageable pageable);
+    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName)  " +
+            "FROM Orders ord " +
+            "INNER JOIN Category cat ON (ord.categoryId = cat.categoryId)" +
+            " INNER JOIN Service ser ON ord.serviceId = ser.serviceId " +
+            " where ord.orderStatus in ('SERVICED','REJECTED')")
+    Page<OrdersDisplayDTO> findByClosedOrderStatus(Pageable pageable);
 }
