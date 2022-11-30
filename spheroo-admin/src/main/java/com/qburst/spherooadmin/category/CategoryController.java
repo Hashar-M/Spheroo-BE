@@ -1,7 +1,9 @@
 package com.qburst.spherooadmin.category;
 
+import com.qburst.spherooadmin.signup.ResponseDTO;
 import com.qburst.spherooadmin.upload.UploadCategoryIconUtil;
 import lombok.AllArgsConstructor;
+import net.bytebuddy.asm.Advice;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +51,21 @@ public class CategoryController {
     @GetMapping("/page={page}&=qty={noOfElements}")
     public ResponseEntity<Page<Category>> findAllById(@PathVariable int page, @PathVariable int noOfElements){
         return new ResponseEntity<>(categoryService.getAllCategoriesPaged(page, noOfElements), HttpStatus.OK);
+    }
+    @GetMapping("/category-list")
+    public ResponseEntity<?> getCategoryListByPage(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int noOfElements){
+        ResponseDTO responseDTO = new ResponseDTO();
+        if(page<0){
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage(" page should not be less than 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        }
+        if(noOfElements<1){
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage("no of elements should be grater than 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        }
+        return ResponseEntity.ok("success, data not added");
     }
 
     /**
