@@ -66,8 +66,8 @@ public class OrdersController {
      * @return Return the order with filtered values serialized in JSON along with HTTP status OK and error message if not exist.
      */
     @GetMapping
-    public ResponseEntity<?> findAllOrders(@RequestParam int page, @RequestParam int noOfElements,
-                                           @RequestParam String columnToSort, @RequestParam boolean isAsc, @RequestParam String status) {
+    public ResponseEntity<?> findAllOrders(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int noOfElements,
+                                           @RequestParam(defaultValue = "deliveryToDate") String columnToSort, @RequestParam(defaultValue = "false") boolean isAsc, @RequestParam(defaultValue = "open") String status) {
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
                 status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue")) {
             return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page,noOfElements,columnToSort,isAsc,status.toUpperCase()));
@@ -131,7 +131,7 @@ public class OrdersController {
         String fileName = "order_" + orderId + "_image" + index + ".jpg";
         response.setContentType("image/jpg");
         response.setHeader("Content-Disposition","attachment;filename="+fileName);
-        String url =ordersService.getOrderById(orderId).getIssueImagesList().get(index-1).getIssueImages();
+        String url =ordersService.getOrderById(orderId).getImagesList().get(index-1).getIssueImages();
         InputStream inputStream  = new FileInputStream(new File(url));
         return outputStream -> {
             int nRead;

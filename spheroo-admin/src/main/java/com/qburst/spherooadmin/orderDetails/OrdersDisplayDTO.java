@@ -21,9 +21,25 @@ public class OrdersDisplayDTO {
     private String zipCode;
     private String orderStatus;
     private long categoryId;
+    private long serviceId;
     private String categoryName;
     private String serviceName;
     private double charge;
     private String assignedSupplier;
-    private List<IssueImages> issueImagesList;
+    private List<IssueImages> imagesList;
+
+    public OrdersDisplayDTO(long orderId, String customerName, Date createdDate, Date deliveryFromDate, Date deliveryToDate, String comments, String zipCode, String orderStatus, long categoryId,long serviceId, String categoryName, String serviceName) {
+        this.orderId = orderId;
+        this.customerName = customerName;
+        this.createdDate = createdDate;
+        this.deliveryFromDate = deliveryFromDate;
+        this.deliveryToDate = deliveryToDate;
+        this.comments = comments;
+        this.zipCode = zipCode;
+        this.orderStatus = orderStatus;
+        this.categoryId = categoryId;
+        this.serviceId =serviceId;
+        this.categoryName = categoryName;
+        this.serviceName = serviceName;
+    }
 }

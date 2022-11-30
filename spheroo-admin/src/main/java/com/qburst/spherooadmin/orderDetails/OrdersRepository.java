@@ -5,6 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,8 +27,16 @@ public interface OrdersRepository extends JpaRepository<Orders,Long>, JpaSpecifi
      * @param pageable giving the pagination criteria.
      * @return return orders in the form of page.
      */
-    @Query(value = "SELECT * FROM orders WHERE (delivery_to_date <= NOW() - CAST(?1 AS INTERVAL) and order_status IN ('UNASSIGNED','UNACCEPTED'))",nativeQuery = true)
-    Page<Orders> getOrderByDuePeriod(String duePeriodInHours, Pageable pageable);
+//    @Query(value = "SELECT * FROM orders WHERE (delivery_to_date <= NOW() - CAST(?1 AS INTERVAL) and order_status IN ('UNASSIGNED','UNACCEPTED'))",nativeQuery = true)
+//    Page<Orders> getOrderByDuePeriod(String duePeriodInHours, Pageable pageable);
+//    OrdersDisplayDTO(long orderId, String customerName, Date createdDate, Date deliveryFromDate, Date deliveryToDate, String comments, String zipCode, String orderStatus, long categoryId, List<IssueImages> issueImagesList)
+//    WHERE (ord.deliveryToDate <= NOW() - CAST(?1 AS INTERVAL) and ord.orderStatus IN ('UNASSIGNED','UNACCEPTED'))
+    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName)  " +
+            "FROM Orders ord " +
+            "INNER JOIN Category cat ON (ord.categoryId = cat.categoryId)" +
+            " INNER JOIN Service ser ON ord.serviceId = ser.serviceId " +
+            " where ord.orderStatus in ('UNASSIGNED','UNACCEPTED','ACCEPTED') and Extract(epoch from(current_timestamp-ord.deliveryToDate))/(60*60) >= 48")
+    Page<OrdersDisplayDTO> getOrderByDuePeriod(String duePeriodInHours, Pageable pageable);
 
     /**
      * function for selecting orders which are included in open order category.
