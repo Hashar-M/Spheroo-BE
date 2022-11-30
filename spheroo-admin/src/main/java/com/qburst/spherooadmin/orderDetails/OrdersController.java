@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.orderDetails;
 
 import com.qburst.spherooadmin.search.OrderFilter;
+import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,11 +67,23 @@ public class OrdersController {
      * @return Return the order with filtered values serialized in JSON along with HTTP status OK and error message if not exist.
      */
     @GetMapping
-    public ResponseEntity<?> findAllOrders(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int noOfElements,
+    public ResponseEntity<?> findAllOrders(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements,
                                            @RequestParam(defaultValue = "deliveryToDate") String columnToSort, @RequestParam(defaultValue = "false") boolean isAsc, @RequestParam(defaultValue = "open") String status) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        if(page<1){
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage(" page should not be less than 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        }
+        if(noOfElements<1){
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage("no of elements should be grater than 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        }
+
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
                 status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue")) {
-            return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page,noOfElements,columnToSort,isAsc,status.toUpperCase()));
+            return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page-1,noOfElements,columnToSort,isAsc,status.toUpperCase()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
