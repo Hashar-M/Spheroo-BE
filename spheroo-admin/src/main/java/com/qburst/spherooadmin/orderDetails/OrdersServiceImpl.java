@@ -7,15 +7,11 @@ import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.supplier.SupplierRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +23,7 @@ public class OrdersServiceImpl implements OrdersService {
     private ServiceChargeRepository serviceChargeRepository;
     private AssignedOrderRepository assignedOrderRepository;
     private SupplierRepository supplierRepository;
+    private IssueImagesRepository issueImagesRepository;
 
     @Override
     public OrdersDisplayDTO getOrderById(long id) {
@@ -41,10 +38,11 @@ public class OrdersServiceImpl implements OrdersService {
         ordersDisplayDTO.setZipCode(orders.getZipCode());
         ordersDisplayDTO.setOrderStatus(orders.getOrderStatus());
         ordersDisplayDTO.setCategoryId(orders.getCategoryId());
+        ordersDisplayDTO.setServiceId(orders.getServiceId());
         ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(orders.getCategoryId()).getCategoryName());
         ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
         ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
-        ordersDisplayDTO.setIssueImagesList(orders.getImagesList());
+        ordersDisplayDTO.setImagesList(orders.getImagesList());
         return ordersDisplayDTO;
     }
 
@@ -94,36 +92,23 @@ public class OrdersServiceImpl implements OrdersService {
         } else {
             pageWithRequiredElements = PageRequest.of(pageNo,noOfElements, Sort.by(columnToSort).descending());
         }
-        Page<Orders> ordersPage;
+        Page<OrdersDisplayDTO> ordersDisplayDTOPage;
         if(status.equalsIgnoreCase("open")) {
-            ordersPage = ordersRepo.findByOpenOrderStatus(pageWithRequiredElements);
+            ordersDisplayDTOPage = ordersRepo.findByOpenOrderStatus(pageWithRequiredElements);
         } else if (status.equalsIgnoreCase("closed")) {
-            ordersPage = ordersRepo.findByClosedOrderStatus(pageWithRequiredElements);
+            ordersDisplayDTOPage = ordersRepo.findByClosedOrderStatus(pageWithRequiredElements);
         } else if (status.equalsIgnoreCase("overdue")) {
             // 2 days (48 hrs) from due date considered as overdue
-            ordersPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.OVERDUE_STARTING,pageWithRequiredElements);
+            ordersDisplayDTOPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.OVERDUE_STARTING_INT,pageWithRequiredElements);
         } else {
             //4 days (96 hours) from due date considered as Escalation
-            ordersPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.ESCALATIONS_STARTING,pageWithRequiredElements);
+            ordersDisplayDTOPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.ESCALATIONS_STARTING_INT,pageWithRequiredElements);
         }
-        List<OrdersDisplayDTO> ordersDisplayDTOList = new ArrayList<>();
-        for (Orders order: ordersPage) {
-            OrdersDisplayDTO ordersDisplayDTO = new OrdersDisplayDTO();
-            ordersDisplayDTO.setOrderId(order.getOrderId());
-            ordersDisplayDTO.setCustomerName(order.getCustomerName());
-            ordersDisplayDTO.setCreatedDate(order.getCreatedDate());
-            ordersDisplayDTO.setDeliveryFromDate(order.getDeliveryFromDate());
-            ordersDisplayDTO.setDeliveryToDate(order.getDeliveryToDate());
-            ordersDisplayDTO.setComments(order.getComments());
-            ordersDisplayDTO.setZipCode(order.getZipCode());
-            ordersDisplayDTO.setOrderStatus(order.getOrderStatus());
-            ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(order.getCategoryId()).getCategoryName());
-            ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(order.getServiceId()).getServiceName());
-            ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(order.getServiceId(), "NORMAL"));
-            ordersDisplayDTO.setAssignedSupplier("Not available");
-            ordersDisplayDTOList.add(ordersDisplayDTO);
-        }
-        Page<OrdersDisplayDTO> ordersDisplayDTOPage = new PageImpl<>(ordersDisplayDTOList,pageWithRequiredElements,ordersDisplayDTOList.size());
+        ordersDisplayDTOPage.forEach(order-> {
+            order.setCharge(serviceChargeRepository.findChargeByPriority(order.getServiceId(),"NORMAL"));
+            order.setAssignedSupplier(assignedOrderRepository.findSupplierByOrderId(order.getOrderId()));
+            order.setImagesList(issueImagesRepository.findIssueImagesByOrderId(order.getOrderId()));
+        });
         return ordersDisplayDTOPage;
     }
 
