@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, SecurityConstants.REGISTER_PATH).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.LOGIN_PATH).permitAll()
+                .antMatchers(HttpMethod.GET, SecurityConstants.ACTUATOR_PATH).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)

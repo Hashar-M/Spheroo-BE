@@ -53,4 +53,9 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ex.getBindingResult().getAllErrors().forEach((error) -> errors.add(error.getDefaultMessage()));
         return new ResponseEntity<>(new ErrorResponse(errors, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolationException(IllegalArgumentException ex) {
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.ILLEGAL_ARGUMENT_EXCEPTION_RESPONSE), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }
