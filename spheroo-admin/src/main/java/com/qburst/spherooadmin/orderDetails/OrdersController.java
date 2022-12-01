@@ -82,7 +82,7 @@ public class OrdersController {
         }
 
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
-                status.equalsIgnoreCase("escalation")||status.equalsIgnoreCase("overdue")) {
+                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")) {
             return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page-1,noOfElements,columnToSort,isAsc,status.toUpperCase()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");

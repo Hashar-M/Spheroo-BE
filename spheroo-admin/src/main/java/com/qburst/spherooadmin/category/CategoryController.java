@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.category;
 
+import com.qburst.spherooadmin.signup.ResponseDTO;
 import com.qburst.spherooadmin.upload.UploadCategoryIconUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -49,6 +50,28 @@ public class CategoryController {
     @GetMapping("/page={page}&=qty={noOfElements}")
     public ResponseEntity<Page<Category>> findAllById(@PathVariable int page, @PathVariable int noOfElements){
         return new ResponseEntity<>(categoryService.getAllCategoriesPaged(page, noOfElements), HttpStatus.OK);
+    }
+
+    /**
+     * Gets a page of All category names ordered by its name.
+     * @param page the page number to return.
+     * @param noOfElements the number of elements to return to the page at a time.
+     * @return Returns the page data serialized in JSON along with HTTP status OK.
+     */
+    @GetMapping("/category-list")
+    public ResponseEntity<?> getCategoryListByPage(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int noOfElements){
+        ResponseDTO responseDTO = new ResponseDTO();
+        if(page<1){
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage(" page should not be less than 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        }
+        if(noOfElements<1){
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage("no of elements should be grater than 0");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        }
+        return ResponseEntity.ok(categoryService.getAllCategoryNamesPaged(page-1,noOfElements));
     }
 
     /**
