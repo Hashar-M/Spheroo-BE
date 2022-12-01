@@ -86,9 +86,9 @@ public class ChecklistServiceImpl implements ChecklistService{
      * method for ipliment pagination.
      * @param pageNumber
      * @param pageSize
-     * @return {@link Page} of {@link CheclistPagingDTO}
+     * @return {@link Page} of {@link ChecklistPagingDTO}
      */
-    public Page<CheclistPagingDTO> pageChecklist(int pageNumber,int pageSize){
+    public Page<ChecklistPagingDTO> pageChecklist(int pageNumber, int pageSize){
         Pageable pageable= PageRequest.of(pageNumber,pageSize);
         return checklistRepository.findAll(pageable).map(checklistConverter::converter);
     }
@@ -168,6 +168,19 @@ public class ChecklistServiceImpl implements ChecklistService{
         responseDTO.setSuccess(false);
         responseDTO.setMessage(SERVICE_NOT_FOUND);
         return responseDTO;
+    }
+
+    /**
+     * Find checklist by its name
+     * @param checklistName Name of the checklist
+     * @param pageNumber page number
+     * @param pageSize size of the page
+     * @return A page of ChecklistPagingDTOs
+     */
+    @Override
+    public Page<ChecklistPagingDTO> findChecklistByName(String checklistName, int pageNumber, int pageSize) {
+        Pageable pageable= PageRequest.of(pageNumber,pageSize);
+        return checklistRepository.findByChecklistName(checklistName, pageable).map(checklistConverter::converter);
     }
 
 }
