@@ -7,9 +7,10 @@ import org.springframework.data.domain.Page;
  * interface have abstract methods for service layer for {@link Checklist} and {@link ChecklistItem}.
  */
 public interface ChecklistService {
-    public ResponseDTO addChecklist(ChecklistAddDTO checklistAddDTO);
-    public Page<CheclistPagingDTO> pageChecklist(int pageNumber, int pageSize);
-    public ResponseDTO deleteChecklistAndChecklistItemFromId(Long id);
-    public ChecklistGetDTO getChecklistById(Long id);
-    public ResponseDTO updateTheChecklist(Checklist checklist,String serviceName);
+    ResponseDTO addChecklist(ChecklistAddDTO checklistAddDTO);
+    Page<ChecklistPagingDTO> pageChecklist(int pageNumber, int pageSize);
+    ResponseDTO deleteChecklistAndChecklistItemFromId(Long id);
+    ChecklistGetDTO getChecklistById(Long id);
+    ResponseDTO updateTheChecklist(Checklist checklist,String serviceName);
+    Page<ChecklistPagingDTO> findChecklistByName(String checklistName, int pageNumber, int pageSize);
 }

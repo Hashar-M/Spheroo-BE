@@ -47,13 +47,30 @@ public class ChecklistController {
      * Method gives page for checklist in order in which they are created without any sorting parameter.
      * @param pageNumber
      * @param pageSize
-     * @return {@link Page} for checklist.The content of page is a list of {@link CheclistPagingDTO}.
+     * @return {@link Page} for checklist.The content of page is a list of {@link ChecklistPagingDTO}.
      */
     @GetMapping("/get/all/list")
-    public ResponseEntity<Page<CheclistPagingDTO>> pageOfChecklistWithNoCriteria(@RequestParam("pageNo") int pageNumber, @RequestParam("pageSize") int pageSize){
-        Page<CheclistPagingDTO> checlistPagingDTOPage=checklistService.pageChecklist(pageNumber,pageSize);
+    public ResponseEntity<Page<ChecklistPagingDTO>> pageOfChecklistWithNoCriteria(@RequestParam("pageNo") int pageNumber, @RequestParam("pageSize") int pageSize){
+        Page<ChecklistPagingDTO> checlistPagingDTOPage=checklistService.pageChecklist(pageNumber,pageSize);
         if (checlistPagingDTOPage.hasContent()){
             return ResponseEntity.ok(checlistPagingDTOPage);
+        }
+        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Search for a checklist by its name
+     * @param pageNumber pageNumber of the search results
+     * @param pageSize Size of the page
+     * @param name name of the checklist
+     * @return Page of ChecklistPagingDTOs
+     */
+    @GetMapping("/get/all/search")
+    public ResponseEntity<Page<ChecklistPagingDTO>> pageOfChecklistWithSpecifiedCriteria(@RequestParam("pageNo") int pageNumber, @RequestParam("pageSize") int pageSize,
+                                                                                         @RequestParam("name") String name){
+        Page<ChecklistPagingDTO> checklistPagingDTOPage=checklistService.findChecklistByName(name, pageNumber, pageSize);
+        if (checklistPagingDTOPage.hasContent()){
+            return ResponseEntity.ok(checklistPagingDTOPage);
         }
         return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
     }

@@ -16,22 +16,22 @@ public class ChecklistConverter {
     private CategoryRepository categoryRepository;
 
     /**
-     * method that converts {@link Checklist} into {@link CheclistPagingDTO}.
+     * method that converts {@link Checklist} into {@link ChecklistPagingDTO}.
      *  @param checklist
-     * @return {@link CheclistPagingDTO}
+     * @return {@link ChecklistPagingDTO}
      */
 
-    public CheclistPagingDTO converter(Checklist checklist){
-        CheclistPagingDTO checlistPagingDTO=new CheclistPagingDTO();
-        checlistPagingDTO.setId(checklist.getChecklistId());
-        checlistPagingDTO.setName(checklist.getChecklistName());
-        checlistPagingDTO.setDescription(checklist.getChecklistDescription());
-        checlistPagingDTO.setServiceName(checklist.getService().getServiceName());
+    public ChecklistPagingDTO converter(Checklist checklist){
+        ChecklistPagingDTO checklistPagingDTO =new ChecklistPagingDTO();
+        checklistPagingDTO.setId(checklist.getChecklistId());
+        checklistPagingDTO.setName(checklist.getChecklistName());
+        checklistPagingDTO.setDescription(checklist.getChecklistDescription());
+        checklistPagingDTO.setServiceName(checklist.getService().getServiceName());
 
         long categoryId=serviceRepository.findCategoryIdFromServiceId(checklist.getService().getServiceId());
 
         String categoryName= categoryRepository.getCategoryNameFromCategoryId(categoryId);
-        checlistPagingDTO.setCategoryName(categoryName);
-        return checlistPagingDTO;
+        checklistPagingDTO.setCategoryName(categoryName);
+        return checklistPagingDTO;
     }
 }
