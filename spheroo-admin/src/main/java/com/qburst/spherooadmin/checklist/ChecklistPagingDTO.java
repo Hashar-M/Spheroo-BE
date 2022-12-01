@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CheclistPagingDTO {
+public class ChecklistPagingDTO {
     private Long id;
     private String name;
     private String description;
