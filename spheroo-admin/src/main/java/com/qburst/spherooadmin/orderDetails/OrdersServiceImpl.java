@@ -38,6 +38,7 @@ public class OrdersServiceImpl implements OrdersService {
         ordersDisplayDTO.setZipCode(orders.getZipCode());
         ordersDisplayDTO.setOrderStatus(orders.getOrderStatus());
         ordersDisplayDTO.setCategoryId(orders.getCategoryId());
+        ordersDisplayDTO.setServiceId(orders.getServiceId());
         ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(orders.getCategoryId()).getCategoryName());
         ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
         ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
