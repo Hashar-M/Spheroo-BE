@@ -61,6 +61,12 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    public Page<String> getAllCategoryNamesPaged(int pageNo, int noOfElements) {
+        Pageable pageWithRequiredElements = PageRequest.of(pageNo,noOfElements,Sort.by("category_name"));
+        return categoryRepository.getCategoryNamesPaged(pageWithRequiredElements);
+    }
+
+    @Override
     public Page<Category> getAllCategoriesPaged(int pageNo, int noOfElements) {
         Pageable pageWithRequiredElements = PageRequest.of(pageNo, noOfElements, Sort.by("categoryId"));
         return categoryRepository.findAll(pageWithRequiredElements);

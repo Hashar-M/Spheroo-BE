@@ -1,5 +1,7 @@
 package com.qburst.spherooadmin.category;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -48,4 +50,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
      */
     @Query(nativeQuery = true,value = "SELECT category_name FROM category WHERE category_id=?1")
     String getCategoryNameFromCategoryId(long categoryId);
+
+    @Query(value = "SELECT category_name FROM category", nativeQuery = true)
+    Page<String> getCategoryNamesPaged(Pageable pageable);
 }

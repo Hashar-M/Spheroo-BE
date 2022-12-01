@@ -40,6 +40,14 @@ public interface CategoryService {
      */
     Page<Category> getAllCategoriesPaged(int pageNo, int noOfElements);
 
+    /**
+     * Gets a page of category name from the database based on its page number and the number of elements.
+     * @param pageNo The pageNo to return from the database.
+     * @param noOfElements the number of elements to return at a time to the page.
+     * @return returns Page of category names ordered by category names.
+     */
+    Page<String> getAllCategoryNamesPaged(int pageNo, int noOfElements);
+
 
     /**
      * Updates the icon of a category in the database.
