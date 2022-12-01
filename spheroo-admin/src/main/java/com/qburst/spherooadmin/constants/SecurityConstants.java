@@ -9,4 +9,5 @@ public class SecurityConstants {
     public static final String LOGIN_PATH = "/login";
     public static final String CONTENT_TYPE = "application/json";
     public static final String CHARACTER_ENCODING = "UTF-8";
+    public static final String ACTUATOR_PATH = "/actuator/**";
 }
