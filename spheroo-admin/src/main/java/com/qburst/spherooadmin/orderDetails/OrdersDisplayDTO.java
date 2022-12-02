@@ -27,8 +27,9 @@ public class OrdersDisplayDTO {
     private double charge;
     private String assignedSupplier;
     private List<IssueImages> imagesList;
+    private boolean isAmended;
 
-    public OrdersDisplayDTO(long orderId, String customerName, Date createdDate, Date deliveryFromDate, Date deliveryToDate, String comments, String zipCode, String orderStatus, long categoryId,long serviceId, String categoryName, String serviceName) {
+    public OrdersDisplayDTO(long orderId, String customerName, Date createdDate, Date deliveryFromDate, Date deliveryToDate, String comments, String zipCode, String orderStatus, long categoryId,long serviceId, String categoryName, String serviceName, boolean isAmended) {
         this.orderId = orderId;
         this.customerName = customerName;
         this.createdDate = createdDate;
@@ -41,5 +42,6 @@ public class OrdersDisplayDTO {
         this.serviceId =serviceId;
         this.categoryName = categoryName;
         this.serviceName = serviceName;
+        this.isAmended = isAmended;
     }
 }

@@ -126,7 +126,7 @@ public class OrdersController {
                 csvBeanWriter.write(orderDisplay,nameMapping);
             }
             csvBeanWriter.close();
-            return ResponseEntity.status(HttpStatus.OK).body("success");
+            return ResponseEntity.status(HttpStatus.OK).body(csvBeanWriter);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
@@ -194,11 +194,7 @@ public class OrdersController {
      */
     @PutMapping("/amend-order")
     public ResponseEntity<?> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
-        boolean status =ordersService.updateOrdersById(amendOrderDTO);
-        if(!status) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("order updated");
+        return ResponseEntity.status(HttpStatus.OK).body(ordersService.updateOrdersById(amendOrderDTO));
     }
 
     /**
