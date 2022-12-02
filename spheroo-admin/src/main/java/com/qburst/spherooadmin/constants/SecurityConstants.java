@@ -10,4 +10,7 @@ public class SecurityConstants {
     public static final String CONTENT_TYPE = "application/json";
     public static final String CHARACTER_ENCODING = "UTF-8";
     public static final String ACTUATOR_PATH = "/actuator/**";
+    public static final String API_DOCS_PATH = "/api-docs/**";
+    public static final String API_DOCS_API_PATH = "/v3/api-docs/**";
+    public static final String SWAGGER_UI_PATH = "/swagger-ui/**";
 }
