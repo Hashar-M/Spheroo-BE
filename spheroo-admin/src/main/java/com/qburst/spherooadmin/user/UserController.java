@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @AllArgsConstructor
-@Slf4j
 public class UserController {
     private UserService userService;
 

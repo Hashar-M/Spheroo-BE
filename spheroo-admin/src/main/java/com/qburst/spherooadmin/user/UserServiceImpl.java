@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
  * Service class used for user specific operations.
  */
 @Service
-@Slf4j
 public class UserServiceImpl implements UserService{
     @Autowired
     private UsersRepository usersRepository;
@@ -39,6 +38,7 @@ public class UserServiceImpl implements UserService{
         users.setPassword(passwordEncoder.encode(users.getPassword()));
         usersRepository.save(users);
     }
+
     @Override
     public Users getUserByEmailId(String email) {
         return usersRepository.findByEmailId(email);
@@ -51,7 +51,6 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public void changePassword(String emailId,String password){
-        log.info(passwordEncoder.encode(password),emailId);
         usersRepository.changePassword(passwordEncoder.encode(password),emailId);
     }
 
