@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 /**
@@ -33,12 +33,15 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public Category getCategory(Long id) {
-        return categoryRepository.getReferenceById(id);
+        if(categoryRepository.existsById(id)){
+            return categoryRepository.getReferenceById(id);
+        }
+        throw new EntityNotFoundException("No category exist with given id");
     }
 
     @Override
     @Transactional
-    public boolean updateCategoryById(Long categoryId, Category category) {
+    public String updateCategoryById(Long categoryId, Category category) {
         boolean isExist = categoryRepository.existsById(categoryId);
         if(isExist){
             category.setCategoryId(categoryId);
@@ -47,17 +50,19 @@ public class CategoryServiceImpl implements CategoryService{
             serviceChargeRepository.deleteAllById(noReferenceChargeIds);
             List<Long> noReferenceServiceIds = serviceRepository.findNullCategoryServices();
             serviceRepository.deleteAllById(noReferenceServiceIds);
-            return true;
+            return "Category Updated successfully";
         }else {
-            return false;
+            throw new EntityNotFoundException("No category exist with given id");
         }
-
     }
 
     @Override
     @Transactional
     public void deleteCategory(Long id) {
-       categoryRepository.deleteByCategoryId(id);
+        if(categoryRepository.existsById(id)){
+            categoryRepository.deleteByCategoryId(id);
+        }
+       throw new EntityNotFoundException("No category exist with given id");
     }
 
     @Override
@@ -78,16 +83,13 @@ public class CategoryServiceImpl implements CategoryService{
         categoryRepository.updateCategoryIconByCategoryId(categoryIconPath, categoryId);
     }
     @Override
-    public ManageCategoryDTO getManageCategoryDetails(int pageNo, int noOfElements) {
+    public Page<ManageCategoryDetails> getManageCategoryDetails(int pageNo, int noOfElements) {
         Pageable pageableCriteria = PageRequest.of(pageNo, noOfElements, Sort.by("categoryName"));
         Page<Category> categoryPage = categoryRepository.findAll(pageableCriteria);
-
-        List<ManageCategoryDetails> manageCategoryDetailsList = new ArrayList<>();
-        categoryPage.forEach(category -> manageCategoryDetailsList.add(new ManageCategoryDetails(category.getCategoryId(),category.getCategoryName(),category.getServiceList().size())));
-        ManageCategoryDTO manageCategoryDTO = new ManageCategoryDTO();
-        manageCategoryDTO.setPage(pageNo);
-        manageCategoryDTO.setNoOfElements(noOfElements);
-        manageCategoryDTO.setManageCategoryDetailsList(manageCategoryDetailsList);
-        return manageCategoryDTO;
+        Page<ManageCategoryDetails> manageCategoryDetailsPage = categoryRepository.getManageCategoryPaged(pageableCriteria);
+        manageCategoryDetailsPage.forEach(item->{
+            item.setNoOfServices(categoryRepository.getReferenceById(item.getCategoryId()).getServiceList().size());
+        });
+        return manageCategoryDetailsPage;
     }
 }
