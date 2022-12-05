@@ -53,4 +53,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query(value = "SELECT category_name FROM category", nativeQuery = true)
     Page<String> getCategoryNamesPaged(Pageable pageable);
+    @Query(value = "SELECT new com.qburst.spherooadmin.category.ManageCategoryDetails(cat.categoryId, cat.categoryName) " +
+            "FROM Category cat ")
+    Page<ManageCategoryDetails> getManageCategoryPaged(Pageable pageable);
 }

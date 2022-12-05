@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -78,16 +77,13 @@ public class CategoryServiceImpl implements CategoryService{
         categoryRepository.updateCategoryIconByCategoryId(categoryIconPath, categoryId);
     }
     @Override
-    public ManageCategoryDTO getManageCategoryDetails(int pageNo, int noOfElements) {
+    public Page<ManageCategoryDetails> getManageCategoryDetails(int pageNo, int noOfElements) {
         Pageable pageableCriteria = PageRequest.of(pageNo, noOfElements, Sort.by("categoryName"));
         Page<Category> categoryPage = categoryRepository.findAll(pageableCriteria);
-
-        List<ManageCategoryDetails> manageCategoryDetailsList = new ArrayList<>();
-        categoryPage.forEach(category -> manageCategoryDetailsList.add(new ManageCategoryDetails(category.getCategoryId(),category.getCategoryName(),category.getServiceList().size())));
-        ManageCategoryDTO manageCategoryDTO = new ManageCategoryDTO();
-        manageCategoryDTO.setPage(pageNo);
-        manageCategoryDTO.setNoOfElements(noOfElements);
-        manageCategoryDTO.setManageCategoryDetailsList(manageCategoryDetailsList);
-        return manageCategoryDTO;
+        Page<ManageCategoryDetails> manageCategoryDetailsPage = categoryRepository.getManageCategoryPaged(pageableCriteria);
+        manageCategoryDetailsPage.forEach(item->{
+            item.setNoOfServices(categoryRepository.getReferenceById(item.getCategoryId()).getServiceList().size());
+        });
+        return manageCategoryDetailsPage;
     }
 }

@@ -56,5 +56,5 @@ public interface CategoryService {
      */
     void updateCategoryIconById(Long categoryId, String categoryIconPath);
 
-    ManageCategoryDTO getManageCategoryDetails(int pageNo, int noOfElements);
+    Page<ManageCategoryDetails> getManageCategoryDetails(int pageNo, int noOfElements);
 }
