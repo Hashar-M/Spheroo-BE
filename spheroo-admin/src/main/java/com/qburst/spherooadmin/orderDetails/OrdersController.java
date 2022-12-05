@@ -126,7 +126,7 @@ public class OrdersController {
                 csvBeanWriter.write(orderDisplay,nameMapping);
             }
             csvBeanWriter.close();
-            return ResponseEntity.status(HttpStatus.OK).body(csvBeanWriter);
+            return ResponseEntity.status(HttpStatus.OK).body("success");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
