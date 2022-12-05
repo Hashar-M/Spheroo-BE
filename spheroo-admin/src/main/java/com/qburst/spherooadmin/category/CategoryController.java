@@ -99,13 +99,8 @@ public class CategoryController {
      * @return Returns the HTTP status OK.
      */
     @PutMapping("/id={id}")
-    public ResponseEntity<HttpStatus> updateCategory(@RequestBody Category category, @PathVariable Long id) {
-        boolean statusOk = categoryService.updateCategoryById(id, category);
-        if(statusOk){
-            return new ResponseEntity<>(HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> updateCategory(@RequestBody Category category, @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategoryById(id,category));
     }
 
     /**

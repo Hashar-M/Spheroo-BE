@@ -25,7 +25,7 @@ public interface CategoryService {
      * @param categoryId the id of the category to update.
      * @param category The category to update the existing category with.
      */
-    boolean updateCategoryById(Long categoryId, Category category);
+    String updateCategoryById(Long categoryId, Category category);
 
     /**
      * Deletes a category from the database.
