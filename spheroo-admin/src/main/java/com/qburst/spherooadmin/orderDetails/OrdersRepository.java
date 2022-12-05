@@ -26,7 +26,7 @@ public interface OrdersRepository extends JpaRepository<Orders,Long>, JpaSpecifi
      * @param pageable giving the pagination criteria.
      * @return return orders in the form of page.
      */
-    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName)  " +
+    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName, ord.isAmended)  " +
             "FROM Orders ord " +
             "INNER JOIN Category cat ON (ord.categoryId = cat.categoryId)" +
             " INNER JOIN Service ser ON ord.serviceId = ser.serviceId " +
@@ -38,7 +38,7 @@ public interface OrdersRepository extends JpaRepository<Orders,Long>, JpaSpecifi
      * @param pageable giving the pagination criteria.
      * @return return orders in the form of page.
      */
-    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName)  " +
+    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName, ord.isAmended)  " +
             "FROM Orders ord " +
             "INNER JOIN Category cat ON (ord.categoryId = cat.categoryId)" +
             " INNER JOIN Service ser ON ord.serviceId = ser.serviceId " +
@@ -121,7 +121,7 @@ public interface OrdersRepository extends JpaRepository<Orders,Long>, JpaSpecifi
      * @param pageable giving the pagination criteria.
      * @return return orders in the form of page.
      */
-    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName)  " +
+    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName, ord.isAmended)  " +
             "FROM Orders ord " +
             "INNER JOIN Category cat ON (ord.categoryId = cat.categoryId)" +
             " INNER JOIN Service ser ON ord.serviceId = ser.serviceId " +

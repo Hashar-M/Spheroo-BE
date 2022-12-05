@@ -58,4 +58,9 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.ILLEGAL_ARGUMENT_EXCEPTION_RESPONSE), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(WrongDataForActionException.class)
+    public ResponseEntity<Object> handleWrongDataForActionException(WrongDataForActionException ex){
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+    }
 }

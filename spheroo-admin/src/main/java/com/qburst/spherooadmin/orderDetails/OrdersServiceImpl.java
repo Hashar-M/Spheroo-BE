@@ -2,6 +2,7 @@ package com.qburst.spherooadmin.orderDetails;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.constants.OrdersConstants;
+import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 @AllArgsConstructor
@@ -113,15 +116,28 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public boolean updateOrdersById(AmendOrderDTO amendOrderDTO) {
+    public String updateOrdersById(AmendOrderDTO amendOrderDTO) {
         if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
             Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
+            if(orders.isAmended())
+            {
+                throw new WrongDataForActionException("this order already amended once, only single time amend is allowed");
+            }
+            if(!(orders.getOrderStatus().equalsIgnoreCase("UNASSIGNED")||orders.getOrderStatus().equalsIgnoreCase("UNACCEPTED"))){
+                throw new WrongDataForActionException("only unassigned and unaccepted orders can amend.");
+            }
+            Date date = new Date();
+            // amend allowed till 8 hr before the date.
+            if(!((orders.getDeliveryToDate().getTime()-date.getTime())>(8*60*60*1000))){
+                throw new WrongDataForActionException("Amend allowed time exceeded.");
+            }
             orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
             orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
+            orders.setAmended(true);
             ordersRepo.save(orders);
-            return true;
+            return "Amend completed";
         }else {
-            return false;
+            throw new WrongDataForActionException("No order exist with given data");
         }
     }
 

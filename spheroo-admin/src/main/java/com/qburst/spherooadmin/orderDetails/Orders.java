@@ -109,4 +109,6 @@ public class Orders {
     @OneToMany(targetEntity = IssueImages.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private List<IssueImages> imagesList;
+    @Column(name = "is_amended", columnDefinition = "boolean default false")
+    private boolean isAmended;
 }
