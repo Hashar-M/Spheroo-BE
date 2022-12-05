@@ -2,6 +2,8 @@ package com.qburst.spherooadmin.orderDetails;
 import com.qburst.spherooadmin.search.OrderFilter;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface OrdersService {
 
     OrdersDisplayDTO getOrderById(long id);
@@ -12,4 +14,5 @@ public interface OrdersService {
     OrderStatisticsDTO getOrdersStatistics();
     Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
     int assignOrder(AssignedOrder assignedOrder);
+    void saveListOfOrders(List<Orders> ordersList);
 }

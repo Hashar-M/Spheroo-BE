@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -76,6 +77,11 @@ public class OrdersServiceImpl implements OrdersService {
             return 3;
         }
 
+    }
+
+    @Override
+    public void saveListOfOrders(List<Orders> ordersList) {
+        ordersRepo.saveAll(ordersList);
     }
 
     /**
