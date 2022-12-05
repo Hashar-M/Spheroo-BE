@@ -1,5 +1,10 @@
 package com.qburst.spherooadmin.orderDetails;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.search.OrderFilter;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
@@ -28,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Controller for order entity
@@ -223,5 +230,15 @@ public class OrdersController {
     @GetMapping("/search")
     public ResponseEntity<Page<Orders>> findAllOrdersBySpecification(@RequestBody OrderFilter orderFilter, @RequestParam int pageNo, @RequestParam int noOfElements) {
         return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo, noOfElements), HttpStatus.OK);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<HttpStatus> importOrdersFromCSV(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
+        CsvMapper mapper = new CsvMapper();
+        MappingIterator<Orders> readValues = mapper.readerFor(Orders.class).with(bootstrapSchema).readValues(multipartFile.getInputStream());
+        List<Orders> ordersList = readValues.readAll();
+        ordersService.saveListOfOrders(ordersList);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
