@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
  * Service class used for user specific operations.
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService{
     @Autowired
     private UsersRepository usersRepository;
@@ -37,9 +39,20 @@ public class UserServiceImpl implements UserService{
         users.setPassword(passwordEncoder.encode(users.getPassword()));
         usersRepository.save(users);
     }
-
     @Override
     public Users getUserByEmailId(String email) {
         return usersRepository.findByEmailId(email);
     }
+
+    /**
+     *method for changing password of a user.
+     * @param emailId of curently login user, the {@link java.security.Principal}
+     * @param password new value for password.
+     */
+    @Override
+    public void changePassword(String emailId,String password){
+        log.info(passwordEncoder.encode(password),emailId);
+        usersRepository.changePassword(passwordEncoder.encode(password),emailId);
+    }
+
 }
