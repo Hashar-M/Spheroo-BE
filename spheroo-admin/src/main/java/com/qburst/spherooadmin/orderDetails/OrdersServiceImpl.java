@@ -116,7 +116,7 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public boolean updateOrdersById(AmendOrderDTO amendOrderDTO) {
+    public String updateOrdersById(AmendOrderDTO amendOrderDTO) {
         if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
             Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
             if(orders.isAmended())
@@ -127,14 +127,15 @@ public class OrdersServiceImpl implements OrdersService {
                 throw new WrongDataForActionException("only unassigned and unaccepted orders can amend.");
             }
             Date date = new Date();
-            if(!((orders.getDeliveryToDate().getTime()-date.getTime())*1000*60*60>8)){
+            // amend allowed till 8 hr before the date.
+            if(!((orders.getDeliveryToDate().getTime()-date.getTime())>(8*60*60*1000))){
                 throw new WrongDataForActionException("Amend allowed time exceeded.");
             }
             orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
             orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
             orders.setAmended(true);
             ordersRepo.save(orders);
-            return true;
+            return "Amend completed";
         }else {
             throw new WrongDataForActionException("No order exist with given data");
         }
