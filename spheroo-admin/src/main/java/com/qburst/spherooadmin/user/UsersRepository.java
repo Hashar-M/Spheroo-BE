@@ -1,6 +1,9 @@
 package com.qburst.spherooadmin.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Akhilesh
@@ -16,4 +19,14 @@ public interface UsersRepository extends JpaRepository<Users,Long>
      */
     boolean existsByEmailId(String email);
     Users findByEmailId(String email);
+
+    /**
+     * method for updating password value of a {@link org.springframework.security.core.userdetails.User}
+     * @param password new password value
+     * @param emailId of the {@link Users}
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE users SET password=?1 WHERE email_id=?2 ;",nativeQuery = true)
+    public void changePassword(String password,String emailId);
 }
