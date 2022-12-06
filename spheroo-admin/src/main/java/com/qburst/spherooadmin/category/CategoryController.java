@@ -1,6 +1,6 @@
 package com.qburst.spherooadmin.category;
 
-import com.qburst.spherooadmin.signup.ResponseDTO;
+import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.upload.UploadCategoryIconUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -47,9 +47,15 @@ public class CategoryController {
      * @param noOfElements the number of elements to return to the page at a time.
      * @return Returns the page data serialized in JSON along with HTTP status OK.
      */
-    @GetMapping("/page={page}&=qty={noOfElements}")
-    public ResponseEntity<Page<Category>> findAllById(@PathVariable int page, @PathVariable int noOfElements){
-        return new ResponseEntity<>(categoryService.getAllCategoriesPaged(page, noOfElements), HttpStatus.OK);
+    @GetMapping("/list-category")
+    public ResponseEntity<Page<Category>> findAllById(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements){
+        if(page<1){
+            throw new WrongDataForActionException("page number should be greater than 0");
+        }
+        if (noOfElements<1){
+            throw new WrongDataForActionException("no of elements should be greater than 0");
+        }
+        return new ResponseEntity<>(categoryService.getAllCategoriesPaged(page-1, noOfElements), HttpStatus.OK);
     }
 
     /**
@@ -58,18 +64,13 @@ public class CategoryController {
      * @param noOfElements the number of elements to return to the page at a time.
      * @return Returns the page data serialized in JSON along with HTTP status OK.
      */
-    @GetMapping("/category-list")
+    @GetMapping("/list-categoryName")
     public ResponseEntity<?> getCategoryListByPage(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int noOfElements){
-        ResponseDTO responseDTO = new ResponseDTO();
         if(page<1){
-            responseDTO.setSuccess(false);
-            responseDTO.setMessage(" page should not be less than 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+            throw new WrongDataForActionException("page number should be greater than 0");
         }
         if(noOfElements<1){
-            responseDTO.setSuccess(false);
-            responseDTO.setMessage("no of elements should be grater than 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+            throw new WrongDataForActionException("no of elements should be greater than 0");
         }
         return ResponseEntity.ok(categoryService.getAllCategoryNamesPaged(page-1,noOfElements));
     }
@@ -80,9 +81,15 @@ public class CategoryController {
      * @param noOfElements for pagination
      * @return manage category details in the form of array.
      */
-    @GetMapping(path="/manage_categories")
-    public ResponseEntity<?> getManageCategoryDetails (@RequestParam int page,@RequestParam int noOfElements){
-        return ResponseEntity.status(HttpStatus.OK).body(categoryService.getManageCategoryDetails(page,noOfElements));
+    @GetMapping(path="/manage-categories")
+    public ResponseEntity<?> getManageCategoryDetails (@RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "6") int noOfElements){
+        if(page<1){
+            throw new WrongDataForActionException("page number should be greater than 0");
+        }
+        if(noOfElements<1){
+            throw new WrongDataForActionException("no of elements should be greater than 0");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.getManageCategoryDetails(page-1,noOfElements));
     }
 
     /**
@@ -92,14 +99,8 @@ public class CategoryController {
      * @return Returns the HTTP status OK.
      */
     @PutMapping("/id={id}")
-    public ResponseEntity<HttpStatus> updateCategory(@RequestBody Category category, @PathVariable Long id) {
-        boolean statusOk = categoryService.updateCategoryById(id, category);
-        if(statusOk){
-            return new ResponseEntity<>(HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> updateCategory(@RequestBody Category category, @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategoryById(id,category));
     }
 
     /**
