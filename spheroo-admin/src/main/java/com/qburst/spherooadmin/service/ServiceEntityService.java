@@ -61,4 +61,6 @@ public interface ServiceEntityService {
      * @return
      */
     public ResponseDTO getListOfServiceNamesForTheGivenCategory(String categoryName,int pageNo,int pageSize);
+
+    void saveListOfServices(List<Service> serviceList);
 }

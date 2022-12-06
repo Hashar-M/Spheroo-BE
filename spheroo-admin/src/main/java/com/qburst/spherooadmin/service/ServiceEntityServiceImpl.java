@@ -128,4 +128,9 @@ public class ServiceEntityServiceImpl implements ServiceEntityService {
             return responseDTO;
         }
     }
+
+    @Override
+    public void saveListOfServices(List<com.qburst.spherooadmin.service.Service> serviceList) {
+        serviceRepository.saveAll(serviceList);
+    }
 }
