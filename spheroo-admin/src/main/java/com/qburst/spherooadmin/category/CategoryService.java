@@ -2,6 +2,8 @@ package com.qburst.spherooadmin.category;
 
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 /**
  * The service for the Category entity.
  */
@@ -57,4 +59,6 @@ public interface CategoryService {
     void updateCategoryIconById(Long categoryId, String categoryIconPath);
 
     Page<ManageCategoryDetails> getManageCategoryDetails(int pageNo, int noOfElements);
+
+    void saveListOfCategories(List<Category> categoryList);
 }

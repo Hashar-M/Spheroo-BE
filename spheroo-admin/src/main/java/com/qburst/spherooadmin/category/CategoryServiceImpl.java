@@ -92,4 +92,9 @@ public class CategoryServiceImpl implements CategoryService{
         });
         return manageCategoryDetailsPage;
     }
+
+    @Override
+    public void saveListOfCategories(List<Category> categoryList) {
+        categoryRepository.saveAll(categoryList);
+    }
 }
