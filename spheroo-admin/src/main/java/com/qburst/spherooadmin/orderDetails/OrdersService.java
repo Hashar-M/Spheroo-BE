@@ -14,5 +14,10 @@ public interface OrdersService {
     OrderStatisticsDTO getOrdersStatistics();
     Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
     int assignOrder(AssignedOrder assignedOrder);
+
+    /**
+     * Saves multiple orders into the database from a list
+     * @param ordersList the list of services to save into the database
+     */
     void saveListOfOrders(List<Orders> ordersList);
 }

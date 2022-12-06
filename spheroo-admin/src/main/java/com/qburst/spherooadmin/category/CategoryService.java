@@ -60,5 +60,9 @@ public interface CategoryService {
 
     Page<ManageCategoryDetails> getManageCategoryDetails(int pageNo, int noOfElements);
 
+    /**
+     * Saves multiple categories into the database from a list
+     * @param categoryList the list of categories to save into the database
+     */
     void saveListOfCategories(List<Category> categoryList);
 }

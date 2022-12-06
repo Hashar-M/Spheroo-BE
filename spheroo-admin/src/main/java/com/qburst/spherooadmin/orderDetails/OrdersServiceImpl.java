@@ -79,6 +79,10 @@ public class OrdersServiceImpl implements OrdersService {
 
     }
 
+    /**
+     * Saves multiple orders into the database from a list
+     * @param ordersList the list of services to save into the database
+     */
     @Override
     public void saveListOfOrders(List<Orders> ordersList) {
         ordersRepo.saveAll(ordersList);
