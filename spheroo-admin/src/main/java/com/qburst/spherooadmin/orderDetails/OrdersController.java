@@ -232,12 +232,24 @@ public class OrdersController {
         return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo, noOfElements), HttpStatus.OK);
     }
 
+    /**
+     * This method allows you to import a CSV file straight into the database provided that the
+     * file is in the correct format.
+     * This was made in order to quickly enter in test data so is not meant to be used in production.
+     * @param multipartFile The CSV file to enter into the Database.
+     * @return The HTTP status OK.
+     */
     @PostMapping("/import")
-    public ResponseEntity<HttpStatus> importOrdersFromCSV(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<HttpStatus> importOrdersFromCSV(@RequestParam("file") MultipartFile multipartFile) {
         CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
         CsvMapper mapper = new CsvMapper();
-        MappingIterator<Orders> readValues = mapper.readerFor(Orders.class).with(bootstrapSchema).readValues(multipartFile.getInputStream());
-        List<Orders> ordersList = readValues.readAll();
+        List<Orders> ordersList = null;
+        try {
+            MappingIterator<Orders> readValues = mapper.readerFor(Orders.class).with(bootstrapSchema).readValues(multipartFile.getInputStream());
+            ordersList = readValues.readAll();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         ordersService.saveListOfOrders(ordersList);
         return new ResponseEntity<>(HttpStatus.OK);
     }
