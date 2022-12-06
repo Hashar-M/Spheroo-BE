@@ -243,7 +243,7 @@ public class OrdersController {
     public ResponseEntity<HttpStatus> importOrdersFromCSV(@RequestParam("file") MultipartFile multipartFile) {
         CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
         CsvMapper mapper = new CsvMapper();
-        List<Orders> ordersList = null;
+        List<Orders> ordersList;
         try {
             MappingIterator<Orders> readValues = mapper.readerFor(Orders.class).with(bootstrapSchema).readValues(multipartFile.getInputStream());
             ordersList = readValues.readAll();
