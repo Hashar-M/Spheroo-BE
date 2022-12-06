@@ -128,4 +128,13 @@ public class ServiceEntityServiceImpl implements ServiceEntityService {
             return responseDTO;
         }
     }
+
+    /**
+     * Saves multiple services into the database from a list
+     * @param serviceList the list of services to save into the database
+     */
+    @Override
+    public void saveListOfServices(List<com.qburst.spherooadmin.service.Service> serviceList) {
+        serviceRepository.saveAll(serviceList);
+    }
 }

@@ -1,5 +1,8 @@
 package com.qburst.spherooadmin.service;
 
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -8,12 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,5 +111,27 @@ public class ServiceController {
          * response for the category name that doesn't exists.
          */
         return new ResponseEntity<>(responseDTO,HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * This method allows you to import a CSV file straight into the database provided that the
+     * file is in the correct format.
+     * This was made in order to quickly enter in test data so is not meant to be used in production.
+     * @param multipartFile The CSV file to enter into the Database.
+     * @return The HTTP status OK.
+     */
+    @PostMapping("/import")
+    public ResponseEntity<HttpStatus> importServicesFromCSV(@RequestParam("file") MultipartFile multipartFile) {
+        CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
+        CsvMapper mapper = new CsvMapper();
+        List<Service> serviceList;
+        try {
+            MappingIterator<Service> readValues = mapper.readerFor(Service.class).with(bootstrapSchema).readValues(multipartFile.getInputStream());
+            serviceList = readValues.readAll();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        serviceEntityService.saveListOfServices(serviceList);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

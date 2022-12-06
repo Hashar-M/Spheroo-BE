@@ -92,4 +92,13 @@ public class CategoryServiceImpl implements CategoryService{
         });
         return manageCategoryDetailsPage;
     }
+
+    /**
+     * Saves multiple categories into the database from a list
+     * @param categoryList the list of categories to save into the database
+     */
+    @Override
+    public void saveListOfCategories(List<Category> categoryList) {
+        categoryRepository.saveAll(categoryList);
+    }
 }

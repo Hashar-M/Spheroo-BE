@@ -61,4 +61,10 @@ public interface ServiceEntityService {
      * @return
      */
     public ResponseDTO getListOfServiceNamesForTheGivenCategory(String categoryName,int pageNo,int pageSize);
+
+    /**
+     * Saves multiple services into the database from a list
+     * @param serviceList the list of services to save into the database
+     */
+    void saveListOfServices(List<Service> serviceList);
 }

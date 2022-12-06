@@ -1,5 +1,8 @@
 package com.qburst.spherooadmin.orderDetails;
 
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.search.OrderFilter;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
@@ -28,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Controller for order entity
@@ -223,5 +228,27 @@ public class OrdersController {
     @GetMapping("/search")
     public ResponseEntity<Page<Orders>> findAllOrdersBySpecification(@RequestBody OrderFilter orderFilter, @RequestParam int pageNo, @RequestParam int noOfElements) {
         return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo, noOfElements), HttpStatus.OK);
+    }
+
+    /**
+     * This method allows you to import a CSV file straight into the database provided that the
+     * file is in the correct format.
+     * This was made in order to quickly enter in test data so is not meant to be used in production.
+     * @param multipartFile The CSV file to enter into the Database.
+     * @return The HTTP status OK.
+     */
+    @PostMapping("/import")
+    public ResponseEntity<HttpStatus> importOrdersFromCSV(@RequestParam("file") MultipartFile multipartFile) {
+        CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
+        CsvMapper mapper = new CsvMapper();
+        List<Orders> ordersList;
+        try {
+            MappingIterator<Orders> readValues = mapper.readerFor(Orders.class).with(bootstrapSchema).readValues(multipartFile.getInputStream());
+            ordersList = readValues.readAll();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        ordersService.saveListOfOrders(ordersList);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
