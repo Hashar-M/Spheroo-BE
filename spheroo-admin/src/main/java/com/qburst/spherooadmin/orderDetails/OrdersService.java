@@ -7,9 +7,9 @@ public interface OrdersService {
     OrdersDisplayDTO getOrderById(long id);
     void addOrder(Orders order);
     Page<OrdersDisplayDTO> getAllOrdersPaged(int pageNo, int noOfElements,String columnToSort,boolean isAsc, String status);
-    String updateOrdersById(AmendOrderDTO amendOrderDTO);
-    boolean deleteOrderById(long Id);
+    void updateOrdersById(AmendOrderDTO amendOrderDTO);
+    void deleteOrderById(long Id);
     OrderStatisticsDTO getOrdersStatistics();
     Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
-    int assignOrder(AssignedOrder assignedOrder);
+    void assignOrder(AssignedOrder assignedOrder);
 }

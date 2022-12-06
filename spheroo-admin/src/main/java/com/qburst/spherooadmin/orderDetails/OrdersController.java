@@ -1,7 +1,7 @@
 package com.qburst.spherooadmin.orderDetails;
 
+import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
-import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,13 +48,7 @@ public class OrdersController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrderById(@PathVariable long id) {
-
-        OrdersDisplayDTO ordersDisplayDTO = ordersService.getOrderById(id);
-        if(ordersDisplayDTO  != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(ordersDisplayDTO );
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrderById(id));
     }
 
     /**
@@ -69,23 +63,17 @@ public class OrdersController {
     @GetMapping
     public ResponseEntity<?> findAllOrders(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements,
                                            @RequestParam(defaultValue = "deliveryToDate") String columnToSort, @RequestParam(defaultValue = "false") boolean isAsc, @RequestParam(defaultValue = "open") String status) {
-        ResponseDTO responseDTO = new ResponseDTO();
         if(page<1){
-            responseDTO.setSuccess(false);
-            responseDTO.setMessage(" page should not be less than 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+            throw new WrongDataForActionException("page should not be less than 1");
         }
         if(noOfElements<1){
-            responseDTO.setSuccess(false);
-            responseDTO.setMessage("no of elements should be grater than 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+            throw new WrongDataForActionException("no of elements should be grater than 0");
         }
-
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
                 status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")) {
             return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page-1,noOfElements,columnToSort,isAsc,status.toUpperCase()));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
+            throw new WrongDataForActionException("Status value not in proper format");
         }
     }
 
@@ -162,19 +150,8 @@ public class OrdersController {
      */
     @PostMapping("/assign-order")
     public ResponseEntity<?> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
-        int status= ordersService.assignOrder(assignedOrder);
-        //0 denotes saved successfully.
-        if(status == 0){
-            return ResponseEntity.status(HttpStatus.OK).body("saved successfully");
-        } else if (status == 1) {
-            // 1 denotes supplier id doesn't exist
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("supplier id doesn't exist");
-        } else if (status ==2) {
-            // 2: denotes order id doesn't exist
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order id doesn't exist");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" both order id and supplier id do not exist");
-        }
+        ordersService.assignOrder(assignedOrder);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Assigned successfully");
     }
     /**
      * add a new order by providing its id.
@@ -194,7 +171,8 @@ public class OrdersController {
      */
     @PutMapping("/amend-order")
     public ResponseEntity<?> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(ordersService.updateOrdersById(amendOrderDTO));
+        ordersService.updateOrdersById(amendOrderDTO);
+        return ResponseEntity.status(HttpStatus.OK).body("Amend completed");
     }
 
     /**
@@ -204,12 +182,8 @@ public class OrdersController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity <?> deleteOrder(@PathVariable long id){
-        boolean deleteStatus = ordersService.deleteOrderById(id);
-        if(deleteStatus){
-            return ResponseEntity.status(HttpStatus.OK).body("order deleted successfully");
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no order details with this Id");
-        }
+        ordersService.deleteOrderById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("order deleted successfully");
     }
 
     /**
@@ -221,7 +195,13 @@ public class OrdersController {
      * @return A Page of orders based on the provided criteria.
      */
     @GetMapping("/search")
-    public ResponseEntity<Page<Orders>> findAllOrdersBySpecification(@RequestBody OrderFilter orderFilter, @RequestParam int pageNo, @RequestParam int noOfElements) {
-        return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo, noOfElements), HttpStatus.OK);
+    public ResponseEntity<Page<Orders>> findAllOrdersBySpecification(@RequestBody OrderFilter orderFilter, @RequestParam(defaultValue = "1") int pageNo, @RequestParam(defaultValue = "6") int noOfElements) {
+        if(pageNo<1){
+            throw new WrongDataForActionException("page should not be less than 1");
+        }
+        if(noOfElements<1){
+            throw new WrongDataForActionException("no of elements should be grater than 0");
+        }
+        return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo-1, noOfElements), HttpStatus.OK);
     }
 }

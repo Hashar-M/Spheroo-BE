@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 
 @Service
@@ -44,6 +45,8 @@ public class OrdersServiceImpl implements OrdersService {
         ordersDisplayDTO.setServiceId(orders.getServiceId());
         ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(orders.getCategoryId()).getCategoryName());
         ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
+        String supplier = assignedOrderRepository.findSupplierByOrderId(ordersDisplayDTO.getOrderId());
+        ordersDisplayDTO.setAssignedSupplier((supplier != null)? supplier: "Not assigned");
         ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
         ordersDisplayDTO.setImagesList(orders.getImagesList());
         return ordersDisplayDTO;
@@ -55,25 +58,23 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public int assignOrder(AssignedOrder assignedOrder) {
+    public void assignOrder(AssignedOrder assignedOrder) {
         if(ordersRepo.existsById(assignedOrder.getOrderId())){
             if(supplierRepository.existsById(assignedOrder.getSupplierId())){
-
-                assignedOrderRepository.save(assignedOrder);
                 Orders orders = ordersRepo.getReferenceById(assignedOrder.getOrderId());
+                if(orders.getOrderStatus()!=OrderStatus.UNASSIGNED.toString()){
+                    throw new WrongDataForActionException("Only unassigned orders can assign");
+                }
+                assignedOrderRepository.save(assignedOrder);
                 orders.setOrderStatus(OrderStatus.UNACCEPTED.toString());
                 ordersRepo.save(orders);
-                //return 0: denotes saved successfully
-                return 0;
+            }else{
+                throw new WrongDataForActionException("Supplier not exist with given id");
             }
-            //return 1 : denotes supplier id doesn't exist
-            return 1;
         } else if (supplierRepository.existsById(assignedOrder.getSupplierId())) {
-            //return 2: denotes order id doesn't exist;
-            return 2;
+            throw new WrongDataForActionException("Order not exist with given id");
         }else {
-            //return 3: denotes both order id and supplier id do not exist.
-            return 3;
+            throw new WrongDataForActionException("Both order id and supplier id do not exist");
         }
 
     }
@@ -109,14 +110,20 @@ public class OrdersServiceImpl implements OrdersService {
         }
         ordersDisplayDTOPage.forEach(order-> {
             order.setCharge(serviceChargeRepository.findChargeByPriority(order.getServiceId(),"NORMAL"));
-            order.setAssignedSupplier(assignedOrderRepository.findSupplierByOrderId(order.getOrderId()));
+            String supplier = assignedOrderRepository.findSupplierByOrderId(order.getOrderId());
+            order.setAssignedSupplier((supplier != null)? supplier: "Not assigned");
             order.setImagesList(issueImagesRepository.findIssueImagesByOrderId(order.getOrderId()));
         });
         return ordersDisplayDTOPage;
     }
 
+    /**
+     * function for updating existing order details.
+     * @param amendOrderDTO accepts data for updating order.
+     * @return
+     */
     @Override
-    public String updateOrdersById(AmendOrderDTO amendOrderDTO) {
+    public void updateOrdersById(AmendOrderDTO amendOrderDTO) {
         if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
             Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
             if(orders.isAmended())
@@ -135,20 +142,18 @@ public class OrdersServiceImpl implements OrdersService {
             orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
             orders.setAmended(true);
             ordersRepo.save(orders);
-            return "Amend completed";
         }else {
             throw new WrongDataForActionException("No order exist with given data");
         }
     }
 
     @Override
-    public boolean deleteOrderById(long id) {
+    public void deleteOrderById(long id) {
         boolean isExist= ordersRepo.existsById(id);
         if(isExist){
             ordersRepo.deleteById(id);
-            return true;
         }else {
-            return false;
+            throw new EntityNotFoundException("No order exist with given data");
         }
     }
 
