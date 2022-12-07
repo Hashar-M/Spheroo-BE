@@ -4,12 +4,8 @@ import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,14 +23,11 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 
 /**
  * Controller for order entity
@@ -130,60 +123,6 @@ public class OrdersController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
-    }
-    @GetMapping(value = "/orders-csv-export", produces = "text/csv")
-    public ResponseEntity<?> exportCsv(@RequestParam(defaultValue = "open") String status) {
-        String[] csvHeader = {"order id", "customer name", "created date", "delivery from_date", "delivery to date",
-                "comments", "zip code", "order status", "category name", "service name", "charge", "assigned supplier"};
-        Page<OrdersDisplayDTO> ordersDisplayDTOPage = ordersService.getAllOrdersPaged(0, 100, "deliveryToDate", false, status);
-
-        ByteArrayInputStream byteArrayOutputStream;
-        try (
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                // defining the CSV printer
-                CSVPrinter csvPrinter = new CSVPrinter(
-                        new PrintWriter(out),
-                        // withHeader is optional
-                        CSVFormat.DEFAULT.withHeader(csvHeader)
-                );
-        ) {
-            // populating the CSV content
-            for (OrdersDisplayDTO ordersDisplayDTO : ordersDisplayDTOPage)
-                csvPrinter.printRecord(ordersDisplayDTO.getOrderId(),
-                        ordersDisplayDTO.getCustomerName(),
-                        ordersDisplayDTO.getCreatedDate(),
-                        ordersDisplayDTO.getDeliveryFromDate(),
-                        ordersDisplayDTO.getDeliveryToDate(),
-                        ordersDisplayDTO.getComments(),
-                        ordersDisplayDTO.getZipCode(),
-                        ordersDisplayDTO.getOrderStatus(),
-                        ordersDisplayDTO.getCategoryName(),
-                        ordersDisplayDTO.getServiceName(),
-                        ordersDisplayDTO.getCharge(),
-                        ordersDisplayDTO.getAssignedSupplier());
-
-            // writing the underlying stream
-            csvPrinter.flush();
-
-            byteArrayOutputStream = new ByteArrayInputStream(out.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-        InputStreamResource fileInputStream = new InputStreamResource(byteArrayOutputStream);
-
-        String csvFileName = status+" order details.csv";
-
-        // setting HTTP headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + csvFileName);
-        // defining the custom Content-Type
-        headers.set(HttpHeaders.CONTENT_TYPE, "text/csv");
-
-        return new ResponseEntity<>(
-                fileInputStream,
-                headers,
-                HttpStatus.OK
-        );
     }
 
     /**
