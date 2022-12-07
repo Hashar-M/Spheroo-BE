@@ -31,6 +31,9 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public OrdersDisplayDTO getOrderById(long id) {
+        if(!ordersRepo.existsById(id)){
+            throw new EntityNotFoundException("No order exist with given data");
+        }
         Orders orders = ordersRepo.getReferenceById(id);
         OrdersDisplayDTO ordersDisplayDTO= new OrdersDisplayDTO();
         ordersDisplayDTO.setOrderId(orders.getOrderId());
@@ -69,12 +72,12 @@ public class OrdersServiceImpl implements OrdersService {
                 orders.setOrderStatus(OrderStatus.UNACCEPTED.toString());
                 ordersRepo.save(orders);
             }else{
-                throw new WrongDataForActionException("Supplier not exist with given id");
+                throw new EntityNotFoundException("Supplier not exist with given id");
             }
         } else if (supplierRepository.existsById(assignedOrder.getSupplierId())) {
-            throw new WrongDataForActionException("Order not exist with given id");
+            throw new EntityNotFoundException("Order not exist with given id");
         }else {
-            throw new WrongDataForActionException("Both order id and supplier id do not exist");
+            throw new EntityNotFoundException("Both order id and supplier id do not exist");
         }
 
     }
@@ -143,7 +146,7 @@ public class OrdersServiceImpl implements OrdersService {
             orders.setAmended(true);
             ordersRepo.save(orders);
         }else {
-            throw new WrongDataForActionException("No order exist with given data");
+            throw new EntityNotFoundException("No order exist with given data");
         }
     }
 
