@@ -1,7 +1,6 @@
 package com.qburst.spherooadmin.orderDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 
@@ -43,25 +43,25 @@ public class Orders {
     /**
      * customer_name  field stores the name of order issued customer.
      */
-    @NotNull
+    @NotBlank(message = "invalid customer name")
     @Column(name="customer_name",nullable = false)
     private String customerName;
     /**
      * category_id field stores the id of selected category.
      */
-    @NotNull
+    @NotBlank(message = "Invalid category id")
     @Column(name="category_id",nullable = false)
     private long categoryId;
     /**
      * service_id field stores the id of selected service.
      */
-    @NotNull
+    @NotBlank(message = "Invalid service id")
     @Column(name="service_id",nullable = false)
     private long serviceId;
     /**
      * created_date field stores the order creation date.
      */
-    @NotNull
+    @NotBlank(message = "Invalid created date")
     @Column(name = "created_date",nullable = false)
     private Date createdDate;
     /**
@@ -82,7 +82,7 @@ public class Orders {
     /**
      * Zipcode stores the zipcode of customer.
      */
-    @NotNull
+    @NotBlank(message = "Invalid zip code")
     @Column(name = "zip_code",nullable = false)
     private String zipCode;
     /**
@@ -93,8 +93,7 @@ public class Orders {
      * closed orders:
      *      accepted,rejected,closed
      */
-    @NotNull
-    @Column(name = "order_status",nullable = false)
+    @Column(name = "order_status",nullable = false, columnDefinition = "varchar(255) default 'UNASSIGNED'")
     private String orderStatus;
 
     /**
