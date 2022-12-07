@@ -16,8 +16,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-
 import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 
@@ -40,16 +42,15 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     private long categoryId;
-
+    @NotBlank(message = "category name can't be blank or null")
+    @Size(max = 64,message = "allowed length for category name is 64")
     @Column(name = "category_name", length = 64, nullable = false, unique = true)
     private String categoryName;
-
     @Column(name = "category_icon")
     private String categoryIcon;
-
     @Column(name = "category_description", length = 1024)
     private String categoryDescription;
-
+    @Valid
     @OneToMany(targetEntity = Service.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private List<Service> serviceList;

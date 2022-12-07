@@ -85,7 +85,6 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public Page<ManageCategoryDetails> getManageCategoryDetails(int pageNo, int noOfElements) {
         Pageable pageableCriteria = PageRequest.of(pageNo, noOfElements, Sort.by("categoryName"));
-        Page<Category> categoryPage = categoryRepository.findAll(pageableCriteria);
         Page<ManageCategoryDetails> manageCategoryDetailsPage = categoryRepository.getManageCategoryPaged(pageableCriteria);
         manageCategoryDetailsPage.forEach(item->{
             item.setNoOfServices(categoryRepository.getReferenceById(item.getCategoryId()).getServiceList().size());

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -124,7 +125,7 @@ public class CategoryController {
      * @return Returns the HTTP status CREATED.
      */
     @PostMapping("/new")
-    public ResponseEntity<HttpStatus> createCategory(@RequestBody Category category) {
+    public ResponseEntity<HttpStatus> createCategory(@Valid @RequestBody Category category) {
 
         categoryService.saveCategory(category);
         return new ResponseEntity<>(HttpStatus.CREATED);
