@@ -1,5 +1,8 @@
 package com.qburst.spherooadmin.category;
 
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.upload.UploadCategoryIconUtil;
 import lombok.AllArgsConstructor;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -141,4 +145,27 @@ public class CategoryController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * This method allows you to import a CSV file straight into the database provided that the
+     * file is in the correct format.
+     * This was made in order to quickly enter in test data so is not meant to be used in production.
+     * @param multipartFile The CSV file to enter into the Database.
+     * @return The HTTP status OK.
+     */
+    @PostMapping("/import")
+    public ResponseEntity<HttpStatus> importCategoriesFromCSV(@RequestParam("file") MultipartFile multipartFile) {
+        CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
+        CsvMapper mapper = new CsvMapper();
+        List<Category> categoryList;
+        try {
+            MappingIterator<Category> readValues = mapper.readerFor(Category.class).with(bootstrapSchema).readValues(multipartFile.getInputStream());
+            categoryList = readValues.readAll();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        categoryService.saveListOfCategories(categoryList);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
+

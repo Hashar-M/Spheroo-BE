@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -80,6 +81,15 @@ public class OrdersServiceImpl implements OrdersService {
             throw new EntityNotFoundException("Both order id and supplier id do not exist");
         }
 
+    }
+
+    /**
+     * Saves multiple orders into the database from a list
+     * @param ordersList the list of services to save into the database
+     */
+    @Override
+    public void saveListOfOrders(List<Orders> ordersList) {
+        ordersRepo.saveAll(ordersList);
     }
 
     /**
