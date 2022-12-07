@@ -26,18 +26,31 @@ import java.util.List;
  */
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
+
+    /**
+     * This  exception is supposed to be called when trying to access an Entity that
+     * does not exist in the database.
+     */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleResourceNotFoundException(RuntimeException ex) {
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * This exception is supposed to be called when trying to delete an object from the database
+     * that does not exist.
+     */
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<Object> handleDataAccessException(EmptyResultDataAccessException ex) {
         ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.DATA_ACCESS_EXCEPTION_RESPONSE), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * This exception is supposed to be called when dealing with exceptions related to the constraints,
+     * type and values for a field in a table.
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.DATA_INTEGRITY_EXCEPTION_RESPONSE), HttpStatus.BAD_REQUEST);
@@ -53,6 +66,10 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ex.getBindingResult().getAllErrors().forEach((error) -> errors.add(error.getDefaultMessage()));
         return new ResponseEntity<>(new ErrorResponse(errors, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
+
+    /**
+     * This exception is called when passing an Illegal argument to a method.
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.ILLEGAL_ARGUMENT_EXCEPTION_RESPONSE), HttpStatus.BAD_REQUEST);
