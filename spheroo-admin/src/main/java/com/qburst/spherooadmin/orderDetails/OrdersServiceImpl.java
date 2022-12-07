@@ -80,7 +80,6 @@ public class OrdersServiceImpl implements OrdersService {
         }else {
             throw new EntityNotFoundException("Both order id and supplier id do not exist");
         }
-
     }
 
     /**
