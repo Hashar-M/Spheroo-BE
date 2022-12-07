@@ -12,7 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
@@ -38,19 +38,19 @@ public class AssignedOrder {
     /**
      * order_id field stores the id of assigned order.
      */
-    @NotNull
+    @NotBlank(message = "Invalid order id")
     @Column(name="order_id",nullable = false,unique = true)
     private long orderId;
     /**
      * supplier_id field stores the id of assigned supplier.
      */
-    @NotNull
+    @NotBlank(message = "Invalid supplier id")
     @Column(name="supplier_id",nullable = false)
     private long supplierId;
     /**
      * assigned_date field stores the assignation completed date.
      */
-    @NotNull
+    @NotBlank(message = "Invalid assigned date")
     @Column(name = "assigned_date",nullable = false)
     private Date assignedDate;
 }
