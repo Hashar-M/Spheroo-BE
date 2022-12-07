@@ -45,14 +45,14 @@ public class Service {
      * Name of the service
      */
     @NotBlank(message = "service name can't be blank or null")
-    @Size(max = 64,message = "allowed length for category name is 64")
+    @Size(max = 64,message = "allowed length for service name is 64")
     @Column(name = "service_name", length = 64, nullable = false, unique = true)
     private String serviceName;
 
     /**
      * Description of the service
      */
-    @Size(max = 1024,message = "allowed length for category name is 64")
+    @Size(max = 1024,message = "allowed length for description is 1024")
     @Column(name = "description", length = 1024)
     private String description;
 
