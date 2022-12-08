@@ -87,7 +87,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity handleFileNotFoundException(FileNotFoundException ex){
+    public ResponseEntity<Object> handleFileNotFoundException(FileNotFoundException ex){
         ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.FILE_NOT_NOT_FOUND_EXCEPTION_RESPONSE),HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
     }
