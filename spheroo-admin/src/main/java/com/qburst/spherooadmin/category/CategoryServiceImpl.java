@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
+import static com.qburst.spherooadmin.constants.CategoryConstants.CATEGORY_NAME;
+
 /**
  * @inheritDoc
  *
@@ -84,8 +86,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
     @Override
     public Page<ManageCategoryDetails> getManageCategoryDetails(int pageNo, int noOfElements) {
-        Pageable pageableCriteria = PageRequest.of(pageNo, noOfElements, Sort.by("categoryName"));
-        Page<Category> categoryPage = categoryRepository.findAll(pageableCriteria);
+        Pageable pageableCriteria = PageRequest.of(pageNo, noOfElements, Sort.by(CATEGORY_NAME));
         Page<ManageCategoryDetails> manageCategoryDetailsPage = categoryRepository.getManageCategoryPaged(pageableCriteria);
         manageCategoryDetailsPage.forEach(item->{
             item.setNoOfServices(categoryRepository.getReferenceById(item.getCategoryId()).getServiceList().size());

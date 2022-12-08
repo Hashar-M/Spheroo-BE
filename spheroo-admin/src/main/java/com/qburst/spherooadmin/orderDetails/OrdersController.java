@@ -3,6 +3,7 @@ package com.qburst.spherooadmin.orderDetails;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
@@ -53,13 +54,7 @@ public class OrdersController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrderById(@PathVariable long id) {
-
-        OrdersDisplayDTO ordersDisplayDTO = ordersService.getOrderById(id);
-        if(ordersDisplayDTO  != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(ordersDisplayDTO );
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order not available");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrderById(id));
     }
 
     /**
@@ -74,23 +69,17 @@ public class OrdersController {
     @GetMapping
     public ResponseEntity<?> findAllOrders(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements,
                                            @RequestParam(defaultValue = "deliveryToDate") String columnToSort, @RequestParam(defaultValue = "false") boolean isAsc, @RequestParam(defaultValue = "open") String status) {
-        ResponseDTO responseDTO = new ResponseDTO();
         if(page<1){
-            responseDTO.setSuccess(false);
-            responseDTO.setMessage(" page should not be less than 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+            throw new WrongDataForActionException("page should not be less than 1");
         }
         if(noOfElements<1){
-            responseDTO.setSuccess(false);
-            responseDTO.setMessage("no of elements should be grater than 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+            throw new WrongDataForActionException("no of elements should be grater than 0");
         }
-
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
                 status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")) {
             return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page-1,noOfElements,columnToSort,isAsc,status.toUpperCase()));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
+            throw new WrongDataForActionException("Status value not in proper format");
         }
     }
 
@@ -111,7 +100,7 @@ public class OrdersController {
      * @throws IOException
      */
     @GetMapping("/orders-export")
-    public ResponseEntity<?>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) throws IOException {
+    public ResponseEntity<?>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) {
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
                 status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")) {
             response.setContentType("text/csv");
@@ -121,17 +110,22 @@ public class OrdersController {
             response.setHeader(headerKey,headerValue);
 
             Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,"deliveryToDate",false,status);
-            ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
-            String[] csvHeader = {"order id","customer name","created date","delivery from_date","delivery to date",
-                    "comments","zip code","order status","category name","service name","charge","assigned supplier"};
-            String[] nameMapping= {"orderId","customerName","createdDate","deliveryFromDate","deliveryToDate","comments",
-                    "zipCode","orderStatus","categoryName","serviceName","charge","assignedSupplier"};
-            csvBeanWriter.writeHeader(csvHeader);
-            for(OrdersDisplayDTO orderDisplay: ordersDisplayDTOPage){
-                csvBeanWriter.write(orderDisplay,nameMapping);
+            try{
+                ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+                String[] csvHeader = {"order id","customer name","created date","delivery from_date","delivery to date",
+                        "comments","zip code","order status","category name","service name","charge","assigned supplier"};
+                String[] nameMapping= {"orderId","customerName","createdDate","deliveryFromDate","deliveryToDate","comments",
+                        "zipCode","orderStatus","categoryName","serviceName","charge","assignedSupplier"};
+                csvBeanWriter.writeHeader(csvHeader);
+                for(OrdersDisplayDTO orderDisplay: ordersDisplayDTOPage){
+                    csvBeanWriter.write(orderDisplay,nameMapping);
+                }
+                csvBeanWriter.close();
+                return ResponseEntity.status(HttpStatus.OK).body("success");
             }
-            csvBeanWriter.close();
-            return ResponseEntity.status(HttpStatus.OK).body("success");
+            catch (IOException ex){
+                throw new RuntimeException(ex.getMessage());
+            }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
         }
@@ -145,19 +139,23 @@ public class OrdersController {
      * @throws FileNotFoundException
      */
     @GetMapping("/download")
-    public StreamingResponseBody downloadAttachedFile(HttpServletResponse response,@RequestParam long orderId,@RequestParam int index) throws FileNotFoundException {
+    public StreamingResponseBody downloadAttachedFile(HttpServletResponse response,@RequestParam long orderId,@RequestParam int index) {
         String fileName = "order_" + orderId + "_image" + index + ".jpg";
         response.setContentType("image/jpg");
         response.setHeader("Content-Disposition","attachment;filename="+fileName);
         String url =ordersService.getOrderById(orderId).getImagesList().get(index-1).getIssueImages();
-        InputStream inputStream  = new FileInputStream(new File(url));
-        return outputStream -> {
-            int nRead;
-            byte[] data = new byte[1024];
-            while ((nRead = inputStream.read(data,0,data.length))!=-1){
-                outputStream.write(data,0,nRead);
-            }
-        };
+        try {
+            InputStream inputStream  = new FileInputStream(new File(url));
+            return outputStream -> {
+                int nRead;
+                byte[] data = new byte[1024];
+                while ((nRead = inputStream.read(data,0,data.length))!=-1){
+                    outputStream.write(data,0,nRead);
+                }
+            };
+        }catch (FileNotFoundException ex){
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 
     /**
@@ -167,19 +165,8 @@ public class OrdersController {
      */
     @PostMapping("/assign-order")
     public ResponseEntity<?> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
-        int status= ordersService.assignOrder(assignedOrder);
-        //0 denotes saved successfully.
-        if(status == 0){
-            return ResponseEntity.status(HttpStatus.OK).body("saved successfully");
-        } else if (status == 1) {
-            // 1 denotes supplier id doesn't exist
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("supplier id doesn't exist");
-        } else if (status ==2) {
-            // 2: denotes order id doesn't exist
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("order id doesn't exist");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" both order id and supplier id do not exist");
-        }
+        ordersService.assignOrder(assignedOrder);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Assigned successfully");
     }
     /**
      * add a new order by providing its id.
@@ -199,7 +186,8 @@ public class OrdersController {
      */
     @PutMapping("/amend-order")
     public ResponseEntity<?> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(ordersService.updateOrdersById(amendOrderDTO));
+        ordersService.updateOrdersById(amendOrderDTO);
+        return ResponseEntity.status(HttpStatus.OK).body("Amend completed");
     }
 
     /**
@@ -209,12 +197,8 @@ public class OrdersController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity <?> deleteOrder(@PathVariable long id){
-        boolean deleteStatus = ordersService.deleteOrderById(id);
-        if(deleteStatus){
-            return ResponseEntity.status(HttpStatus.OK).body("order deleted successfully");
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no order details with this Id");
-        }
+        ordersService.deleteOrderById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("order deleted successfully");
     }
 
     /**
@@ -226,8 +210,14 @@ public class OrdersController {
      * @return A Page of orders based on the provided criteria.
      */
     @GetMapping("/search")
-    public ResponseEntity<Page<Orders>> findAllOrdersBySpecification(@RequestBody OrderFilter orderFilter, @RequestParam int pageNo, @RequestParam int noOfElements) {
-        return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo, noOfElements), HttpStatus.OK);
+    public ResponseEntity<Page<Orders>> findAllOrdersBySpecification(@RequestBody OrderFilter orderFilter, @RequestParam(defaultValue = "1") int pageNo, @RequestParam(defaultValue = "6") int noOfElements) {
+        if(pageNo<1){
+            throw new WrongDataForActionException("page should not be less than 1");
+        }
+        if(noOfElements<1){
+            throw new WrongDataForActionException("no of elements should be grater than 0");
+        }
+        return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo-1, noOfElements), HttpStatus.OK);
     }
 
     /**
