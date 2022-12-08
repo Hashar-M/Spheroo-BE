@@ -32,10 +32,10 @@ public interface ServiceEntityService {
     void deleteServiceById(Long id);
 
     /**
-     * Update an existing service according to its ID
-     * @param id the id of the service to update
+     * Update the given {@link Service}
+     * @param service tobe updated.
      */
-    void updateServiceById(String serviceName, String description, Boolean variablePrice, List<ServiceCharge> serviceChargeList, Long id);
+    void updateASingleService(Service service);
 
     /**
      * Returns a page of services for the specified category

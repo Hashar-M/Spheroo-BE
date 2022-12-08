@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ public class ServiceController {
      *  The Service for the Service Entity
      */
     private ServiceEntityService serviceEntityService;
+    private ModelMapper modelMapper;
 
     /**
      * Returns a service by id
@@ -48,14 +50,14 @@ public class ServiceController {
     }
 
     /**
-     * Update service by id
-     * @param service Service entity
-     * @param id of the service to update
-     * @return HttpStatus OK if service was successfully updated
+     * Update a single service given in {@link ServicePutDTO}
+     * @param servicePutDTO contain data for updating {@link Service}
+     * @return
      */
-    @PutMapping("/id={id}")
-    ResponseEntity<HttpStatus> updateService(@Valid @RequestBody Service service, @PathVariable long id) {
-        serviceEntityService.updateServiceById(service.getServiceName(), service.getDescription(), service.getVariablePrice(), service.getServiceChargeList(), id);
+    @PutMapping("/update")
+    ResponseEntity<HttpStatus> updateService(@Valid @RequestBody ServicePutDTO servicePutDTO) {
+        Service service=modelMapper.map(servicePutDTO,Service.class);
+        serviceEntityService.updateASingleService(service);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.service;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
+import com.qburst.spherooadmin.exception.ServiceNameConstraintException;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,12 +9,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.qburst.spherooadmin.constants.CategoryConstants.CATEGORY_NOT_FOUND;
+import static com.qburst.spherooadmin.constants.ResponseConstants.SERVICE_NAME_ALREADY_IN_USE;
 
 @Slf4j
 @Service
@@ -26,6 +30,7 @@ public class ServiceEntityServiceImpl implements ServiceEntityService {
      */
     private ServiceRepository serviceRepository;
     private CategoryRepository categoryRepository;
+    private ServiceChargeRepository serviceChargeRepository;
 
     /**
      * Returns a service by its id
@@ -59,12 +64,18 @@ public class ServiceEntityServiceImpl implements ServiceEntityService {
     }
 
     /**
-     * Update an existing service according to its ID
-     * @param id the id of the service to update
+     * Update the given {@link com.qburst.spherooadmin.service.Service} using {@link ServiceRepository}
+     * @param service tobe updated.
      */
+    @Transactional
     @Override
-    public void updateServiceById(String serviceName, String description, Boolean variablePrice, List<ServiceCharge> serviceChargeList, Long id) {
-        serviceRepository.updateService(serviceName, description, variablePrice, serviceChargeList, id);
+    public void updateASingleService(com.qburst.spherooadmin.service.Service service) {
+        if (Objects.equals(serviceRepository.findServiceNameByServiceId(service.getServiceId()), service.getServiceName()) || !serviceRepository.existsByServiceName(service.getServiceName())) {
+            serviceRepository.save(service);
+            serviceChargeRepository.deleteAllById(serviceChargeRepository.findNullServiceCharges());
+            return;
+        }
+        throw new ServiceNameConstraintException(SERVICE_NAME_ALREADY_IN_USE);
     }
 
     /**

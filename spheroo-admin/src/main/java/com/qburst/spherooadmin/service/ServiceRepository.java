@@ -75,4 +75,11 @@ public interface ServiceRepository extends JpaRepository<Service,Long> {
     @Query(value = "SELECT s.service_name FROM service s WHERE s.category_id=?1 ORDER BY s.service_name",nativeQuery = true)
     Page<String> findServiceNameForACategory(long categoryId, Pageable pageable);
 
+    /**
+     * method find service name for given service id.
+     * @param id of {@link Service}
+     * @return {@link Service} name.
+     */
+    @Query(value = "select serviceName from Service where serviceId=?1")
+    String findServiceNameByServiceId(long id);
 }
