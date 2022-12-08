@@ -14,9 +14,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -43,12 +44,15 @@ public class Service {
     /**
      * Name of the service
      */
+    @NotBlank(message = "service name can't be blank or null")
+    @Size(max = 64,message = "allowed length for service name is 64")
     @Column(name = "service_name", length = 64, nullable = false, unique = true)
     private String serviceName;
 
     /**
      * Description of the service
      */
+    @Size(max = 1024,message = "allowed length for description is 1024")
     @Column(name = "description", length = 1024)
     private String description;
 

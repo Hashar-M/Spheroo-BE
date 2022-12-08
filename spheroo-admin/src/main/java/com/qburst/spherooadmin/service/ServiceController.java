@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public class ServiceController {
      * @return HttpStatus OK if service was successfully updated
      */
     @PutMapping("/id={id}")
-    ResponseEntity<HttpStatus> updateService(@RequestBody Service service, @PathVariable long id) {
+    ResponseEntity<HttpStatus> updateService(@Valid @RequestBody Service service, @PathVariable long id) {
         serviceEntityService.updateServiceById(service.getServiceName(), service.getDescription(), service.getVariablePrice(), service.getServiceChargeList(), id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
