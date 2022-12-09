@@ -142,13 +142,26 @@ public class OrdersServiceImpl implements OrdersService {
             {
                 throw new WrongDataForActionException("this order already amended once, only single time amend is allowed");
             }
-            if(!(orders.getOrderStatus().equalsIgnoreCase("UNASSIGNED")||orders.getOrderStatus().equalsIgnoreCase("UNACCEPTED"))){
-                throw new WrongDataForActionException("only unassigned and unaccepted orders can amend.");
+            if(!orders.getOrderStatus().equalsIgnoreCase("UNASSIGNED")){
+                throw new WrongDataForActionException("only unassigned orders can amend.");
             }
             Date date = new Date();
             // amend allowed till 8 hr before the date.
             if(!((orders.getDeliveryToDate().getTime()-date.getTime())>(8*60*60*1000))){
                 throw new WrongDataForActionException("Amend allowed time exceeded.");
+            }
+            if(Math.abs(orders.getDeliveryFromDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime())>(48*60*60*1000)||Math.abs(orders.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryToDate().getTime())>(48*60*60*1000)){
+                throw new WrongDataForActionException("48 hr limit exceeded.");
+            }
+            if(orders.getDeliveryToDate()==amendOrderDTO.getDeliveryToDate()){
+                throw new WrongDataForActionException("No change in To date.");
+            }
+            //checking is the given date before current date
+            if(date.compareTo(amendOrderDTO.getDeliveryToDate())>0){
+                throw new WrongDataForActionException("please enter future date for To date");
+            }
+            if(amendOrderDTO.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime()<(24*60*60*1000)){
+                throw new WrongDataForActionException("Time gap between From date and To date should be at least 24 hr");
             }
             orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
             orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
