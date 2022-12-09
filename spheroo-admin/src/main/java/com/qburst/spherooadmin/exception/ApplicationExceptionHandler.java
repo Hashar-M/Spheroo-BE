@@ -6,7 +6,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -102,5 +101,16 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     public ResponseEntity<Object> handleFileNotFoundException(FileNotFoundException ex){
         ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.FILE_NOT_NOT_FOUND_EXCEPTION_RESPONSE),HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Exception is thrown while a {@link com.qburst.spherooadmin.service.Service} entity have name that is already in use.
+     * @param ex {@link ServiceNameConstraintException}
+     * @return
+     */
+    @ExceptionHandler(ServiceNameConstraintException.class)
+    public ResponseEntity<Object> handleEntityAlreadyExistsException(ServiceNameConstraintException ex){
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(error,HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

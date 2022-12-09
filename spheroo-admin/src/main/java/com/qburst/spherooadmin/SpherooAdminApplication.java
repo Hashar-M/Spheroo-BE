@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin;
 
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +21,12 @@ public class SpherooAdminApplication {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	public static void main(String[] args) {
+	@Bean
+	public ModelMapper getModelMapper(){
+		return new ModelMapper();
+	}
+
+ 	public static void main(String[] args) {
 		new SpringApplicationBuilder(SpherooAdminApplication.class)
 				.run(args);
 	}
