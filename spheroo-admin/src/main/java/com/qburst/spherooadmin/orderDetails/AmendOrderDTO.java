@@ -4,15 +4,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Getter
 @Setter
 public class AmendOrderDTO {
-    @NotBlank(message = "Invalid order id")
+    @NotNull(message = "Invalid order id")
     private long orderId;
-    @NotBlank(message = "Invalid delivery from date")
+    @NotNull(message = "Invalid delivery from date")
     private Date deliveryFromDate;
-    @NotBlank(message = "Invalid delivery to date")
+    @NotNull(message = "Invalid delivery to date")
     private Date deliveryToDate;
 }

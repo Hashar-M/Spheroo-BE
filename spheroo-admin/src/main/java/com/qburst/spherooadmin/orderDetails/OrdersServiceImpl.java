@@ -138,6 +138,7 @@ public class OrdersServiceImpl implements OrdersService {
     public void updateOrdersById(AmendOrderDTO amendOrderDTO) {
         if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
             Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
+            System.out.println(orders.getCustomerName());
             if(orders.isAmended())
             {
                 throw new WrongDataForActionException("this order already amended once, only single time amend is allowed");
@@ -149,6 +150,10 @@ public class OrdersServiceImpl implements OrdersService {
             // amend allowed till 8 hr before the date.
             if(!((orders.getDeliveryToDate().getTime()-date.getTime())>(8*60*60*1000))){
                 throw new WrongDataForActionException("Amend allowed time exceeded.");
+            }
+            //updating date occur before previous date.
+            if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())>0 || orders.getDeliveryFromDate().compareTo(amendOrderDTO.getDeliveryFromDate())>0){
+                throw new WrongDataForActionException("updating date occur before previous date.");
             }
             if(Math.abs(orders.getDeliveryFromDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime())>(48*60*60*1000)||Math.abs(orders.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryToDate().getTime())>(48*60*60*1000)){
                 throw new WrongDataForActionException("48 hr limit exceeded.");
