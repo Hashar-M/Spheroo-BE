@@ -48,8 +48,8 @@ public class SupplierController {
      * @return returns list of supplier details related to given categories.
      */
     @GetMapping("/get-suppliers")
-    public ResponseEntity<?> getSupplierByCategoryIdAndZip(@RequestParam long categoryId,@RequestParam long orderId,@RequestParam String zipcode){
-        return ResponseEntity.status(HttpStatus.OK).body(supplierService.getSuppliersToAssign(categoryId,orderId,zipcode));
+    public ResponseEntity<?> getSupplierByCategoryIdAndZip(@RequestParam(name = "order-id") long orderId){
+        return ResponseEntity.status(HttpStatus.OK).body(supplierService.getSuppliersToAssign(orderId));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDTO> deleteASupplier(@RequestBody SupplierDeleteDTO supplierDeleteDTO){
