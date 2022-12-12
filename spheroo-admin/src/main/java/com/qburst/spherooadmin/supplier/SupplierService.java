@@ -15,7 +15,7 @@ public interface SupplierService {
     public boolean deleteSupplierFromSupplierName(String supplierName);
     public Optional<Supplier> getTheSupplier(String supplierName);
     public boolean editTheSupplier(Supplier supplier);
-    public List<SupplierToAssignDTO> getSuppliersToAssign(long categoryId,long orderId,String zipcode);
+    public List<SupplierToAssignDTO> getSuppliersToAssign(long orderId);
 
     /**
      * The method map the {@link Supplier} data  for the below filtering parameter into {@link FilterSupplierForAssignDTO}.
@@ -27,4 +27,5 @@ public interface SupplierService {
      * @return
      */
     public Page<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(long categoryId, int pin, int rating, int pageNumber, int pageSize);
+
 }
