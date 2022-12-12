@@ -18,6 +18,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -49,19 +50,19 @@ public class Orders {
     /**
      * category_id field stores the id of selected category.
      */
-    @NotBlank(message = "Invalid category id")
+    @NotNull
     @Column(name="category_id",nullable = false)
     private long categoryId;
     /**
      * service_id field stores the id of selected service.
      */
-    @NotBlank(message = "Invalid service id")
+    @NotNull
     @Column(name="service_id",nullable = false)
     private long serviceId;
     /**
      * created_date field stores the order creation date.
      */
-    @NotBlank(message = "Invalid created date")
+    @NotNull(message = "created date cannot be null")
     @Column(name = "created_date",nullable = false)
     private Date createdDate;
     /**
@@ -93,6 +94,7 @@ public class Orders {
      * closed orders:
      *      accepted,rejected,closed
      */
+    @NotBlank(message = "invalid order status")
     @Column(name = "order_status",nullable = false, columnDefinition = "varchar(255) default 'UNASSIGNED'")
     private String orderStatus;
 
