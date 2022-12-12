@@ -138,11 +138,12 @@ public class OrdersServiceImpl implements OrdersService {
     public void updateOrdersById(AmendOrderDTO amendOrderDTO) {
         if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
             Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
-//            System.out.println(orders.getCustomerName());
+            //checking is the order amended once.
             if(orders.isAmended())
             {
                 throw new WrongDataForActionException("this order already amended once, only single time amend is allowed");
             }
+            //checking is order status UNASSIGNED or not.
             if(!orders.getOrderStatus().equalsIgnoreCase("UNASSIGNED")){
                 throw new WrongDataForActionException("only unassigned orders can amend.");
             }
@@ -155,16 +156,19 @@ public class OrdersServiceImpl implements OrdersService {
             if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())>0 || orders.getDeliveryFromDate().compareTo(amendOrderDTO.getDeliveryFromDate())>0){
                 throw new WrongDataForActionException("updating date occur before previous date.");
             }
+            //checking 48 hr limit between original dae and new date.
             if(Math.abs(orders.getDeliveryFromDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime())>(48*60*60*1000)||Math.abs(orders.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryToDate().getTime())>(48*60*60*1000)){
                 throw new WrongDataForActionException("48 hr limit exceeded.");
             }
-            if(orders.getDeliveryToDate()==amendOrderDTO.getDeliveryToDate()){
+            //checking any change in to date.
+            if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())==0){
                 throw new WrongDataForActionException("No change in To date.");
             }
-            //checking is the given date before current date
+            //checking is the given date before current date.
             if(date.compareTo(amendOrderDTO.getDeliveryToDate())>0){
                 throw new WrongDataForActionException("please enter future date for To date");
             }
+            //checking time gap between new From date and new To date.
             if(amendOrderDTO.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime()<(24*60*60*1000)){
                 throw new WrongDataForActionException("Time gap between From date and To date should be at least 24 hr");
             }
