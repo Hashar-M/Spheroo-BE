@@ -42,14 +42,14 @@ public class SupplierController {
 
     /**
      * function for getting supplier details as default.
-     * @param categoryId accepts category id.
      * @param orderId accepts order id
-     * @param zipcode accepts zipcode
      * @return returns list of supplier details related to given categories.
      */
     @GetMapping("/get-suppliers")
-    public ResponseEntity<?> getSupplierByCategoryIdAndZip(@RequestParam long categoryId,@RequestParam long orderId,@RequestParam String zipcode){
-        return ResponseEntity.status(HttpStatus.OK).body(supplierService.getSuppliersToAssign(categoryId,orderId,zipcode));
+    public ResponseEntity<MatchedSuppliersGetDTO> getSupplierByCategoryIdAndZip(@RequestParam(name = "order-id") long orderId){
+        MatchedSuppliersGetDTO matchedSuppliersGetDTO=new MatchedSuppliersGetDTO();
+        matchedSuppliersGetDTO.setSupplierToAssignDTOList(supplierService.getSuppliersToAssign(orderId));
+        return new ResponseEntity<>(matchedSuppliersGetDTO,HttpStatus.OK);
     }
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDTO> deleteASupplier(@RequestBody SupplierDeleteDTO supplierDeleteDTO){
