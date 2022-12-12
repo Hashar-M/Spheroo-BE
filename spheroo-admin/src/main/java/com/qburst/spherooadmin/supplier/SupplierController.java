@@ -42,9 +42,7 @@ public class SupplierController {
 
     /**
      * function for getting supplier details as default.
-     * @param categoryId accepts category id.
      * @param orderId accepts order id
-     * @param zipcode accepts zipcode
      * @return returns list of supplier details related to given categories.
      */
     @GetMapping("/get-suppliers")
