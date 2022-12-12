@@ -38,19 +38,19 @@ public class AssignedOrder {
     /**
      * order_id field stores the id of assigned order.
      */
-    @NotBlank(message = "Invalid order id")
+//    @NotBlank(message = "Invalid order id")
     @Column(name="order_id",nullable = false,unique = true)
     private long orderId;
     /**
      * supplier_id field stores the id of assigned supplier.
      */
-    @NotBlank(message = "Invalid supplier id")
+//    @NotBlank(message = "Invalid supplier id")
     @Column(name="supplier_id",nullable = false)
     private long supplierId;
     /**
      * assigned_date field stores the assignation completed date.
      */
-    @NotBlank(message = "Invalid assigned date")
+//    @NotBlank(message = "Invalid assigned date")
     @Column(name = "assigned_date",nullable = false)
     private Date assignedDate;
 }
