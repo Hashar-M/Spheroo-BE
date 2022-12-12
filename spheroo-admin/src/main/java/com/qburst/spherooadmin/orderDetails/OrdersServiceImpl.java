@@ -66,7 +66,7 @@ public class OrdersServiceImpl implements OrdersService {
         if(ordersRepo.existsById(assignedOrder.getOrderId())){
             if(supplierRepository.existsById(assignedOrder.getSupplierId())){
                 Orders orders = ordersRepo.getReferenceById(assignedOrder.getOrderId());
-                if(orders.getOrderStatus()!=OrderStatus.UNASSIGNED.toString()){
+                if(!orders.getOrderStatus().equalsIgnoreCase(OrderStatus.UNASSIGNED.toString())){
                     throw new WrongDataForActionException("Only unassigned orders can assign");
                 }
                 assignedOrderRepository.save(assignedOrder);
