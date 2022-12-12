@@ -195,7 +195,7 @@ public class SupplierServiceImp implements SupplierService {
             supplierToAssignDTO.setSupplierId(supplier.getSupplierId());
             supplierToAssignDTO.setSupplierName(supplier.getSupplierName());
             supplierToAssignDTO.setCategoryName(supplier.getCategoryNames());
-            supplierToAssignDTO.setServiceName(serviceRepository.getReferenceById(ordersRepository.getReferenceById(orderId).getServiceId()).getServiceName());
+            supplierToAssignDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
             supplierToAssignDTO.setTier(supplier.getTier());
             supplierToAssignDTO.setRating(supplier.getRating());
             supplierToAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(supplier.getSupplierId()));

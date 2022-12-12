@@ -46,7 +46,7 @@ public class SupplierController {
      * @return returns list of supplier details related to given categories.
      */
     @GetMapping("/get-suppliers")
-    public ResponseEntity<Object> getSupplierByCategoryIdAndZip(@RequestParam(name = "order-id") long orderId){
+    public ResponseEntity<MatchedSuppliersGetDTO> getSupplierByCategoryIdAndZip(@RequestParam(name = "order-id") long orderId){
         MatchedSuppliersGetDTO matchedSuppliersGetDTO=new MatchedSuppliersGetDTO();
         matchedSuppliersGetDTO.setSupplierToAssignDTOList(supplierService.getSuppliersToAssign(orderId));
         return new ResponseEntity<>(matchedSuppliersGetDTO,HttpStatus.OK);
