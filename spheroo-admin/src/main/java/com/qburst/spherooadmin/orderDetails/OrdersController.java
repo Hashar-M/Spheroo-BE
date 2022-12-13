@@ -98,7 +98,7 @@ public class OrdersController {
      * @return Return the order with filtered values serialized in JSON along with HTTP status OK and error message if not exist.
      */
     @GetMapping
-    public ResponseEntity<?> findAllOrders(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements,
+    public ResponseEntity<Page<OrdersDisplayDTO>> findAllOrders(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements,
                                            @RequestParam(defaultValue = "deliveryToDate") String columnToSort, @RequestParam(defaultValue = "false") boolean isAsc, @RequestParam(defaultValue = "open") String status) {
         if(page<1){
             throw new WrongDataForActionException("page should not be less than 1");
