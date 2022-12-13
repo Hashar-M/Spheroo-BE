@@ -3,16 +3,16 @@ package com.qburst.spherooadmin.orderDetails;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Getter
 @Setter
 public class AmendOrderDTO {
-    @NotBlank(message = "Invalid order id")
+    @NotNull
     private long orderId;
-    @NotBlank(message = "Invalid delivery from date")
+    @NotNull(message = "from date cannot be null")
     private Date deliveryFromDate;
-    @NotBlank(message = "Invalid delivery to date")
+    @NotNull(message = "To date cannot be null")
     private Date deliveryToDate;
 }

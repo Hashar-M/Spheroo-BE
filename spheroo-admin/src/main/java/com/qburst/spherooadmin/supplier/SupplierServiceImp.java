@@ -2,6 +2,7 @@ package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.orderDetails.AssignedOrderRepository;
+import com.qburst.spherooadmin.orderDetails.Orders;
 import com.qburst.spherooadmin.orderDetails.OrdersRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.supplieruser.SupplierUser;
@@ -179,12 +180,14 @@ public class SupplierServiceImp implements SupplierService {
 
     /**
      * function for returning supplier list with given categories.
-     * @param categoryId accepts category id.
      * @param orderId accepts order id.
      * @return list of supplier data which matches criteria.
      */
     @Override
-    public List<SupplierToAssignDTO> getSuppliersToAssign(long categoryId, long orderId,String zipcode) {
+    public List<SupplierToAssignDTO> getSuppliersToAssign(long orderId) {
+        Orders orders=ordersRepository.getReferenceById(orderId);
+        long categoryId=orders.getCategoryId();
+        String zipcode=orders.getZipCode();
         List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,Integer.parseInt(zipcode));
         List<SupplierToAssignDTO> supplierToAssignDTOList = new ArrayList<>();
         for (Supplier supplier : supplierList) {
@@ -192,7 +195,7 @@ public class SupplierServiceImp implements SupplierService {
             supplierToAssignDTO.setSupplierId(supplier.getSupplierId());
             supplierToAssignDTO.setSupplierName(supplier.getSupplierName());
             supplierToAssignDTO.setCategoryName(supplier.getCategoryNames());
-            supplierToAssignDTO.setServiceName(serviceRepository.getReferenceById(ordersRepository.getReferenceById(orderId).getServiceId()).getServiceName());
+            supplierToAssignDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
             supplierToAssignDTO.setTier(supplier.getTier());
             supplierToAssignDTO.setRating(supplier.getRating());
             supplierToAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(supplier.getSupplierId()));
