@@ -101,7 +101,7 @@ public class OrdersController {
      * @throws IOException
      */
     @GetMapping("/orders-export")
-    public ResponseEntity<?>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) {
+    public ResponseEntity<String>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) {
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
                 status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")||status.equalsIgnoreCase("ongoing")) {
             response.setContentType("text/csv");
