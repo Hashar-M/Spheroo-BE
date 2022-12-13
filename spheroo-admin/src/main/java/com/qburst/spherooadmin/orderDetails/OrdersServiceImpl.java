@@ -116,7 +116,11 @@ public class OrdersServiceImpl implements OrdersService {
         } else if (status.equalsIgnoreCase("overdue")) {
             // 2 days (48 hrs) from due date considered as overdue
             ordersDisplayDTOPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.OVERDUE_STARTING_INT,pageWithRequiredElements);
-        } else {
+        }else if (status.equalsIgnoreCase("ongoing"))
+        {
+            //order status as ACCEPTED is considered as ongoing orders.
+            ordersDisplayDTOPage = ordersRepo.findByOngoingOrderStatus(pageWithRequiredElements);
+        }else {
             //4 days (96 hours) from due date considered as Escalation
             ordersDisplayDTOPage = ordersRepo.getOrderByDuePeriod(OrdersConstants.ESCALATIONS_STARTING_INT,pageWithRequiredElements);
         }
