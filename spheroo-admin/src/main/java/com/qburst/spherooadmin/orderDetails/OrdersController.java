@@ -28,6 +28,8 @@ import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
+import javax.persistence.EntityNotFoundException;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
@@ -82,7 +84,7 @@ public class OrdersController {
      * @return Return the order serialized in JSON along with HTTP status OK and error message if not exist
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOrderById(@PathVariable long id) {
+    public ResponseEntity<OrdersDisplayDTO> getOrderById(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrderById(id));
     }
 
@@ -105,7 +107,7 @@ public class OrdersController {
             throw new WrongDataForActionException("no of elements should be grater than 0");
         }
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
-                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")) {
+                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")||status.equalsIgnoreCase("ongoing")) {
             return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page-1,noOfElements,columnToSort,isAsc,status.toUpperCase()));
         } else {
             throw new WrongDataForActionException("Status value not in proper format");
@@ -117,7 +119,7 @@ public class OrdersController {
      * @return returs order statistics data in the form of OrderStatisticsDTO class.
      */
     @GetMapping("/orders-statistics")
-    public ResponseEntity<?> getOrdersStatistics(){
+    public ResponseEntity<OrderStatisticsDTO> getOrdersStatistics(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
     }
 
@@ -129,9 +131,9 @@ public class OrdersController {
      * @throws IOException
      */
     @GetMapping("/orders-export")
-    public ResponseEntity<?>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) {
+    public ResponseEntity<String>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) {
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
-                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")) {
+                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")||status.equalsIgnoreCase("ongoing")) {
             response.setContentType("text/csv");
             String fileName= status+" order details.csv";
             String headerKey = "Content-Disposition";
@@ -150,7 +152,7 @@ public class OrdersController {
                     csvBeanWriter.write(orderDisplay,nameMapping);
                 }
                 csvBeanWriter.close();
-                return ResponseEntity.status(HttpStatus.OK).body("success");
+                return new ResponseEntity<>(HttpStatus.OK);
             }
             catch (IOException ex){
                 throw new RuntimeException(ex.getMessage());
@@ -230,8 +232,8 @@ public class OrdersController {
         String fileName = "order_" + orderId + "_image" + index + ".jpg";
         response.setContentType("image/jpg");
         response.setHeader("Content-Disposition","attachment;filename="+fileName);
-        String url =ordersService.getOrderById(orderId).getImagesList().get(index-1).getIssueImages();
         try {
+            String url =ordersService.getOrderById(orderId).getImagesList().get(index-1).getIssueImages();
             InputStream inputStream  = new FileInputStream(new File(url));
             return outputStream -> {
                 int nRead;
@@ -242,6 +244,8 @@ public class OrdersController {
             };
         }catch (FileNotFoundException ex){
             throw new RuntimeException(ex.getMessage());
+        }catch (IndexOutOfBoundsException ex){
+            throw new EntityNotFoundException(ex.getMessage());
         }
     }
 
@@ -251,7 +255,7 @@ public class OrdersController {
      * @return Http status with message.
      */
     @PostMapping("/assign-order")
-    public ResponseEntity<?> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
+    public ResponseEntity<String> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
         ordersService.assignOrder(assignedOrder);
         return ResponseEntity.status(HttpStatus.CREATED).body("Assigned successfully");
     }
@@ -272,7 +276,7 @@ public class OrdersController {
      * @return Returns the HTTP status OK/BAD_REQUEST with status message
      */
     @PutMapping("/amend-order")
-    public ResponseEntity<?> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
+    public ResponseEntity<String> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
         ordersService.updateOrdersById(amendOrderDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Amend completed");
     }
@@ -283,7 +287,7 @@ public class OrdersController {
      * @return message with HTTP status.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity <?> deleteOrder(@PathVariable long id){
+    public ResponseEntity <String> deleteOrder(@PathVariable long id){
         ordersService.deleteOrderById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("order deleted successfully");
     }
