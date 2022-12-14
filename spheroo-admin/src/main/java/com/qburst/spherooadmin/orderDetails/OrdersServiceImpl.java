@@ -62,7 +62,13 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     @Transactional
     public void rejectOrder(long orderId, long reasonId) {
-        Orders orders = ordersRepo.findById(orderId).orElseThrow();
+        if(!ordersRepo.existsById(orderId)){
+            throw new EntityNotFoundException("No order exist with given data");
+        }
+        if(!rejectReasonRepository.existsById(reasonId)){
+            throw new EntityNotFoundException("No reason exist with given data");
+        }
+        Orders orders = ordersRepo.getReferenceById(orderId);
         if(!orders.getOrderStatus().equalsIgnoreCase(OrderStatus.UNASSIGNED.toString())){
             throw new WrongDataForActionException("Only unassigned orders can reject");
         }
@@ -198,7 +204,7 @@ public class OrdersServiceImpl implements OrdersService {
             }
             orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
             orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
-//            orders.setAmended(true);
+            orders.setAmended(true);
             ordersRepo.save(orders);
         }else {
             throw new EntityNotFoundException("No order exist with given data");
