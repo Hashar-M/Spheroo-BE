@@ -7,8 +7,10 @@ import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +27,9 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
+
+import javax.persistence.EntityNotFoundException;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
@@ -32,7 +37,34 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H1;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H10;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H11;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H12;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H2;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H3;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H4;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H5;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H6;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H7;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H8;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H9;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CLOSED;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DEPOSITION_HEADER_VALUE;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_TYPE;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.ESCALATION;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_FOR_CSV_FILE_DOWNLOAD;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OPEN;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OVERDUE;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.SORT_COLUMN;
 
 /**
  * Controller for order entity
@@ -52,7 +84,7 @@ public class OrdersController {
      * @return Return the order serialized in JSON along with HTTP status OK and error message if not exist
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOrderById(@PathVariable long id) {
+    public ResponseEntity<OrdersDisplayDTO> getOrderById(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrderById(id));
     }
 
@@ -66,7 +98,7 @@ public class OrdersController {
      * @return Return the order with filtered values serialized in JSON along with HTTP status OK and error message if not exist.
      */
     @GetMapping
-    public ResponseEntity<?> findAllOrders(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements,
+    public ResponseEntity<Page<OrdersDisplayDTO>> findAllOrders(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements,
                                            @RequestParam(defaultValue = "deliveryToDate") String columnToSort, @RequestParam(defaultValue = "false") boolean isAsc, @RequestParam(defaultValue = "open") String status) {
         if(page<1){
             throw new WrongDataForActionException("page should not be less than 1");
@@ -75,7 +107,7 @@ public class OrdersController {
             throw new WrongDataForActionException("no of elements should be grater than 0");
         }
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
-                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")) {
+                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")||status.equalsIgnoreCase("ongoing")) {
             return ResponseEntity.status(HttpStatus.OK).body(ordersService.getAllOrdersPaged(page-1,noOfElements,columnToSort,isAsc,status.toUpperCase()));
         } else {
             throw new WrongDataForActionException("Status value not in proper format");
@@ -87,7 +119,7 @@ public class OrdersController {
      * @return returs order statistics data in the form of OrderStatisticsDTO class.
      */
     @GetMapping("/orders-statistics")
-    public ResponseEntity<?> getOrdersStatistics(){
+    public ResponseEntity<OrderStatisticsDTO> getOrdersStatistics(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
     }
 
@@ -99,9 +131,9 @@ public class OrdersController {
      * @throws IOException
      */
     @GetMapping("/orders-export")
-    public ResponseEntity<?>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) {
+    public ResponseEntity<String>  exportOrdersToCSV(HttpServletResponse response,@RequestParam String status) {
         if(status.equalsIgnoreCase("open") || status.equalsIgnoreCase("closed")||
-                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")) {
+                status.equalsIgnoreCase("escalations")||status.equalsIgnoreCase("overdue")||status.equalsIgnoreCase("ongoing")) {
             response.setContentType("text/csv");
             String fileName= status+" order details.csv";
             String headerKey = "Content-Disposition";
@@ -120,13 +152,71 @@ public class OrdersController {
                     csvBeanWriter.write(orderDisplay,nameMapping);
                 }
                 csvBeanWriter.close();
-                return ResponseEntity.status(HttpStatus.OK).body("success");
+                return new ResponseEntity<>(HttpStatus.OK);
             }
             catch (IOException ex){
                 throw new RuntimeException(ex.getMessage());
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
+        }
+    }
+
+    /**
+     * order details for the given order status is converted to a csv file and then converted byte is added as the response body.
+     * @param status of the order.
+     * @return array of byte of the csv file.
+     * @throws IOException
+     */
+    @GetMapping("/orders-export/binary")
+    public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status) throws IOException {
+        if(status.equalsIgnoreCase(OPEN) || status.equalsIgnoreCase(CLOSED)||
+                status.equalsIgnoreCase(ESCALATION)||status.equalsIgnoreCase(OVERDUE)) {
+
+            Path uploadPath = Paths.get(FILE_PATH_FOR_CSV_FILE_DOWNLOAD);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path path=Files.createTempFile(uploadPath,FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD,FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD);
+            File file=path.toFile();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DEPOSITION_HEADER_VALUE);
+            headers.set(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
+
+            Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,SORT_COLUMN,false,status);
+            /**
+             * {@link PrintWriter} object is created for write on the csv file.
+             */
+            try(PrintWriter writer=new PrintWriter(file)){
+                /**
+                 * Instantiating the {@link ICsvBeanWriter} for create the csv file.
+                 */
+                ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
+                /**
+                 * Header for the csv file is specified here.
+                 */
+                String[] csvHeader = {H1,H2,H3,H4,H5,H6,H7,H8,H9,H10,H11,H12};
+                String[] nameMapping= {"orderId","customerName","createdDate","deliveryFromDate","deliveryToDate","comments",
+                        "zipCode","orderStatus","categoryName","serviceName","charge","assignedSupplier"};
+                csvBeanWriter.writeHeader(csvHeader);
+                for(OrdersDisplayDTO orderDisplay: ordersDisplayDTOPage){
+                    csvBeanWriter.write(orderDisplay,nameMapping);
+                }
+                csvBeanWriter.close();
+                /**
+                 * creating the byte array of csv file.
+                 */
+                byte [] bytes = FileUtils.readFileToByteArray(file);
+                file.delete();
+                return new ResponseEntity<>(bytes,headers,HttpStatus.OK);
+            }
+            catch (IOException ex){
+                throw new RuntimeException(ex.getMessage());
+            }
+        } else {
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -142,8 +232,8 @@ public class OrdersController {
         String fileName = "order_" + orderId + "_image" + index + ".jpg";
         response.setContentType("image/jpg");
         response.setHeader("Content-Disposition","attachment;filename="+fileName);
-        String url =ordersService.getOrderById(orderId).getImagesList().get(index-1).getIssueImages();
         try {
+            String url =ordersService.getOrderById(orderId).getImagesList().get(index-1).getIssueImages();
             InputStream inputStream  = new FileInputStream(new File(url));
             return outputStream -> {
                 int nRead;
@@ -154,6 +244,8 @@ public class OrdersController {
             };
         }catch (FileNotFoundException ex){
             throw new RuntimeException(ex.getMessage());
+        }catch (IndexOutOfBoundsException ex){
+            throw new EntityNotFoundException(ex.getMessage());
         }
     }
 
@@ -163,7 +255,7 @@ public class OrdersController {
      * @return Http status with message.
      */
     @PostMapping("/assign-order")
-    public ResponseEntity<?> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
+    public ResponseEntity<String> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
         ordersService.assignOrder(assignedOrder);
         return ResponseEntity.status(HttpStatus.CREATED).body("Assigned successfully");
     }
@@ -184,7 +276,7 @@ public class OrdersController {
      * @return Returns the HTTP status OK/BAD_REQUEST with status message
      */
     @PutMapping("/amend-order")
-    public ResponseEntity<?> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
+    public ResponseEntity<String> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
         ordersService.updateOrdersById(amendOrderDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Amend completed");
     }
@@ -195,7 +287,7 @@ public class OrdersController {
      * @return message with HTTP status.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity <?> deleteOrder(@PathVariable long id){
+    public ResponseEntity <String> deleteOrder(@PathVariable long id){
         ordersService.deleteOrderById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("order deleted successfully");
     }
