@@ -1,9 +1,11 @@
 package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.signup.ResponseDTO;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Optional;
 
+@Validated
 @RestController
 @RequestMapping("/supplier")
 public class SupplierController {
@@ -80,19 +86,17 @@ public class SupplierController {
 
     /**
      *It gives a {@link org.springframework.data.domain.Page} has a content of {@link List} of {@link FilterSupplierForAssignDTO} based on the filtering parameter.
-     * @param categoryId for {@link Supplier}
+     * @param categoryName for {@link Supplier}
      * @param pinCode of {@link Supplier}
      * @param rating for the {@link Supplier }
-     * @param pageNumber
-     * @param pageSize
      * @return {@link org.springframework.data.domain.Page<FilterSupplierForAssignDTO>}
      */
     @GetMapping("/get-suppliers/filter")
-    public ResponseEntity<?> supplerFilteringForACategory(@RequestParam(name = "category-id") long categoryId,
-                                              @RequestParam(name = "pin-code") int pinCode,
-                                              @RequestParam(name = "rating") int rating,
-                                              @RequestParam(name = "page-no",defaultValue = "0") int pageNumber,
-                                              @RequestParam(name = "page-size",defaultValue = "1") int pageSize){
-        return new ResponseEntity<>(supplierService.filteredPageOfSupplierForACategoryId(categoryId,pinCode,rating,pageNumber,pageSize),HttpStatus.FOUND);
+    public ResponseEntity<List<FilterSupplierForAssignDTO>> supplerFilteringForACategory(
+                                              @RequestParam(name = "category-name") String categoryName,
+                                              @RequestParam(name = "pin-code",defaultValue = "") String pinCode,
+                                              @RequestParam(name = "rating",defaultValue = "1")@Min(value = 1,message = "rating should be greater than or equal one")
+                                                                                               @Max(value = 5,message = "rating should be less than or equal five") int rating){
+        return new ResponseEntity<>(supplierService.filteredPageOfSupplierForACategoryId(categoryName,pinCode,rating),HttpStatus.FOUND);
     }
 }

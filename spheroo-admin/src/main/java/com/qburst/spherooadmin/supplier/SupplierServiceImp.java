@@ -77,7 +77,6 @@ public class SupplierServiceImp implements SupplierService {
         Supplier supplier=new Supplier();
 
         supplier.setSupplierName(supplierAddDTO.getSupplierName());
-        supplier.setTier(supplierAddDTO.getTier());
         supplier.setRating(supplierAddDTO.getRating());
         supplier.setCategoryNames(supplierAddDTO.getCategoryNames());
         supplier.setSupplierAddress(supplierAddress);
@@ -196,7 +195,6 @@ public class SupplierServiceImp implements SupplierService {
             supplierToAssignDTO.setSupplierName(supplier.getSupplierName());
             supplierToAssignDTO.setCategoryName(supplier.getCategoryNames());
             supplierToAssignDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
-            supplierToAssignDTO.setTier(supplier.getTier());
             supplierToAssignDTO.setRating(supplier.getRating());
             supplierToAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(supplier.getSupplierId()));
             supplierToAssignDTOList.add(supplierToAssignDTO);
@@ -206,33 +204,21 @@ public class SupplierServiceImp implements SupplierService {
 
     /**
      * The method map the {@link Supplier} data  for the below filtering parameter into {@link FilterSupplierForAssignDTO}.
-     * @param categoryId
+     * @param categoryName
      * @param pin
      * @param rating
-     * @param pageNumber
-     * @param pageSize
      * @return {@link Page<FilterSupplierForAssignDTO>}
      */
-    public Page<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(long categoryId, int pin, int rating, int pageNumber, int pageSize){
-        /**sorting is for {@link Supplier} name in ascending order.*/
-        Sort sort=Sort.by("supplierName").ascending();
-        if(pageNumber<0 || pageSize<0){
-            throw new IllegalArgumentException();
-        }
-        else {
-            Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+    public List<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(String categoryName, String pin, int rating){
 
-            Page<FilterSupplierForAssignDTO> page = supplierRepository.findAllOrderBySupplierName(pageable, categoryId, rating, pin);
+            List<FilterSupplierForAssignDTO> page = supplierRepository.findAllOrderBySupplierName(categoryName, rating, pin);
             /**
              * value for assigned orders for each {@link Supplier} is taken from {@link AssignedOrderRepository}
              * and added to {@link FilterSupplierForAssignDTO}.
              */
-            page.get().forEach(filterSupplierForAssignDTO -> {
+            page.forEach(filterSupplierForAssignDTO -> {
                 filterSupplierForAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(filterSupplierForAssignDTO.getSupplierId()));
             });
             return page;
         }
-    }
-
-
 }

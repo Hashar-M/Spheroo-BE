@@ -19,13 +19,11 @@ public interface SupplierService {
 
     /**
      * The method map the {@link Supplier} data  for the below filtering parameter into {@link FilterSupplierForAssignDTO}.
-     * @param categoryId
+     * @param categoryName
      * @param pin
      * @param rating
-     * @param pageNumber
-     * @param pageSize
      * @return
      */
-    public Page<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(long categoryId, int pin, int rating, int pageNumber, int pageSize);
+    public List<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(String categoryName, String pin, int rating);
 
 }

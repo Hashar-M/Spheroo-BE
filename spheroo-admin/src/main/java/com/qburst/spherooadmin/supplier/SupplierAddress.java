@@ -37,6 +37,6 @@ public class SupplierAddress {
     private String country;
     private String town;
     private String district;
-    private int pinCode;
+    private String pinCode;
     private long buildNo;
 }
