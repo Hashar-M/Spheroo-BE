@@ -7,8 +7,10 @@ import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +29,7 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import javax.persistence.EntityNotFoundException;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
@@ -34,7 +37,34 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H1;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H10;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H11;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H12;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H2;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H3;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H4;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H5;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H6;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H7;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H8;
+import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H9;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CLOSED;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DEPOSITION_HEADER_VALUE;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_TYPE;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.ESCALATION;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_FOR_CSV_FILE_DOWNLOAD;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OPEN;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OVERDUE;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.SORT_COLUMN;
 
 /**
  * Controller for order entity
@@ -129,6 +159,64 @@ public class OrdersController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not in proper format");
+        }
+    }
+
+    /**
+     * order details for the given order status is converted to a csv file and then converted byte is added as the response body.
+     * @param status of the order.
+     * @return array of byte of the csv file.
+     * @throws IOException
+     */
+    @GetMapping("/orders-export/binary")
+    public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status) throws IOException {
+        if(status.equalsIgnoreCase(OPEN) || status.equalsIgnoreCase(CLOSED)||
+                status.equalsIgnoreCase(ESCALATION)||status.equalsIgnoreCase(OVERDUE)) {
+
+            Path uploadPath = Paths.get(FILE_PATH_FOR_CSV_FILE_DOWNLOAD);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path path=Files.createTempFile(uploadPath,FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD,FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD);
+            File file=path.toFile();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DEPOSITION_HEADER_VALUE);
+            headers.set(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
+
+            Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,SORT_COLUMN,false,status);
+            /**
+             * {@link PrintWriter} object is created for write on the csv file.
+             */
+            try(PrintWriter writer=new PrintWriter(file)){
+                /**
+                 * Instantiating the {@link ICsvBeanWriter} for create the csv file.
+                 */
+                ICsvBeanWriter csvBeanWriter = new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
+                /**
+                 * Header for the csv file is specified here.
+                 */
+                String[] csvHeader = {H1,H2,H3,H4,H5,H6,H7,H8,H9,H10,H11,H12};
+                String[] nameMapping= {"orderId","customerName","createdDate","deliveryFromDate","deliveryToDate","comments",
+                        "zipCode","orderStatus","categoryName","serviceName","charge","assignedSupplier"};
+                csvBeanWriter.writeHeader(csvHeader);
+                for(OrdersDisplayDTO orderDisplay: ordersDisplayDTOPage){
+                    csvBeanWriter.write(orderDisplay,nameMapping);
+                }
+                csvBeanWriter.close();
+                /**
+                 * creating the byte array of csv file.
+                 */
+                byte [] bytes = FileUtils.readFileToByteArray(file);
+                file.delete();
+                return new ResponseEntity<>(bytes,headers,HttpStatus.OK);
+            }
+            catch (IOException ex){
+                throw new RuntimeException(ex.getMessage());
+            }
+        } else {
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
         }
     }
 
