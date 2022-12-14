@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +122,10 @@ public class OrdersController {
     @GetMapping("/orders-statistics")
     public ResponseEntity<OrderStatisticsDTO> getOrdersStatistics(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
+    }
+    @GetMapping("/reject-reasons")
+    public ResponseEntity<ListOfRejectReasonDTO> getRejectReasons(){
+        return ResponseEntity.status(HttpStatus.OK).body(ordersService.getRejectReasons());
     }
 
     /**
@@ -278,7 +283,12 @@ public class OrdersController {
     @PutMapping("/amend-order")
     public ResponseEntity<String> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
         ordersService.updateOrdersById(amendOrderDTO);
-        return ResponseEntity.status(HttpStatus.OK).body("Amend completed");
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PutMapping("/reject-order")
+    public ResponseEntity rejectOrder(@RequestParam long orderId, @RequestParam long reasonId){
+        ordersService.rejectOrder(orderId,reasonId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

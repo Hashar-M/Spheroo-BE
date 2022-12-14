@@ -14,6 +14,8 @@ public interface OrdersService {
     OrderStatisticsDTO getOrdersStatistics();
     Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
     void assignOrder(AssignedOrder assignedOrder);
+    ListOfRejectReasonDTO getRejectReasons();
+    void rejectOrder(long orderId, long reasonId);
 
     /**
      * Saves multiple orders into the database from a list

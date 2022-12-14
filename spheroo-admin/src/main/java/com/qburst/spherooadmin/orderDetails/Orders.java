@@ -110,6 +110,14 @@ public class Orders {
     @OneToMany(targetEntity = IssueImages.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private List<IssueImages> imagesList;
+    /**
+     * it denotes the order is once amended or not
+     */
     @Column(name = "is_amended", columnDefinition = "boolean default false")
     private boolean isAmended;
+    /**
+     * it stores the id of reject reason
+     */
+    @Column(name = "reason_id",columnDefinition = "bigint default 0")
+    private long reasonId;
 }

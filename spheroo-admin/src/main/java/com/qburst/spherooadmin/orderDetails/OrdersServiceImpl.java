@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class OrdersServiceImpl implements OrdersService {
     private AssignedOrderRepository assignedOrderRepository;
     private SupplierRepository supplierRepository;
     private IssueImagesRepository issueImagesRepository;
+    private RejectReasonRepository rejectReasonRepository;
 
     @Override
     public OrdersDisplayDTO getOrderById(long id) {
@@ -53,7 +55,25 @@ public class OrdersServiceImpl implements OrdersService {
         ordersDisplayDTO.setAssignedSupplier((supplier != null)? supplier: "Not assigned");
         ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
         ordersDisplayDTO.setImagesList(orders.getImagesList());
+        ordersDisplayDTO.setAmended(orders.isAmended());
         return ordersDisplayDTO;
+    }
+
+    @Override
+    @Transactional
+    public void rejectOrder(long orderId, long reasonId) {
+        Orders orders = ordersRepo.findById(orderId).orElseThrow();
+        if(!orders.getOrderStatus().equalsIgnoreCase(OrderStatus.UNASSIGNED.toString())){
+            throw new WrongDataForActionException("Only unassigned orders can reject");
+        }
+        orders.setOrderStatus(OrderStatus.REJECTED.toString());
+        orders.setReasonId(reasonId);
+        ordersRepo.save(orders);
+    }
+
+    @Override
+    public ListOfRejectReasonDTO getRejectReasons() {
+        return new ListOfRejectReasonDTO(rejectReasonRepository.findAll());
     }
 
     @Override
@@ -178,7 +198,7 @@ public class OrdersServiceImpl implements OrdersService {
             }
             orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
             orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
-            orders.setAmended(true);
+//            orders.setAmended(true);
             ordersRepo.save(orders);
         }else {
             throw new EntityNotFoundException("No order exist with given data");
