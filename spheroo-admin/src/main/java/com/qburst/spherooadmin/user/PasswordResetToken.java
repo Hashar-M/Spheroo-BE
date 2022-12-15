@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -21,6 +22,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
+@Table(name = "password_reset_token")
 public class PasswordResetToken {
 
     /**

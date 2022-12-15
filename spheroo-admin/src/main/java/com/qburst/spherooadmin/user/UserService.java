@@ -4,14 +4,18 @@ package com.qburst.spherooadmin.user;
  * interface for user related services.
  */
 public interface UserService {
-    public boolean isEmailAlreadyInUse(String email);
-    public void createNewUser(Users users);
-    public Users getUserByEmailId(String email);
+    boolean isEmailAlreadyInUse(String email);
+    void createNewUser(Users users);
+    Users getUserByEmailId(String email);
 
     /**
      * method for changing password of a user.
      * @param emailId
      * @param password
      */
-    public void changePassword(String emailId,String password);
+    void changePassword(String emailId,String password);
+
+    void generateResetPasswordRequest(String emailId);
+
+    void resetPassword(String token, String password);
 }

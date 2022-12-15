@@ -1,8 +1,12 @@
 package com.qburst.spherooadmin.user;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 /**
  * @inheritDoc
@@ -10,11 +14,11 @@ import org.springframework.stereotype.Service;
  * Service class used for user specific operations.
  */
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService{
-    @Autowired
     private UsersRepository usersRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     /**
      * {@code public boolean isEmailAlreadyInUse(String email)}
@@ -51,6 +55,24 @@ public class UserServiceImpl implements UserService{
     @Override
     public void changePassword(String emailId,String password){
         usersRepository.changePassword(passwordEncoder.encode(password),emailId);
+    }
+
+    @Override
+    public void generateResetPasswordRequest(String emailId) {
+        Users user = usersRepository.findByEmailId(emailId);
+        if (user != null) {
+            OffsetDateTime expirytime = OffsetDateTime.now();
+            PasswordResetToken passwordResetToken = new PasswordResetToken();
+            passwordResetToken.setToken(UUID.randomUUID().toString());
+            passwordResetToken.setUser(user);
+            passwordResetTokenRepository.save(passwordResetToken);
+        }
+    }
+
+    @Override
+    public void resetPassword(String token, String password) {
+        String email = passwordResetTokenRepository.findUsersByToken(token).getEmailId();
+        changePassword(email, password);
     }
 
 }

@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +26,7 @@ public class UserController {
      */
     @PutMapping("/change-password")
     public ResponseEntity<Object> changeUserPassword(HttpServletRequest request, @RequestBody ChangePasswordDTO changePasswordDTO){
-        /**
+        /*
          * Accessing the Authentication object in {@link SecurityContextHolder} for getting details of currently logging {@link Users}
          */
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -35,4 +37,10 @@ public class UserController {
         userService.changePassword(emailId,newPassword);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @PostMapping("/reset-password/{token}")
+    public ResponseEntity<HttpStatus> resetUserPassword(@RequestBody ChangePasswordDTO changePasswordDTO, @PathVariable String token) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
