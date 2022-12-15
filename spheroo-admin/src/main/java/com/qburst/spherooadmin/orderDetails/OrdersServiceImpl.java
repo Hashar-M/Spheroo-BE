@@ -56,6 +56,11 @@ public class OrdersServiceImpl implements OrdersService {
         ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
         ordersDisplayDTO.setImagesList(orders.getImagesList());
         ordersDisplayDTO.setAmended(orders.isAmended());
+        String reason = null;
+        if(orders.getReasonId()!=0){
+            reason = rejectReasonRepository.getReferenceById(orders.getReasonId()).getReason();
+        }
+        ordersDisplayDTO.setRejectReason(reason);
         return ordersDisplayDTO;
     }
 
