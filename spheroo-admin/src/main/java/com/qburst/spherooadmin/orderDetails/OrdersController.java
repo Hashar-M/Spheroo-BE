@@ -6,7 +6,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;

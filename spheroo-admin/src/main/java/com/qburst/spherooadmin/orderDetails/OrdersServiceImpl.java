@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -88,11 +89,13 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
+    @Transactional
     public void addOrder(Orders order) {
         ordersRepo.save(order);
     }
 
     @Override
+    @Transactional
     public void assignOrder(AssignedOrder assignedOrder) {
         if(ordersRepo.existsById(assignedOrder.getOrderId())){
             if(supplierRepository.existsById(assignedOrder.getSupplierId())){
@@ -118,6 +121,7 @@ public class OrdersServiceImpl implements OrdersService {
      * @param ordersList the list of services to save into the database
      */
     @Override
+    @Transactional
     public void saveListOfOrders(List<Orders> ordersList) {
         ordersRepo.saveAll(ordersList);
     }
@@ -170,6 +174,7 @@ public class OrdersServiceImpl implements OrdersService {
      * @return
      */
     @Override
+    @Transactional
     public void updateOrdersById(AmendOrderDTO amendOrderDTO) {
         if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
             Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
@@ -217,6 +222,7 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
+    @Transactional
     public void deleteOrderById(long id) {
         boolean isExist= ordersRepo.existsById(id);
         if(isExist){
