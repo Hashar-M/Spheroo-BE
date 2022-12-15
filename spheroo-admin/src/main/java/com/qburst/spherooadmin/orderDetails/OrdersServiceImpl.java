@@ -193,7 +193,7 @@ public class OrdersServiceImpl implements OrdersService {
             }
             //updating date occur before previous date.
             if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())>0 || orders.getDeliveryFromDate().compareTo(amendOrderDTO.getDeliveryFromDate())>0){
-                throw new WrongDataForActionException("updating date occur before previous date.");
+                throw new WrongDataForActionException("updating date occur before original date.");
             }
             //checking 48 hr limit between original dae and new date.
             if(Math.abs(orders.getDeliveryFromDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime())>(48*60*60*1000)||Math.abs(orders.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryToDate().getTime())>(48*60*60*1000)){
@@ -205,7 +205,7 @@ public class OrdersServiceImpl implements OrdersService {
             }
             //checking is the given date before current date.
             if(date.compareTo(amendOrderDTO.getDeliveryToDate())>0){
-                throw new WrongDataForActionException("please enter future date for To date");
+                throw new WrongDataForActionException("please enter coming date for To date");
             }
             //checking time gap between new From date and new To date.
             if(amendOrderDTO.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime()<(24*60*60*1000)){
