@@ -35,12 +35,11 @@ public interface SupplierRepository extends JpaRepository<Supplier,Long> {
 
   /**
    * using jpa projection the result set for the query is mapped to {@link FilterSupplierForAssignDTO} .
-   * @param pageable
-   * @param categoryId for the {@link Supplier}
+   * @param categoryName for the {@link Supplier}
    * @param rating of the {@link Supplier}
    * @param pinCode for the {@link Supplier}
    * @return
    */
-  @Query("select new com.qburst.spherooadmin.supplier.FilterSupplierForAssignDTO(s.supplierId,s.supplierName) from Supplier s where s.categoryId=:categoryId and s.rating=:rating and s.supplierAddress.pinCode=:pinCode")
-  Page<FilterSupplierForAssignDTO> findAllOrderBySupplierName(Pageable pageable,@Param("categoryId") long categoryId,@Param("rating") int rating,@Param("pinCode") int pinCode);
+  @Query("select new com.qburst.spherooadmin.supplier.FilterSupplierForAssignDTO(s.supplierId,s.supplierName) from Supplier s where s.categoryNames=:categoryName and s.rating>=:rating and s.supplierAddress.pinCode like %:pinCode%")
+  List<FilterSupplierForAssignDTO> findAllOrderBySupplierName(@Param("categoryName") String  categoryName,@Param("rating") int rating,@Param("pinCode") String pinCode);
 }

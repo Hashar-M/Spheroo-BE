@@ -20,5 +20,5 @@ public class SupplierGetDTO {
     private String contactNumber;
     private String emailId;
     private String category;
-    private int pinCode;
+    private String pinCode;
 }

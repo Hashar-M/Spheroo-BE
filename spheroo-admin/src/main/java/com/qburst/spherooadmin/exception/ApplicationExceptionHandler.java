@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -112,5 +113,10 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     public ResponseEntity<Object> handleEntityAlreadyExistsException(ServiceNameConstraintException ex){
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.UNPROCESSABLE_ENTITY);
         return new ResponseEntity<>(error,HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex){
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
 }

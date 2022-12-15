@@ -32,8 +32,8 @@ public class SupplierAddressAddDTO {
     @Size(max = 255)
     private String district;
 
-    @NotNull
-    private int pinCode;
+    @Size(max = 6,min = 6,message = "length of pin code should be six")
+    private String pinCode;
 
     @NotNull
     private long buildNo;

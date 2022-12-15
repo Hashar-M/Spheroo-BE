@@ -11,6 +11,5 @@ public class SupplierToAssignDTO {
     private String categoryName;
     private String serviceName;
     private int rating;
-    private int tier;
     private int assignedTickets;
 }
