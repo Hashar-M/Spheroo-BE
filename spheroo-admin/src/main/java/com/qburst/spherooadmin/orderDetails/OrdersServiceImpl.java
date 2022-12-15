@@ -199,9 +199,9 @@ public class OrdersServiceImpl implements OrdersService {
             if(Math.abs(orders.getDeliveryFromDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime())>(48*60*60*1000)||Math.abs(orders.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryToDate().getTime())>(48*60*60*1000)){
                 throw new WrongDataForActionException("48 hr limit exceeded.");
             }
-            //checking any change in to date.
+            //checking any change in any date.
             if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())==0&&orders.getDeliveryFromDate().compareTo(amendOrderDTO.getDeliveryFromDate())==0){
-                throw new WrongDataForActionException("No change in To date.");
+                throw new WrongDataForActionException("No change in any date.");
             }
             //checking is the given date before current date.
             if(date.compareTo(amendOrderDTO.getDeliveryToDate())>0){
