@@ -1,7 +1,6 @@
 package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.signup.ResponseDTO;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,18 +83,21 @@ public class SupplierController {
     }
 
     /**
-     *It gives a {@link org.springframework.data.domain.Page} has a content of {@link List} of {@link FilterSupplierForAssignDTO} based on the filtering parameter.
+     *It gives a {@link MatchedSuppliersGetDTO} has a content of {@link List} of {@link FilterSupplierForAssignDTO} based on the filtering parameter.
      * @param categoryName for {@link Supplier}
      * @param pinCode of {@link Supplier}
      * @param rating for the {@link Supplier }
-     * @return {@link org.springframework.data.domain.Page<FilterSupplierForAssignDTO>}
+     * @return {@link MatchedSuppliersGetDTO}
      */
     @GetMapping("/get-suppliers/filter")
-    public ResponseEntity<List<FilterSupplierForAssignDTO>> supplerFilteringForACategory(
+    public ResponseEntity<MatchedSuppliersGetDTO> supplerFilteringForACategory(
                                               @RequestParam(name = "category-name") String categoryName,
                                               @RequestParam(name = "pin-code",defaultValue = "") String pinCode,
                                               @RequestParam(name = "rating",defaultValue = "1")@Min(value = 1,message = "rating should be greater than or equal one")
                                                                                                @Max(value = 5,message = "rating should be less than or equal five") int rating){
-        return new ResponseEntity<>(supplierService.filteredPageOfSupplierForACategoryId(categoryName,pinCode,rating),HttpStatus.FOUND);
+        List<FilterSupplierForAssignDTO> list=supplierService.filteredListOfSupplierForACategoryId(categoryName,pinCode,rating);
+        MatchedSuppliersGetDTO matchedSuppliersGetDTO=new MatchedSuppliersGetDTO();
+        matchedSuppliersGetDTO.setFilterSupplierForAssignDTOList(list);
+        return new ResponseEntity<>(matchedSuppliersGetDTO,HttpStatus.FOUND);
     }
 }

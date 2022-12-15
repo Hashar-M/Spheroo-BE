@@ -1,7 +1,5 @@
 package com.qburst.spherooadmin.supplier;
 
-import org.springframework.data.domain.Page;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +22,6 @@ public interface SupplierService {
      * @param rating
      * @return
      */
-    public List<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(String categoryName, String pin, int rating);
+    public List<FilterSupplierForAssignDTO> filteredListOfSupplierForACategoryId(String categoryName, String pin, int rating);
 
 }

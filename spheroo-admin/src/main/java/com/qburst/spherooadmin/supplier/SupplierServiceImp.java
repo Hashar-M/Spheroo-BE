@@ -209,7 +209,7 @@ public class SupplierServiceImp implements SupplierService {
      * @param rating
      * @return {@link Page<FilterSupplierForAssignDTO>}
      */
-    public List<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(String categoryName, String pin, int rating){
+    public List<FilterSupplierForAssignDTO> filteredListOfSupplierForACategoryId(String categoryName, String pin, int rating){
 
             List<FilterSupplierForAssignDTO> page = supplierRepository.findAllOrderBySupplierName(categoryName, rating, pin);
             /**
