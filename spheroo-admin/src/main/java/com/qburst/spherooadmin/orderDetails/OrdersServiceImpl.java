@@ -13,8 +13,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -182,6 +186,25 @@ public class OrdersServiceImpl implements OrdersService {
             ordersRepo.save(orders);
         }else {
             throw new EntityNotFoundException("No order exist with given data");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void uploadImage(MultipartFile imageFile,long orderId) {
+        String imagePath=OrdersConstants.IMAGE_FOLDER_PATH+imageFile.getOriginalFilename();
+        try {
+            File file = new File(imagePath);
+            if(!file.exists()){
+                File directory = new File(file.getParent());
+                if(!directory.exists()){
+                    directory.mkdir();
+                }
+                file.createNewFile();
+            }
+            imageFile.transferTo(file);
+        }catch (IOException ex){
+            throw new RuntimeException(ex.getMessage());
         }
     }
 

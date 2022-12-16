@@ -280,6 +280,11 @@ public class OrdersController {
         ordersService.updateOrdersById(amendOrderDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @PutMapping("/upload-image")
+    public ResponseEntity<?> uploadImage(@RequestBody MultipartFile imageFile, @RequestParam("order-id") long orderId){
+        ordersService.uploadImage(imageFile,orderId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     /**
      * function for deleting order data by order id.
