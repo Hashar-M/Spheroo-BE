@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 /**
@@ -50,5 +51,5 @@ public class PasswordResetToken {
      * The expiration date for a token, after the expiration date, the token will no longer be valid.
      */
     @Column(name = "expiry_date", nullable = false)
-    private Date expiryDate;
+    private OffsetDateTime expiryDate;
 }

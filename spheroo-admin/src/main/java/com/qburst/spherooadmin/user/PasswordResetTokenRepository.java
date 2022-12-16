@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
     Users findUsersByToken(String token);
+    PasswordResetToken findPasswordResetTokenByToken(String token);
 }
