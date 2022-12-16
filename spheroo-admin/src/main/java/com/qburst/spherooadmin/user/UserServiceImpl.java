@@ -1,5 +1,7 @@
 package com.qburst.spherooadmin.user;
 
+import com.qburst.spherooadmin.constants.EmailConstants;
+import com.qburst.spherooadmin.email.EmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +21,7 @@ public class UserServiceImpl implements UserService{
     private UsersRepository usersRepository;
     private PasswordEncoder passwordEncoder;
     private PasswordResetTokenRepository passwordResetTokenRepository;
+    private EmailService emailService;
 
     /**
      * {@code public boolean isEmailAlreadyInUse(String email)}
@@ -61,18 +64,24 @@ public class UserServiceImpl implements UserService{
     public void generateResetPasswordRequest(String emailId) {
         Users user = usersRepository.findByEmailId(emailId);
         if (user != null) {
-            OffsetDateTime expirytime = OffsetDateTime.now();
+            OffsetDateTime expirytime = OffsetDateTime.now().plusHours(EmailConstants.EXPIRY_TIME);
             PasswordResetToken passwordResetToken = new PasswordResetToken();
             passwordResetToken.setToken(UUID.randomUUID().toString());
             passwordResetToken.setUser(user);
+            passwordResetToken.setExpiryDate(expirytime);
             passwordResetTokenRepository.save(passwordResetToken);
+            emailService.sendForgotPasswordMail(emailId, "Test", passwordResetToken.getToken());
         }
     }
 
     @Override
     public void resetPassword(String token, String password) {
-        String email = passwordResetTokenRepository.findUsersByToken(token).getEmailId();
-        changePassword(email, password);
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findPasswordResetTokenByToken(token);
+        OffsetDateTime currentTime = OffsetDateTime.now();
+        if (!currentTime.isAfter(passwordResetToken.getExpiryDate())) {
+            String email = passwordResetTokenRepository.findUsersByToken(token).getEmailId();
+            changePassword(email, password);
+        }
     }
 
 }
