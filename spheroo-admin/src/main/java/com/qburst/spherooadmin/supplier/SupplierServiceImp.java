@@ -47,7 +47,7 @@ public class SupplierServiceImp implements SupplierService {
      */
     @Override
     @Transactional
-    public void addSupplier(SupplierAddDTO supplierAddDTO) throws CategoryNotFoundException{
+    public void addSupplier(SupplierAddDTO supplierAddDTO){
         /**
          * Creates a new supplier address from the {@link SupplierAddressAddDTO} in {@link SupplierAddDTO}
          */
