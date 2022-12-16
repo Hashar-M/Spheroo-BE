@@ -278,7 +278,7 @@ public class OrdersController {
     @PutMapping("/amend-order")
     public ResponseEntity<String> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
         ordersService.updateOrdersById(amendOrderDTO);
-        return ResponseEntity.status(HttpStatus.OK).body("Amend completed");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

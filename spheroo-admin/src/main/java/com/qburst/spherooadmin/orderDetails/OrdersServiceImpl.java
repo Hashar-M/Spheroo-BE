@@ -178,7 +178,7 @@ public class OrdersServiceImpl implements OrdersService {
             }
             orders.setDeliveryFromDate(amendOrderDTO.getDeliveryFromDate());
             orders.setDeliveryToDate(amendOrderDTO.getDeliveryToDate());
-            orders.setAmended(true);
+//            orders.setAmended(true);
             ordersRepo.save(orders);
         }else {
             throw new EntityNotFoundException("No order exist with given data");
