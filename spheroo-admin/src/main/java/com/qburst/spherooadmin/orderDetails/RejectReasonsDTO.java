@@ -11,6 +11,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListOfRejectReasonDTO {
+public class RejectReasonsDTO {
     private List<RejectReason> rejectReasonList;
 }

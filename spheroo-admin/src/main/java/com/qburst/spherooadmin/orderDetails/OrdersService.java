@@ -14,7 +14,7 @@ public interface OrdersService {
     OrderStatisticsDTO getOrdersStatistics();
     Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
     void assignOrder(AssignedOrder assignedOrder);
-    ListOfRejectReasonDTO getRejectReasons();
+    RejectReasonsDTO getRejectReasons();
     void rejectOrder(long orderId, long reasonId);
 
     /**

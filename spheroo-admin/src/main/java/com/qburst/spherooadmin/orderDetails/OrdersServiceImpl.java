@@ -83,8 +83,8 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public ListOfRejectReasonDTO getRejectReasons() {
-        return new ListOfRejectReasonDTO(rejectReasonRepository.findAll());
+    public RejectReasonsDTO getRejectReasons() {
+        return new RejectReasonsDTO(rejectReasonRepository.findAll());
     }
 
     @Override

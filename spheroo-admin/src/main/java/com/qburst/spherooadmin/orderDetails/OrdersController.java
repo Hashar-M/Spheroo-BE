@@ -123,7 +123,7 @@ public class OrdersController {
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
     }
     @GetMapping("/reject-reasons")
-    public ResponseEntity<ListOfRejectReasonDTO> getRejectReasons(){
+    public ResponseEntity<RejectReasonsDTO> getRejectReasons(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getRejectReasons());
     }
 
