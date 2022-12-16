@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,5 +101,15 @@ public class SupplierController {
         MatchedSuppliersGetDTO matchedSuppliersGetDTO=new MatchedSuppliersGetDTO();
         matchedSuppliersGetDTO.setFilterSupplierForAssignDTOList(list);
         return new ResponseEntity<>(matchedSuppliersGetDTO,HttpStatus.OK);
+    }
+
+    @PutMapping("/visibility")
+    public ResponseEntity<ResponseDTO> manageVisibilityOfSupplier(@PositiveOrZero @RequestParam(name = "supplier-id") long supplierId,
+                                                                  @RequestParam(name = "enable") boolean action){
+        ResponseDTO responseDTO=supplierService.alterVisibilityOfSupplier(supplierId,action);
+        if(responseDTO.isSuccess()){
+            return new ResponseEntity<>(responseDTO,HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(responseDTO,HttpStatus.BAD_REQUEST);
     }
 }

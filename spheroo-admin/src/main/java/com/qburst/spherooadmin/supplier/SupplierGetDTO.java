@@ -21,4 +21,5 @@ public class SupplierGetDTO {
     private String emailId;
     private String category;
     private String pinCode;
+    private boolean visibility;
 }

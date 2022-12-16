@@ -71,4 +71,7 @@ public class Supplier {
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "supplier",fetch = FetchType.EAGER)
     private List<SupplierUser> supplierUsers;
+
+    @Column(name ="visibility",columnDefinition = "boolean default true",nullable = false)
+    private boolean visibility=true;
   }

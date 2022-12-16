@@ -1,5 +1,7 @@
 package com.qburst.spherooadmin.supplier;
 
+import com.qburst.spherooadmin.signup.ResponseDTO;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,4 +26,5 @@ public interface SupplierService {
      */
     public List<FilterSupplierForAssignDTO> filteredListOfSupplierForACategoryId(String categoryName, String pin, int rating);
 
+    public ResponseDTO alterVisibilityOfSupplier(long supplierId, boolean action);
 }

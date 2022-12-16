@@ -2,10 +2,12 @@ package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.exception.CategoryNotFoundException;
+import com.qburst.spherooadmin.exception.SupplierNotFoundException;
 import com.qburst.spherooadmin.orderDetails.AssignedOrderRepository;
 import com.qburst.spherooadmin.orderDetails.Orders;
 import com.qburst.spherooadmin.orderDetails.OrdersRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
+import com.qburst.spherooadmin.signup.ResponseDTO;
 import com.qburst.spherooadmin.supplieruser.SupplierUser;
 import com.qburst.spherooadmin.supplieruser.SupplierUserType;
 import com.qburst.spherooadmin.supplieruser.SupplierUsersAddDTO;
@@ -119,6 +121,7 @@ public class SupplierServiceImp implements SupplierService {
                 supplierGetDTO.setSupplierName(supplier.getSupplierName());
                 supplierGetDTO.setCategory(supplier.getCategoryNames());
                 supplierGetDTO.setPinCode(supplier.getSupplierAddress().getPinCode());
+                supplierGetDTO.setVisibility(supplier.isVisibility());
                 supplier.getSupplierUsers().forEach(supplierUser -> {
                     if (supplierUser.getSupplierUserType() == SupplierUserType.MANAGER) {
                         supplierGetDTO.setContactName(supplierUser.getName());
@@ -224,4 +227,30 @@ public class SupplierServiceImp implements SupplierService {
             });
             return page;
         }
+
+    @Override
+    public ResponseDTO alterVisibilityOfSupplier(long supplierId, boolean action) {
+        ResponseDTO responseDTO=new ResponseDTO();
+        if(!supplierRepository.existsById(supplierId)){
+            throw new  SupplierNotFoundException("SUPPLIER_NOT_FOUND");
+        }
+        else if(supplierRepository.findVisibilityById(supplierId)==action){
+            responseDTO.setMessage("no modification needed, already in the requested state");
+            responseDTO.setSuccess(false);
+            return responseDTO;
+        }
+        else if(supplierRepository.findVisibilityById(supplierId)==!action){
+            supplierRepository.updateVisibilityById(action,supplierId);
+            if(supplierRepository.findVisibilityById(supplierId)==action){
+                responseDTO.setSuccess(true);
+                responseDTO.setMessage("updated");
+                return responseDTO;
+            }
+            responseDTO.setMessage("could not update");
+            responseDTO.setSuccess(false);
+            return responseDTO;
+        }
+        responseDTO.setMessage("something went wrong");
+        return responseDTO;
+    }
 }
