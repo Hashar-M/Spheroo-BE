@@ -18,6 +18,7 @@ import javax.validation.ConstraintViolationException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -118,5 +119,10 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex){
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Object> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(Collections.singletonList(ex.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

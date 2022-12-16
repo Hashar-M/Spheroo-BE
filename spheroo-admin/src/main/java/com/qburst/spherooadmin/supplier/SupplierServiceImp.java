@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
+import com.qburst.spherooadmin.exception.CategoryNotFoundException;
 import com.qburst.spherooadmin.orderDetails.AssignedOrderRepository;
 import com.qburst.spherooadmin.orderDetails.Orders;
 import com.qburst.spherooadmin.orderDetails.OrdersRepository;
@@ -21,6 +22,8 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.qburst.spherooadmin.constants.CategoryConstants.CATEGORY_NOT_FOUND;
 
 /**
  * {@inheritDoc}
@@ -44,7 +47,7 @@ public class SupplierServiceImp implements SupplierService {
      */
     @Override
     @Transactional
-    public void addSupplier(SupplierAddDTO supplierAddDTO) throws EntityNotFoundException{
+    public void addSupplier(SupplierAddDTO supplierAddDTO) throws CategoryNotFoundException{
         /**
          * Creates a new supplier address from the {@link SupplierAddressAddDTO} in {@link SupplierAddDTO}
          */
@@ -92,10 +95,10 @@ public class SupplierServiceImp implements SupplierService {
             supplierRepository.save(supplier);
         }
         /**
-         * {@code throw new EntityNotFoundException();} is thrown while no category{@link com.qburst.spherooadmin.category.Category} exists under which a new supplier is need to save.
+         * {@code throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);} is thrown while no category{@link com.qburst.spherooadmin.category.Category} exists under which a new supplier is need to save.
          */
         else{
-             throw new EntityNotFoundException();
+             throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
         }
     }
 
@@ -187,7 +190,7 @@ public class SupplierServiceImp implements SupplierService {
         Orders orders=ordersRepository.getReferenceById(orderId);
         long categoryId=orders.getCategoryId();
         String zipcode=orders.getZipCode();
-        List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,Integer.parseInt(zipcode));
+        List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,zipcode);
         List<SupplierToAssignDTO> supplierToAssignDTOList = new ArrayList<>();
         for (Supplier supplier : supplierList) {
             SupplierToAssignDTO supplierToAssignDTO = new SupplierToAssignDTO();
