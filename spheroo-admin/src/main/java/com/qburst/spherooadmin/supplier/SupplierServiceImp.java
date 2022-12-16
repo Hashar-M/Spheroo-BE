@@ -43,7 +43,7 @@ public class SupplierServiceImp implements SupplierService {
     /**
      * Method is used for persist a new supplier.
      * @param supplierAddDTO
-     * @throws EntityNotFoundException
+     * @throws CategoryNotFoundException
      */
     @Override
     @Transactional

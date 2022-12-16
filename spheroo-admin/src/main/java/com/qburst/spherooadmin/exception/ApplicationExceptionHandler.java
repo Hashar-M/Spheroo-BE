@@ -120,6 +120,12 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
+
+    /**
+     * Handle the exception {@link CategoryNotFoundException}
+     * @param ex {@link CategoryNotFoundException}
+     * @return {@link ErrorResponse}
+     */
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<Object> handleCategoryNotFoundException(CategoryNotFoundException ex) {
         ErrorResponse error = new ErrorResponse(Collections.singletonList(ex.getMessage()), HttpStatus.NOT_FOUND);
