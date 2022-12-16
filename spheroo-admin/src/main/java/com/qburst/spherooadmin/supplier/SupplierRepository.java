@@ -31,7 +31,7 @@ public interface SupplierRepository extends JpaRepository<Supplier,Long> {
   @Query(nativeQuery = true,value = "SELECT supplier_id FROM supplier WHERE supplier_name=?1")
   long getSupplierIdFromSupplierName(String supplierName);
   @Query(value = "SELECT * FROM supplier WHERE category_id =?1 and pin_code=?2",nativeQuery = true)
-  List<Supplier> findByCategoryId(long categoryId,int pinCode);
+  List<Supplier> findByCategoryId(long categoryId,String pinCode);
 
   /**
    * using jpa projection the result set for the query is mapped to {@link FilterSupplierForAssignDTO} .
