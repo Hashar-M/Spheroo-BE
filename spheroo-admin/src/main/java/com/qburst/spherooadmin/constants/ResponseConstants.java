@@ -9,4 +9,5 @@ public class ResponseConstants {
     public static final String FILE_NOT_NOT_FOUND_EXCEPTION_RESPONSE = "File not found";
     /**{@value #SERVICE_NAME_ALREADY_IN_USE} value of SERVICE_NAME_ALREADY_IN_USE*/
     public static final String SERVICE_NAME_ALREADY_IN_USE="service name already in use.";
+    public static final String PASSWORD_RESET_TOKEN_EXPIRED = "Your password reset request has expired.";
 }
