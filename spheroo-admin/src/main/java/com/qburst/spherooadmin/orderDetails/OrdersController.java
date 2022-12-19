@@ -280,8 +280,8 @@ public class OrdersController {
         ordersService.updateOrdersById(amendOrderDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @PutMapping("/upload-image")
-    public ResponseEntity<?> uploadImage(@RequestBody MultipartFile imageFile, @RequestParam("order-id") long orderId){
+    @PostMapping("/upload-image")
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile imageFile, @RequestParam("order-id") long orderId){
         ordersService.uploadImage(imageFile,orderId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
