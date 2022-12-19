@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
+import com.qburst.spherooadmin.exception.CategoryNotFoundException;
 import com.qburst.spherooadmin.orderDetails.AssignedOrderRepository;
 import com.qburst.spherooadmin.orderDetails.Orders;
 import com.qburst.spherooadmin.orderDetails.OrdersRepository;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.qburst.spherooadmin.constants.CategoryConstants.CATEGORY_NOT_FOUND;
+
 /**
  * {@inheritDoc}
  * Service layer provides services related to supplier model.
@@ -40,11 +43,11 @@ public class SupplierServiceImp implements SupplierService {
     /**
      * Method is used for persist a new supplier.
      * @param supplierAddDTO
-     * @throws EntityNotFoundException
+     * @throws CategoryNotFoundException
      */
     @Override
     @Transactional
-    public void addSupplier(SupplierAddDTO supplierAddDTO) throws EntityNotFoundException{
+    public void addSupplier(SupplierAddDTO supplierAddDTO){
         /**
          * Creates a new supplier address from the {@link SupplierAddressAddDTO} in {@link SupplierAddDTO}
          */
@@ -77,7 +80,6 @@ public class SupplierServiceImp implements SupplierService {
         Supplier supplier=new Supplier();
 
         supplier.setSupplierName(supplierAddDTO.getSupplierName());
-        supplier.setTier(supplierAddDTO.getTier());
         supplier.setRating(supplierAddDTO.getRating());
         supplier.setCategoryNames(supplierAddDTO.getCategoryNames());
         supplier.setSupplierAddress(supplierAddress);
@@ -93,10 +95,10 @@ public class SupplierServiceImp implements SupplierService {
             supplierRepository.save(supplier);
         }
         /**
-         * {@code throw new EntityNotFoundException();} is thrown while no category{@link com.qburst.spherooadmin.category.Category} exists under which a new supplier is need to save.
+         * {@code throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);} is thrown while no category{@link com.qburst.spherooadmin.category.Category} exists under which a new supplier is need to save.
          */
         else{
-             throw new EntityNotFoundException();
+             throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
         }
     }
 
@@ -188,7 +190,7 @@ public class SupplierServiceImp implements SupplierService {
         Orders orders=ordersRepository.getReferenceById(orderId);
         long categoryId=orders.getCategoryId();
         String zipcode=orders.getZipCode();
-        List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,Integer.parseInt(zipcode));
+        List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,zipcode);
         List<SupplierToAssignDTO> supplierToAssignDTOList = new ArrayList<>();
         for (Supplier supplier : supplierList) {
             SupplierToAssignDTO supplierToAssignDTO = new SupplierToAssignDTO();
@@ -196,7 +198,6 @@ public class SupplierServiceImp implements SupplierService {
             supplierToAssignDTO.setSupplierName(supplier.getSupplierName());
             supplierToAssignDTO.setCategoryName(supplier.getCategoryNames());
             supplierToAssignDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
-            supplierToAssignDTO.setTier(supplier.getTier());
             supplierToAssignDTO.setRating(supplier.getRating());
             supplierToAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(supplier.getSupplierId()));
             supplierToAssignDTOList.add(supplierToAssignDTO);
@@ -206,33 +207,21 @@ public class SupplierServiceImp implements SupplierService {
 
     /**
      * The method map the {@link Supplier} data  for the below filtering parameter into {@link FilterSupplierForAssignDTO}.
-     * @param categoryId
+     * @param categoryName
      * @param pin
      * @param rating
-     * @param pageNumber
-     * @param pageSize
      * @return {@link Page<FilterSupplierForAssignDTO>}
      */
-    public Page<FilterSupplierForAssignDTO> filteredPageOfSupplierForACategoryId(long categoryId, int pin, int rating, int pageNumber, int pageSize){
-        /**sorting is for {@link Supplier} name in ascending order.*/
-        Sort sort=Sort.by("supplierName").ascending();
-        if(pageNumber<0 || pageSize<0){
-            throw new IllegalArgumentException();
-        }
-        else {
-            Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+    public List<FilterSupplierForAssignDTO> filteredListOfSupplierForACategoryId(String categoryName, String pin, int rating){
 
-            Page<FilterSupplierForAssignDTO> page = supplierRepository.findAllOrderBySupplierName(pageable, categoryId, rating, pin);
+            List<FilterSupplierForAssignDTO> page = supplierRepository.findAllOrderBySupplierName(categoryName, rating, pin);
             /**
              * value for assigned orders for each {@link Supplier} is taken from {@link AssignedOrderRepository}
              * and added to {@link FilterSupplierForAssignDTO}.
              */
-            page.get().forEach(filterSupplierForAssignDTO -> {
+            page.forEach(filterSupplierForAssignDTO -> {
                 filterSupplierForAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(filterSupplierForAssignDTO.getSupplierId()));
             });
             return page;
         }
-    }
-
-
 }

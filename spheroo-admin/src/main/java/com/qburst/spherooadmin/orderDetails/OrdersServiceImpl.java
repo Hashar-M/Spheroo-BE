@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class OrdersServiceImpl implements OrdersService {
     private AssignedOrderRepository assignedOrderRepository;
     private SupplierRepository supplierRepository;
     private IssueImagesRepository issueImagesRepository;
+    private RejectReasonRepository rejectReasonRepository;
 
     @Override
     public OrdersDisplayDTO getOrderById(long id) {
@@ -53,15 +55,46 @@ public class OrdersServiceImpl implements OrdersService {
         ordersDisplayDTO.setAssignedSupplier((supplier != null)? supplier: "Not assigned");
         ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
         ordersDisplayDTO.setImagesList(orders.getImagesList());
+        ordersDisplayDTO.setAmended(orders.isAmended());
+        String reason = null;
+        if(orders.getReasonId()!=0){
+            reason = rejectReasonRepository.getReferenceById(orders.getReasonId()).getReason();
+        }
+        ordersDisplayDTO.setRejectReason(reason);
         return ordersDisplayDTO;
     }
 
     @Override
+    @Transactional
+    public void rejectOrder(long orderId, long reasonId) {
+        if(!ordersRepo.existsById(orderId)){
+            throw new EntityNotFoundException("No order exist with given data");
+        }
+        if(!rejectReasonRepository.existsById(reasonId)){
+            throw new EntityNotFoundException("No reason exist with given data");
+        }
+        Orders orders = ordersRepo.getReferenceById(orderId);
+        if(!orders.getOrderStatus().equalsIgnoreCase(OrderStatus.UNASSIGNED.toString())){
+            throw new WrongDataForActionException("Only unassigned orders can reject");
+        }
+        orders.setOrderStatus(OrderStatus.REJECTED.toString());
+        orders.setReasonId(reasonId);
+        ordersRepo.save(orders);
+    }
+
+    @Override
+    public RejectReasonsDTO getRejectReasons() {
+        return new RejectReasonsDTO(rejectReasonRepository.findAll());
+    }
+
+    @Override
+    @Transactional
     public void addOrder(Orders order) {
         ordersRepo.save(order);
     }
 
     @Override
+    @Transactional
     public void assignOrder(AssignedOrder assignedOrder) {
         if(ordersRepo.existsById(assignedOrder.getOrderId())){
             if(supplierRepository.existsById(assignedOrder.getSupplierId())){
@@ -87,6 +120,7 @@ public class OrdersServiceImpl implements OrdersService {
      * @param ordersList the list of services to save into the database
      */
     @Override
+    @Transactional
     public void saveListOfOrders(List<Orders> ordersList) {
         ordersRepo.saveAll(ordersList);
     }
@@ -139,6 +173,7 @@ public class OrdersServiceImpl implements OrdersService {
      * @return
      */
     @Override
+    @Transactional
     public void updateOrdersById(AmendOrderDTO amendOrderDTO) {
         if(ordersRepo.existsById(amendOrderDTO.getOrderId())){
             Orders orders = ordersRepo.getReferenceById(amendOrderDTO.getOrderId());
@@ -158,19 +193,19 @@ public class OrdersServiceImpl implements OrdersService {
             }
             //updating date occur before previous date.
             if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())>0 || orders.getDeliveryFromDate().compareTo(amendOrderDTO.getDeliveryFromDate())>0){
-                throw new WrongDataForActionException("updating date occur before previous date.");
+                throw new WrongDataForActionException("updating date occur before original date.");
             }
             //checking 48 hr limit between original dae and new date.
             if(Math.abs(orders.getDeliveryFromDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime())>(48*60*60*1000)||Math.abs(orders.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryToDate().getTime())>(48*60*60*1000)){
                 throw new WrongDataForActionException("48 hr limit exceeded.");
             }
-            //checking any change in to date.
-            if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())==0){
-                throw new WrongDataForActionException("No change in To date.");
+            //checking any change in any date.
+            if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())==0&&orders.getDeliveryFromDate().compareTo(amendOrderDTO.getDeliveryFromDate())==0){
+                throw new WrongDataForActionException("No change in any date.");
             }
             //checking is the given date before current date.
             if(date.compareTo(amendOrderDTO.getDeliveryToDate())>0){
-                throw new WrongDataForActionException("please enter future date for To date");
+                throw new WrongDataForActionException("please enter coming date for To date");
             }
             //checking time gap between new From date and new To date.
             if(amendOrderDTO.getDeliveryToDate().getTime()-amendOrderDTO.getDeliveryFromDate().getTime()<(24*60*60*1000)){
@@ -186,6 +221,7 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
+    @Transactional
     public void deleteOrderById(long id) {
         boolean isExist= ordersRepo.existsById(id);
         if(isExist){

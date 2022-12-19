@@ -31,16 +31,15 @@ public interface SupplierRepository extends JpaRepository<Supplier,Long> {
   @Query(nativeQuery = true,value = "SELECT supplier_id FROM supplier WHERE supplier_name=?1")
   long getSupplierIdFromSupplierName(String supplierName);
   @Query(value = "SELECT * FROM supplier WHERE category_id =?1 and pin_code=?2",nativeQuery = true)
-  List<Supplier> findByCategoryId(long categoryId,int pinCode);
+  List<Supplier> findByCategoryId(long categoryId,String pinCode);
 
   /**
    * using jpa projection the result set for the query is mapped to {@link FilterSupplierForAssignDTO} .
-   * @param pageable
-   * @param categoryId for the {@link Supplier}
+   * @param categoryName for the {@link Supplier}
    * @param rating of the {@link Supplier}
    * @param pinCode for the {@link Supplier}
    * @return
    */
-  @Query("select new com.qburst.spherooadmin.supplier.FilterSupplierForAssignDTO(s.supplierId,s.supplierName) from Supplier s where s.categoryId=:categoryId and s.rating=:rating and s.supplierAddress.pinCode=:pinCode")
-  Page<FilterSupplierForAssignDTO> findAllOrderBySupplierName(Pageable pageable,@Param("categoryId") long categoryId,@Param("rating") int rating,@Param("pinCode") int pinCode);
+  @Query("select new com.qburst.spherooadmin.supplier.FilterSupplierForAssignDTO(s.supplierId,s.supplierName) from Supplier s where s.categoryNames=:categoryName and s.rating>=:rating and s.supplierAddress.pinCode like %:pinCode%")
+  List<FilterSupplierForAssignDTO> findAllOrderBySupplierName(@Param("categoryName") String  categoryName,@Param("rating") int rating,@Param("pinCode") String pinCode);
 }

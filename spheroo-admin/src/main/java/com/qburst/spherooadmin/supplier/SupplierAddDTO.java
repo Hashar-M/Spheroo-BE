@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -22,8 +24,8 @@ public class SupplierAddDTO {
     @Size(min = 6,max = 30,message = "size should be in range 6-30")
     private String supplierName;
 
-    private int tier;
-
+    @Min(value = 1,message = "rating should be greater than or equal one")
+    @Max(value = 5,message = "rating should be less than or equal five")
     private int rating;
 
     @NotNull

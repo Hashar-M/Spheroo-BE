@@ -17,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.CATEGORY_ID;
@@ -46,16 +48,15 @@ public class Supplier {
     @Column(name = NAME,nullable = false,unique = true)
     private String supplierName;
 
-    @Column(name = TIER)
-    private int tier;
-
+    @Min(value = 1,message = "rating should be greater than or equal one")
+    @Max(value = 5,message = "rating should be less than or equal five")
     @Column(name = RATING)
     private int rating;
+
     /**
      * Each supplier class has an address, address is embedded in supplier, so it creates additional columns for address attributes in supplier table.
      * So no need to make {@link SupplierAddress} as an entity.
      */
-
     @Embedded
     private SupplierAddress supplierAddress;
 
