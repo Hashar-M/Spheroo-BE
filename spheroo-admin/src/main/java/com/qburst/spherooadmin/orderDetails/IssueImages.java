@@ -2,6 +2,7 @@ package com.qburst.spherooadmin.orderDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "issue_attached_images")
+@Builder
 public class IssueImages {
 
     @Id

@@ -192,17 +192,22 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     @Transactional
     public void uploadImage(MultipartFile imageFile,long orderId) {
-        String imagePath=OrdersConstants.IMAGE_FOLDER_PATH+imageFile.getOriginalFilename();
+        String imagePath=OrdersConstants.IMAGE_FOLDER_PATH+"order_"+orderId+"/"+imageFile.getOriginalFilename();
+        if(!ordersRepo.existsById(orderId)){
+            throw new WrongDataForActionException("No order exist with given data");
+        }
         try {
-//            File file = new File(imagePath);
-//            if(!file.exists()){
-//                File directory = new File(file.getParent());
-//                if(!directory.exists()){
-//                    directory.mkdir();
-//                }
-//                file.createNewFile();
-//            }
-            imageFile.transferTo(new File(imagePath));
+            File file = new File(imagePath);
+            if(!file.exists()){
+                File directory = new File(file.getParent());
+                if(!directory.exists()){
+                    directory.mkdir();
+                }
+                file.createNewFile();
+            }
+            Orders orders =ordersRepo.getReferenceById(orderId);
+            orders.getImagesList().add(IssueImages.builder().issueImages(imagePath).build());
+            ordersRepo.save(orders);
         }catch (IOException ex){
             throw new RuntimeException(ex.getMessage());
         }
