@@ -39,7 +39,6 @@ import static com.qburst.spherooadmin.constants.SupplierModelConstants.TABLE_NAM
 @Getter
 @Setter
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@ToString
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
