@@ -42,7 +42,7 @@ public interface SupplierRepository extends JpaRepository<Supplier,Long> {
    * @param pinCode for the {@link Supplier}
    * @return
    */
-  @Query("select new com.qburst.spherooadmin.supplier.FilterSupplierForAssignDTO(s.supplierId,s.supplierName) from Supplier s where s.categoryNames=:categoryName and s.rating>=:rating and s.supplierAddress.pinCode like %:pinCode% and s.visibility=true")
+  @Query("select new com.qburst.spherooadmin.supplier.FilterSupplierForAssignDTO(s.supplierId,s.supplierName,s.rating) from Supplier s where s.categoryNames=:categoryName and s.rating>=:rating and s.supplierAddress.pinCode like %:pinCode% and s.visibility=true")
   List<FilterSupplierForAssignDTO> findAllOrderBySupplierName(@Param("categoryName") String  categoryName,@Param("rating") int rating,@Param("pinCode") String pinCode);
 
   @Query(value = "select s.visibility from Supplier s where s.supplierId=:supplierid")
