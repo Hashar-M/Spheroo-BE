@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,7 +28,6 @@ import static com.qburst.spherooadmin.constants.SupplierModelConstants.NAME;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.RATING;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_ID;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.TABLE_NAME;
-import static com.qburst.spherooadmin.constants.SupplierModelConstants.TIER;
 
 /**
  * model for supplier.
@@ -71,4 +71,10 @@ public class Supplier {
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "supplier",fetch = FetchType.EAGER)
     private List<SupplierUser> supplierUsers;
+
+    /**
+     * true value indicate the supplier is enabled and false value for disabled supplier.
+     */
+    @Column(name ="visibility",columnDefinition = "boolean default true",nullable = false)
+    private boolean visibility=true;
   }

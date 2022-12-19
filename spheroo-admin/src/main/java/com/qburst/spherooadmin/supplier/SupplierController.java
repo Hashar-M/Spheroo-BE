@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +47,7 @@ public class SupplierController {
 
     /**
      * function for getting supplier details as default.
+     * {@link Supplier} with visibility value true will be present in the list(Only enabled suppliers).
      * @param orderId accepts order id
      * @return returns list of supplier details related to given categories.
      */
@@ -84,6 +86,7 @@ public class SupplierController {
 
     /**
      *It gives a {@link MatchedSuppliersGetDTO} has a content of {@link List} of {@link FilterSupplierForAssignDTO} based on the filtering parameter.
+     * {@link Supplier} with visibility value true will be present in the list(Only enabled suppliers).
      * @param categoryName for {@link Supplier}
      * @param pinCode of {@link Supplier}
      * @param rating for the {@link Supplier }
@@ -99,5 +102,22 @@ public class SupplierController {
         MatchedSuppliersGetDTO matchedSuppliersGetDTO=new MatchedSuppliersGetDTO();
         matchedSuppliersGetDTO.setFilterSupplierForAssignDTOList(list);
         return new ResponseEntity<>(matchedSuppliersGetDTO,HttpStatus.OK);
+    }
+
+    /**
+     * method for enable and disable a {@link Supplier}.
+     * @param supplierId id value of supplier
+     * @param action, a boolean value.A true value is for enabling a {@link Supplier} and a false boolean for disabling the supplier.
+     * @return HTTP status CREATED for successful update of visibility of supplier.
+     */
+
+    @PutMapping("/visibility")
+    public ResponseEntity<ResponseDTO> manageVisibilityOfSupplier(@PositiveOrZero @RequestParam(name = "supplier-id") long supplierId,
+                                                                  @RequestParam(name = "enable") boolean action){
+        ResponseDTO responseDTO=supplierService.alterVisibilityOfSupplier(supplierId,action);
+        if(responseDTO.isSuccess()){
+            return new ResponseEntity<>(responseDTO,HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(responseDTO,HttpStatus.OK);
     }
 }
