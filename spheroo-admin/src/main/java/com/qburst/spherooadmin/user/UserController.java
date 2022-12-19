@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,8 +39,26 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    /**
+     * Generate a password reset request for the user with the corresponding emailId
+     * @param emailId email ID of the user to generate the request for
+     * @return The http status OK
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<HttpStatus> forgotPasswordRequest(@RequestParam String emailId) {
+        userService.generateResetPasswordRequest(emailId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Reset the password for the user with the corresponding ID
+     * @param changePasswordDTO the change password DTO which has the password field
+     * @param token The reset password token
+     * @return The Http Status OK
+     */
     @PostMapping("/reset-password/{token}")
     public ResponseEntity<HttpStatus> resetUserPassword(@RequestBody ChangePasswordDTO changePasswordDTO, @PathVariable String token) {
+        userService.resetPassword(token, changePasswordDTO.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

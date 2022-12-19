@@ -15,7 +15,16 @@ public interface UserService {
      */
     void changePassword(String emailId,String password);
 
+    /**
+     * Generate a password reset request for a user and sends a password reset email to them
+     * @param emailId Email of the user to send the request to
+     */
     void generateResetPasswordRequest(String emailId);
 
+    /**
+     * Reset the password for the user according to the reset token provided
+     * @param token The password reset token
+     * @param password The new password of the user
+     */
     void resetPassword(String token, String password);
 }
