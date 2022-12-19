@@ -26,6 +26,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.qburst.spherooadmin.constants.CategoryConstants.CATEGORY_NOT_FOUND;
+import static com.qburst.spherooadmin.constants.SpherooConstants.SOMETHING_WENT_WRONG;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.ALREADY_IN_REQUESTED_STATE;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_NOT_FOUND;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_VISIBILITY_UPDATION_FAILURE;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_VISIBILITY_UPDATION_MESSAGE;
 
 /**
  * {@inheritDoc}
@@ -149,7 +154,6 @@ public class SupplierServiceImp implements SupplierService {
         if(supplierRepository.existsBySupplierName(supplierName)){
             long supplierId=supplierRepository.getSupplierIdFromSupplierName(supplierName);
             supplierRepository.deleteById(supplierId);
-            //supplierRepository.deleteBySupplierName(supplierName);
             return true;
         }
         return false;
@@ -228,14 +232,20 @@ public class SupplierServiceImp implements SupplierService {
             return page;
         }
 
+    /**
+     * method for enable and disable a {@link Supplier}.
+     * @param supplierId id value of supplier
+     * @param action
+     * @return {@link ResponseDTO} with true boolean value only for successful update.
+     */
     @Override
     public ResponseDTO alterVisibilityOfSupplier(long supplierId, boolean action) {
         ResponseDTO responseDTO=new ResponseDTO();
         if(!supplierRepository.existsById(supplierId)){
-            throw new  SupplierNotFoundException("SUPPLIER_NOT_FOUND");
+            throw new  SupplierNotFoundException(SUPPLIER_NOT_FOUND);
         }
         else if(supplierRepository.findVisibilityById(supplierId)==action){
-            responseDTO.setMessage("no modification needed, already in the requested state");
+            responseDTO.setMessage(ALREADY_IN_REQUESTED_STATE);
             responseDTO.setSuccess(false);
             return responseDTO;
         }
@@ -243,14 +253,14 @@ public class SupplierServiceImp implements SupplierService {
             supplierRepository.updateVisibilityById(action,supplierId);
             if(supplierRepository.findVisibilityById(supplierId)==action){
                 responseDTO.setSuccess(true);
-                responseDTO.setMessage("updated");
+                responseDTO.setMessage(SUPPLIER_VISIBILITY_UPDATION_MESSAGE);
                 return responseDTO;
             }
-            responseDTO.setMessage("could not update");
+            responseDTO.setMessage(SUPPLIER_VISIBILITY_UPDATION_FAILURE);
             responseDTO.setSuccess(false);
             return responseDTO;
         }
-        responseDTO.setMessage("something went wrong");
+        responseDTO.setMessage(SOMETHING_WENT_WRONG);
         return responseDTO;
     }
 }
