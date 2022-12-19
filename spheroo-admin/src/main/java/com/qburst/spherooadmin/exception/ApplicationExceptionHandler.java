@@ -113,4 +113,13 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.UNPROCESSABLE_ENTITY);
         return new ResponseEntity<>(error,HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+    /**
+     * This exception is thrown when a Password reset token has expired
+     */
+    @ExceptionHandler(ResetTokenExpiredException.class)
+    public ResponseEntity<Object> handleResetTokenExpiredException(ResetTokenExpiredException ex){
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.PASSWORD_RESET_TOKEN_EXPIRED),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error,HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 }
