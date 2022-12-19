@@ -33,6 +33,6 @@ public class UserController {
         String newPassword= changePasswordDTO.getPassword();
 
         userService.changePassword(emailId,newPassword);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

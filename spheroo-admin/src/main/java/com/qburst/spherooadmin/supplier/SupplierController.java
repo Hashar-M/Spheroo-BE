@@ -116,7 +116,7 @@ public class SupplierController {
                                                                   @RequestParam(name = "enable") boolean action){
         ResponseDTO responseDTO=supplierService.alterVisibilityOfSupplier(supplierId,action);
         if(responseDTO.isSuccess()){
-            return new ResponseEntity<>(responseDTO,HttpStatus.CREATED);
+            return new ResponseEntity<>(responseDTO,HttpStatus.OK);
         }
         return new ResponseEntity<>(responseDTO,HttpStatus.OK);
     }

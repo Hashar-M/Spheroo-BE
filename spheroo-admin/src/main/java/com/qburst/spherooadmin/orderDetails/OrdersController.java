@@ -261,7 +261,7 @@ public class OrdersController {
     @PostMapping("/assign-order")
     public ResponseEntity<String> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
         ordersService.assignOrder(assignedOrder);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     /**
      * add a new order by providing its id.
@@ -282,12 +282,12 @@ public class OrdersController {
     @PutMapping("/amend-order")
     public ResponseEntity<String> updateOrder(@Valid @RequestBody AmendOrderDTO amendOrderDTO) {
         ordersService.updateOrdersById(amendOrderDTO);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     @PutMapping("/reject-order")
     public ResponseEntity rejectOrder(@RequestParam long orderId, @RequestParam long reasonId){
         ordersService.rejectOrder(orderId,reasonId);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
