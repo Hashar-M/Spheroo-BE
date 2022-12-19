@@ -37,7 +37,7 @@ public class PasswordResetToken {
     /**
      * The generated reset token for the user
      */
-    @Column(name = "token", nullable = false)
+    @Column(name = "token", nullable = false, unique = true)
     private String token;
 
     /**
