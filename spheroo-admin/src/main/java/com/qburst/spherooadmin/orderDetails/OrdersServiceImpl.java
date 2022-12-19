@@ -194,15 +194,15 @@ public class OrdersServiceImpl implements OrdersService {
     public void uploadImage(MultipartFile imageFile,long orderId) {
         String imagePath=OrdersConstants.IMAGE_FOLDER_PATH+imageFile.getOriginalFilename();
         try {
-            File file = new File(imagePath);
-            if(!file.exists()){
-                File directory = new File(file.getParent());
-                if(!directory.exists()){
-                    directory.mkdir();
-                }
-                file.createNewFile();
-            }
-            imageFile.transferTo(file);
+//            File file = new File(imagePath);
+//            if(!file.exists()){
+//                File directory = new File(file.getParent());
+//                if(!directory.exists()){
+//                    directory.mkdir();
+//                }
+//                file.createNewFile();
+//            }
+            imageFile.transferTo(new File(imagePath));
         }catch (IOException ex){
             throw new RuntimeException(ex.getMessage());
         }

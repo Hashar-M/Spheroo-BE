@@ -8,4 +8,5 @@ public class OrdersConstants {
     public static final String ESCALATIONS_STARTING= "96 HOURS";
     public static final int OVERDUE_STARTING_INT = 48;
     public static final int ESCALATIONS_STARTING_INT= 96;
+    public static final String IMAGE_FOLDER_PATH = "src/main/webapp/WEB-INF/assets/Images/";
 }
