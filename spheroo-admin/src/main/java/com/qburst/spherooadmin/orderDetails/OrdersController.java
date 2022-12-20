@@ -288,8 +288,8 @@ public class OrdersController {
     public ResponseEntity rejectOrder(@RequestParam long orderId, @RequestParam long reasonId){
         ordersService.rejectOrder(orderId,reasonId);
         return new ResponseEntity<>(HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @PostMapping("/upload-image")
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile imageFile, @RequestParam("order-id") long orderId){
         ordersService.uploadImage(imageFile,orderId);

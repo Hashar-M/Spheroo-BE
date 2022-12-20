@@ -17,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import javax.transaction.Transactional;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -242,10 +240,12 @@ public class OrdersServiceImpl implements OrdersService {
             }
             InputStream inputStream = imageFile.getInputStream();
             Path filePath = imagePath.resolve(imageFile.getOriginalFilename());
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-            Orders orders =ordersRepo.getReferenceById(orderId);
-            orders.getImagesList().add(IssueImages.builder().issueImages(filePath.toString()).build());
-            ordersRepo.save(orders);
+            if(!Files.exists(imagePath)){
+                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                Orders orders =ordersRepo.getReferenceById(orderId);
+                orders.getImagesList().add(IssueImages.builder().issueImages(filePath.toString()).build());
+                ordersRepo.save(orders);
+            }
 
         }catch (IOException ex){
             throw new RuntimeException("Could not save the file");
