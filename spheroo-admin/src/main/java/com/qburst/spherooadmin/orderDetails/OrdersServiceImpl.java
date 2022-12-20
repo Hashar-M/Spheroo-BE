@@ -227,6 +227,11 @@ public class OrdersServiceImpl implements OrdersService {
         }
     }
 
+    /**
+     * function for uploading image to file system and to store its path in the database.
+     * @param imageFile accept image file as multipart file.
+     * @param orderId accepts order id.
+     */
     @Override
     @Transactional
     public void uploadImage(MultipartFile imageFile,long orderId) {
