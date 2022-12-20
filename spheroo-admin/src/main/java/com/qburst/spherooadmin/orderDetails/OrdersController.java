@@ -122,6 +122,11 @@ public class OrdersController {
     public ResponseEntity<OrderStatisticsDTO> getOrdersStatistics(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
     }
+
+    /**
+     * API for getting all reject reasons
+     * @return list of reject reasons with reason id
+     */
     @GetMapping("/reject-reasons")
     public ResponseEntity<RejectReasonsDTO> getRejectReasons(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getRejectReasons());
@@ -284,10 +289,35 @@ public class OrdersController {
         ordersService.updateOrdersById(amendOrderDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * API for rejecting an order.
+     * @param orderId accepts the order id
+     * @param reasonId accepts the reason id
+     * @return return HTTP status.
+     */
     @PutMapping("/reject-order")
     public ResponseEntity rejectOrder(@RequestParam long orderId, @RequestParam long reasonId){
         ordersService.rejectOrder(orderId,reasonId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * API for uploading image for to an order
+     * @param imageFile accept image file as multipart file
+     * @param orderId accept order id for saving path
+     * @return return HTTP status with respond message.
+     */
+    @PostMapping("/upload-image")
+    public ResponseEntity uploadImage(@RequestParam("image") MultipartFile imageFile, @RequestParam("order-id") long orderId){
+        String contentType =imageFile.getContentType();
+        if(contentType.equalsIgnoreCase("image/bmp")||contentType.equalsIgnoreCase("image/gif")||
+                contentType.equalsIgnoreCase("image/jpeg")||contentType.equalsIgnoreCase("image/png")){
+            ordersService.uploadImage(imageFile,orderId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            throw new WrongDataForActionException("invalid image type");
+        }
     }
 
     /**

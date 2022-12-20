@@ -1,6 +1,7 @@
 package com.qburst.spherooadmin.orderDetails;
 import com.qburst.spherooadmin.search.OrderFilter;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public interface OrdersService {
     void assignOrder(AssignedOrder assignedOrder);
     RejectReasonsDTO getRejectReasons();
     void rejectOrder(long orderId, long reasonId);
+    void uploadImage(MultipartFile imageFile, long orderId);
 
     /**
      * Saves multiple orders into the database from a list

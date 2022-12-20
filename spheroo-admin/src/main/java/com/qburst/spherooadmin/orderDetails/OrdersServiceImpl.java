@@ -13,9 +13,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 
@@ -217,6 +224,36 @@ public class OrdersServiceImpl implements OrdersService {
             ordersRepo.save(orders);
         }else {
             throw new EntityNotFoundException("No order exist with given data");
+        }
+    }
+
+    /**
+     * function for uploading image to file system and to store its path in the database.
+     * @param imageFile accept image file as multipart file.
+     * @param orderId accepts order id.
+     */
+    @Override
+    @Transactional
+    public void uploadImage(MultipartFile imageFile,long orderId) {
+        if(!ordersRepo.existsById(orderId)){
+            throw new WrongDataForActionException("No order exist with given data");
+        }
+        try {
+            Path imagePath = Paths.get(OrdersConstants.IMAGE_FOLDER_PATH+"order_"+orderId+"/");
+            if(!Files.exists(imagePath)){
+                Files.createDirectories(imagePath);
+            }
+            InputStream inputStream = imageFile.getInputStream();
+            Path filePath = imagePath.resolve(imageFile.getOriginalFilename());
+            if(!Files.exists(imagePath)){
+                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                Orders orders =ordersRepo.getReferenceById(orderId);
+                orders.getImagesList().add(IssueImages.builder().issueImages(filePath.toString()).build());
+                ordersRepo.save(orders);
+            }
+
+        }catch (IOException ex){
+            throw new RuntimeException("Could not save the file");
         }
     }
 
