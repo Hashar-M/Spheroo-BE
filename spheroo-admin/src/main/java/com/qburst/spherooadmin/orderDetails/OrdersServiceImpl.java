@@ -19,6 +19,11 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 
@@ -192,24 +197,23 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     @Transactional
     public void uploadImage(MultipartFile imageFile,long orderId) {
-        String imagePath=OrdersConstants.IMAGE_FOLDER_PATH+"order_"+orderId+"/"+imageFile.getOriginalFilename();
         if(!ordersRepo.existsById(orderId)){
             throw new WrongDataForActionException("No order exist with given data");
         }
         try {
-            File file = new File(imagePath);
-            if(!file.exists()){
-                File directory = new File(file.getParent());
-                if(!directory.exists()){
-                    directory.mkdir();
-                }
-                file.createNewFile();
+            Path imagePath = Paths.get(OrdersConstants.IMAGE_FOLDER_PATH+"order_"+orderId+"/");
+            if(!Files.exists(imagePath)){
+                Files.createDirectories(imagePath);
             }
+            InputStream inputStream = imageFile.getInputStream();
+            Path filePath = imagePath.resolve(imageFile.getOriginalFilename());
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
             Orders orders =ordersRepo.getReferenceById(orderId);
-            orders.getImagesList().add(IssueImages.builder().issueImages(imagePath).build());
+            orders.getImagesList().add(IssueImages.builder().issueImages(filePath.toString()).build());
             ordersRepo.save(orders);
+
         }catch (IOException ex){
-            throw new RuntimeException(ex.getMessage());
+            throw new RuntimeException("Could not save the file");
         }
     }
 
