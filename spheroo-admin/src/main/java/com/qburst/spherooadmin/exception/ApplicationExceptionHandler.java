@@ -18,6 +18,7 @@ import javax.validation.ConstraintViolationException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -114,9 +115,36 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.UNPROCESSABLE_ENTITY);
         return new ResponseEntity<>(error,HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+    /**
+     * This exception is thrown when a Password reset token has expired
+     */
+    @ExceptionHandler(ResetTokenExpiredException.class)
+    public ResponseEntity<Object> handleResetTokenExpiredException(ResetTokenExpiredException ex) {
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ResponseConstants.PASSWORD_RESET_TOKEN_EXPIRED), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex){
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle the exception {@link CategoryNotFoundException}
+     * @param ex {@link CategoryNotFoundException}
+     * @return {@link ErrorResponse}
+     */
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Object> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(Collections.singletonList(ex.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(SupplierNotFoundException.class)
+    public ResponseEntity<Object> handleSupplierNotFoundException(SupplierNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(Collections.singletonList(ex.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

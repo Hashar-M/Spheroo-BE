@@ -28,6 +28,7 @@ public class OrdersDisplayDTO {
     private String assignedSupplier;
     private List<IssueImages> imagesList;
     private boolean isAmended;
+    private String rejectReason;
 
     public OrdersDisplayDTO(long orderId, String customerName, Date createdDate, Date deliveryFromDate, Date deliveryToDate, String comments, String zipCode, String orderStatus, long categoryId,long serviceId, String categoryName, String serviceName, boolean isAmended) {
         this.orderId = orderId;

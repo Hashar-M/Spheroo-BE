@@ -1,10 +1,13 @@
 package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
+import com.qburst.spherooadmin.exception.CategoryNotFoundException;
+import com.qburst.spherooadmin.exception.SupplierNotFoundException;
 import com.qburst.spherooadmin.orderDetails.AssignedOrderRepository;
 import com.qburst.spherooadmin.orderDetails.Orders;
 import com.qburst.spherooadmin.orderDetails.OrdersRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
+import com.qburst.spherooadmin.signup.ResponseDTO;
 import com.qburst.spherooadmin.supplieruser.SupplierUser;
 import com.qburst.spherooadmin.supplieruser.SupplierUserType;
 import com.qburst.spherooadmin.supplieruser.SupplierUsersAddDTO;
@@ -21,6 +24,13 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.qburst.spherooadmin.constants.CategoryConstants.CATEGORY_NOT_FOUND;
+import static com.qburst.spherooadmin.constants.SpherooConstants.SOMETHING_WENT_WRONG;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.ALREADY_IN_REQUESTED_STATE;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_NOT_FOUND;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_VISIBILITY_UPDATION_FAILURE;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_VISIBILITY_UPDATION_MESSAGE;
 
 /**
  * {@inheritDoc}
@@ -40,11 +50,11 @@ public class SupplierServiceImp implements SupplierService {
     /**
      * Method is used for persist a new supplier.
      * @param supplierAddDTO
-     * @throws EntityNotFoundException
+     * @throws CategoryNotFoundException
      */
     @Override
     @Transactional
-    public void addSupplier(SupplierAddDTO supplierAddDTO) throws EntityNotFoundException{
+    public void addSupplier(SupplierAddDTO supplierAddDTO){
         /**
          * Creates a new supplier address from the {@link SupplierAddressAddDTO} in {@link SupplierAddDTO}
          */
@@ -92,10 +102,10 @@ public class SupplierServiceImp implements SupplierService {
             supplierRepository.save(supplier);
         }
         /**
-         * {@code throw new EntityNotFoundException();} is thrown while no category{@link com.qburst.spherooadmin.category.Category} exists under which a new supplier is need to save.
+         * {@code throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);} is thrown while no category{@link com.qburst.spherooadmin.category.Category} exists under which a new supplier is need to save.
          */
         else{
-             throw new EntityNotFoundException();
+             throw new CategoryNotFoundException(CATEGORY_NOT_FOUND);
         }
     }
 
@@ -116,6 +126,7 @@ public class SupplierServiceImp implements SupplierService {
                 supplierGetDTO.setSupplierName(supplier.getSupplierName());
                 supplierGetDTO.setCategory(supplier.getCategoryNames());
                 supplierGetDTO.setPinCode(supplier.getSupplierAddress().getPinCode());
+                supplierGetDTO.setVisibility(supplier.isVisibility());
                 supplier.getSupplierUsers().forEach(supplierUser -> {
                     if (supplierUser.getSupplierUserType() == SupplierUserType.MANAGER) {
                         supplierGetDTO.setContactName(supplierUser.getName());
@@ -143,7 +154,6 @@ public class SupplierServiceImp implements SupplierService {
         if(supplierRepository.existsBySupplierName(supplierName)){
             long supplierId=supplierRepository.getSupplierIdFromSupplierName(supplierName);
             supplierRepository.deleteById(supplierId);
-            //supplierRepository.deleteBySupplierName(supplierName);
             return true;
         }
         return false;
@@ -187,7 +197,7 @@ public class SupplierServiceImp implements SupplierService {
         Orders orders=ordersRepository.getReferenceById(orderId);
         long categoryId=orders.getCategoryId();
         String zipcode=orders.getZipCode();
-        List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,Integer.parseInt(zipcode));
+        List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,zipcode);
         List<SupplierToAssignDTO> supplierToAssignDTOList = new ArrayList<>();
         for (Supplier supplier : supplierList) {
             SupplierToAssignDTO supplierToAssignDTO = new SupplierToAssignDTO();
@@ -221,4 +231,36 @@ public class SupplierServiceImp implements SupplierService {
             });
             return page;
         }
+
+    /**
+     * method for enable and disable a {@link Supplier}.
+     * @param supplierId id value of supplier
+     * @param action
+     * @return {@link ResponseDTO} with true boolean value only for successful update.
+     */
+    @Override
+    public ResponseDTO alterVisibilityOfSupplier(long supplierId, boolean action) {
+        ResponseDTO responseDTO=new ResponseDTO();
+        if(!supplierRepository.existsById(supplierId)){
+            throw new  SupplierNotFoundException(SUPPLIER_NOT_FOUND);
+        }
+        else if(supplierRepository.findVisibilityById(supplierId)==action){
+            responseDTO.setMessage(ALREADY_IN_REQUESTED_STATE);
+            responseDTO.setSuccess(false);
+            return responseDTO;
+        }
+        else if(supplierRepository.findVisibilityById(supplierId)==!action){
+            supplierRepository.updateVisibilityById(action,supplierId);
+            if(supplierRepository.findVisibilityById(supplierId)==action){
+                responseDTO.setSuccess(true);
+                responseDTO.setMessage(SUPPLIER_VISIBILITY_UPDATION_MESSAGE);
+                return responseDTO;
+            }
+            responseDTO.setMessage(SUPPLIER_VISIBILITY_UPDATION_FAILURE);
+            responseDTO.setSuccess(false);
+            return responseDTO;
+        }
+        responseDTO.setMessage(SOMETHING_WENT_WRONG);
+        return responseDTO;
+    }
 }

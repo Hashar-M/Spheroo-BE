@@ -13,4 +13,5 @@ public class SecurityConstants {
     public static final String API_DOCS_PATH = "/api-docs/**";
     public static final String API_DOCS_API_PATH = "/v3/api-docs/**";
     public static final String SWAGGER_UI_PATH = "/swagger-ui/**";
+    public static final String RESET_PASSWORD_PATH = "/reset-password/**";
 }

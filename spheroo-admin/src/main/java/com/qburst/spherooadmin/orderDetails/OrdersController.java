@@ -122,6 +122,10 @@ public class OrdersController {
     public ResponseEntity<OrderStatisticsDTO> getOrdersStatistics(){
         return ResponseEntity.status(HttpStatus.OK).body(ordersService.getOrdersStatistics());
     }
+    @GetMapping("/reject-reasons")
+    public ResponseEntity<RejectReasonsDTO> getRejectReasons(){
+        return ResponseEntity.status(HttpStatus.OK).body(ordersService.getRejectReasons());
+    }
 
     /**
      * function for getting orders details as CSV file
@@ -257,7 +261,7 @@ public class OrdersController {
     @PostMapping("/assign-order")
     public ResponseEntity<String> assignOrder(@Valid @RequestBody AssignedOrder assignedOrder){
         ordersService.assignOrder(assignedOrder);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Assigned successfully");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     /**
      * add a new order by providing its id.
@@ -280,6 +284,12 @@ public class OrdersController {
         ordersService.updateOrdersById(amendOrderDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @PutMapping("/reject-order")
+    public ResponseEntity rejectOrder(@RequestParam long orderId, @RequestParam long reasonId){
+        ordersService.rejectOrder(orderId,reasonId);
+        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     @PostMapping("/upload-image")
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile imageFile, @RequestParam("order-id") long orderId){
         ordersService.uploadImage(imageFile,orderId);
@@ -294,7 +304,7 @@ public class OrdersController {
     @DeleteMapping("/{id}")
     public ResponseEntity <String> deleteOrder(@PathVariable long id){
         ordersService.deleteOrderById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("order deleted successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
