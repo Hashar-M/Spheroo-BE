@@ -23,10 +23,15 @@ import javax.persistence.Table;
 @Table(name = "issue_attached_images")
 @Builder
 public class IssueImages {
-
+    /**
+     * pictureId field is the primary key for issue_images table.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long pictureId;
+    /**
+     * this field stores the image path.
+     */
     @Column(name = "issue_attached_image")
     private String issueImages;
 }
