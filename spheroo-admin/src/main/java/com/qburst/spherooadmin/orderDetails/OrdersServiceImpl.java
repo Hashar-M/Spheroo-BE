@@ -245,7 +245,7 @@ public class OrdersServiceImpl implements OrdersService {
             }
             InputStream inputStream = imageFile.getInputStream();
             Path filePath = imagePath.resolve(imageFile.getOriginalFilename());
-            if(!Files.exists(imagePath)){
+            if(!Files.exists(filePath)){
                 Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
                 Orders orders =ordersRepo.getReferenceById(orderId);
                 orders.getImagesList().add(IssueImages.builder().issueImages(filePath.toString()).build());
