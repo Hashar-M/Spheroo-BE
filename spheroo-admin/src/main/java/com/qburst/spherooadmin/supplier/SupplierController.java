@@ -1,5 +1,6 @@
 package com.qburst.spherooadmin.supplier;
 
+import com.qburst.spherooadmin.search.SupplierPaginationFilter;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,15 +35,23 @@ public class SupplierController {
         responseDTO.setSuccess(true);
         return ResponseEntity.ok(responseDTO);
     }
+
+    /**
+     * method return a {@link org.springframework.data.domain.Page} of Supplier details({@link SupplierGetDTO})
+     * @param supplierPaginationFilter Jpa specification used for supplier search.
+     * @param pageNo page number.
+     * @param pageSize size for page.
+     * @return
+     */
     @GetMapping("/get/list")
-    public ResponseEntity<Object> getSuppliersAsPage(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "1") int pageSize){
+    public ResponseEntity<Object> getSuppliersAsPage(@Valid @RequestBody SupplierPaginationFilter supplierPaginationFilter,@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "1") int pageSize){
         ResponseDTO responseDTO=new ResponseDTO();
         if (pageSize<1){
             responseDTO.setSuccess(false);
             responseDTO.setMessage(" page size must be greater than 0 ");
             return ResponseEntity.ok(responseDTO);
         }
-        return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo,pageSize));
+        return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo,pageSize,supplierPaginationFilter));
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.qburst.spherooadmin.supplier;
 
+import com.qburst.spherooadmin.search.SupplierPaginationFilter;
 import com.qburst.spherooadmin.signup.ResponseDTO;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +13,7 @@ import java.util.Optional;
 
 public interface SupplierService {
     public void addSupplier(SupplierAddDTO supplierAddDTO);
-    public SupplierPageDTO getPageOfSupplier(int pageNo, int pageSize);
+    public SupplierPageDTO getPageOfSupplier(int pageNo, int pageSize, SupplierPaginationFilter specification);
     public boolean deleteSupplierFromSupplierName(String supplierName);
     public Optional<Supplier> getTheSupplier(String supplierName);
     public boolean editTheSupplier(Supplier supplier);
