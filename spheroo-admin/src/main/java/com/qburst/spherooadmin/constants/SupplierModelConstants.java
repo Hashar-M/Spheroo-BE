@@ -12,4 +12,6 @@ public final class SupplierModelConstants {
     public static final String SUPPLIER_VISIBILITY_UPDATION_FAILURE="could not update";
     public static final String SUPPLIER_NOT_FOUND="SUPPLIER_NOT_FOUND";
     public static final String ALREADY_IN_REQUESTED_STATE="no modification needed, already in the requested state";
+    public static final String VISIBILITY="visibility";
+    public static final String VISIBILITY_COLUMN_DEFINITION="boolean default true";
 }

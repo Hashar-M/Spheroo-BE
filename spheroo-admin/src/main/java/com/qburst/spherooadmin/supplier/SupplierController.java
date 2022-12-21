@@ -22,6 +22,8 @@ import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Optional;
 
+import static com.qburst.spherooadmin.constants.ResponseConstants.ILLEGAL_ARGUMENT_EXCEPTION_RESPONSE;
+
 @Validated
 @RestController
 @RequestMapping("/supplier")
@@ -44,12 +46,9 @@ public class SupplierController {
      * @return
      */
     @GetMapping("/get/list")
-    public ResponseEntity<Object> getSuppliersAsPage(@Valid @RequestBody SupplierPaginationFilter supplierPaginationFilter,@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "1") int pageSize){
-        ResponseDTO responseDTO=new ResponseDTO();
-        if (pageSize<1){
-            responseDTO.setSuccess(false);
-            responseDTO.setMessage(" page size must be greater than 0 ");
-            return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<Object> getSuppliersAsPage(@Valid @RequestBody SupplierPaginationFilter supplierPaginationFilter,@RequestParam(name = "page-no",defaultValue = "0") int pageNo, @RequestParam(name = "page-size",defaultValue = "1") int pageSize){
+        if (pageSize<1|| pageNo<0 ){
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT_EXCEPTION_RESPONSE);
         }
         return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo,pageSize,supplierPaginationFilter));
     }
