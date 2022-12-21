@@ -54,7 +54,7 @@ public class SupplierController {
     @GetMapping("/get-suppliers")
     public ResponseEntity<MatchedSuppliersGetDTO> getSupplierByCategoryIdAndZip(@RequestParam(name = "order-id") long orderId){
         MatchedSuppliersGetDTO matchedSuppliersGetDTO=new MatchedSuppliersGetDTO();
-        matchedSuppliersGetDTO.setSupplierToAssignDTOList(supplierService.getSuppliersToAssign(orderId));
+        matchedSuppliersGetDTO.setFilterSupplierForAssignDTOList(supplierService.getSuppliersToAssign(orderId));
         return new ResponseEntity<>(matchedSuppliersGetDTO,HttpStatus.OK);
     }
     @DeleteMapping("/delete")

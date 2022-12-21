@@ -16,11 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -193,23 +191,21 @@ public class SupplierServiceImp implements SupplierService {
      * @return list of supplier data which matches criteria.
      */
     @Override
-    public List<SupplierToAssignDTO> getSuppliersToAssign(long orderId) {
+    public List<FilterSupplierForAssignDTO> getSuppliersToAssign(long orderId) {
         Orders orders=ordersRepository.getReferenceById(orderId);
         long categoryId=orders.getCategoryId();
         String zipcode=orders.getZipCode();
         List<Supplier>  supplierList = supplierRepository.findByCategoryId(categoryId,zipcode);
-        List<SupplierToAssignDTO> supplierToAssignDTOList = new ArrayList<>();
+        List<FilterSupplierForAssignDTO> filterSupplierForAssignDTOList = new ArrayList<>();
         for (Supplier supplier : supplierList) {
-            SupplierToAssignDTO supplierToAssignDTO = new SupplierToAssignDTO();
-            supplierToAssignDTO.setSupplierId(supplier.getSupplierId());
-            supplierToAssignDTO.setSupplierName(supplier.getSupplierName());
-            supplierToAssignDTO.setCategoryName(supplier.getCategoryNames());
-            supplierToAssignDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
-            supplierToAssignDTO.setRating(supplier.getRating());
-            supplierToAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(supplier.getSupplierId()));
-            supplierToAssignDTOList.add(supplierToAssignDTO);
+            FilterSupplierForAssignDTO filterSupplierForAssignDTO = new FilterSupplierForAssignDTO();
+            filterSupplierForAssignDTO.setSupplierId(supplier.getSupplierId());
+            filterSupplierForAssignDTO.setSupplierName(supplier.getSupplierName());
+            filterSupplierForAssignDTO.setRating(supplier.getRating());
+            filterSupplierForAssignDTO.setAssignedTickets(assignedOrderRepository.getAssignedOrderCount(supplier.getSupplierId()));
+            filterSupplierForAssignDTOList.add(filterSupplierForAssignDTO);
         }
-        return supplierToAssignDTOList;
+        return filterSupplierForAssignDTOList;
     }
 
     /**

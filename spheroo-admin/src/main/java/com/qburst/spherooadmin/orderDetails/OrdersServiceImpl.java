@@ -207,8 +207,8 @@ public class OrdersServiceImpl implements OrdersService {
                 throw new WrongDataForActionException("48 hr limit exceeded.");
             }
             //checking any change in any date.
-            if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())==0&&orders.getDeliveryFromDate().compareTo(amendOrderDTO.getDeliveryFromDate())==0){
-                throw new WrongDataForActionException("No change in any date.");
+            if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())==0){
+                throw new WrongDataForActionException("To date should be amended");
             }
             //checking is the given date before current date.
             if(date.compareTo(amendOrderDTO.getDeliveryToDate())>0){
