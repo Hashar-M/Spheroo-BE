@@ -6,6 +6,7 @@ import com.qburst.spherooadmin.exception.SupplierNotFoundException;
 import com.qburst.spherooadmin.orderDetails.AssignedOrderRepository;
 import com.qburst.spherooadmin.orderDetails.Orders;
 import com.qburst.spherooadmin.orderDetails.OrdersRepository;
+import com.qburst.spherooadmin.search.SupplierPaginationFilter;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.signup.ResponseDTO;
 import com.qburst.spherooadmin.supplieruser.SupplierUser;
@@ -16,10 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,15 +113,24 @@ public class SupplierServiceImp implements SupplierService {
     }
 
     /**
-     * Method that gives a list of supplier.
+     * Method that gives a list of supplier as page based on some criteria {@link SupplierPagingConstraint}
      * @param pageNo
      * @param pageSize
-     * @return a list of supplier as per the specified page number and size.
+     * @return a Page of supplier as per the specified page number and size.
      */
     @Transactional
-    public SupplierPageDTO getPageOfSupplier(int pageNo, int pageSize){
-        Pageable pageable= PageRequest.of(pageNo,pageSize);
-        Page<Supplier> suppliersPage=supplierRepository.findAll(pageable);
+    public SupplierPageDTO getPageOfSupplier(int pageNo, int pageSize, SupplierPaginationFilter specification){
+        Pageable pageable;
+        Page<Supplier> suppliersPage;
+        if (!specification.getAsc()&& specification.getKey()!=SupplierPagingConstraint.name){
+            pageable= PageRequest.of(pageNo,pageSize,Sort.by(specification.getKey().toString()).descending());
+        }
+        else if (specification.getAsc()&&specification.getKey()!=SupplierPagingConstraint.name){
+            pageable = PageRequest.of(pageNo, pageSize, Sort.by(specification.getKey().toString()).ascending());
+        }
+        else
+            pageable=PageRequest.of(pageNo,pageSize);
+        suppliersPage=supplierRepository.findAll(specification,pageable);
         List<SupplierGetDTO> supplierGetDTOList=new ArrayList<>();
         suppliersPage.forEach(supplier -> {
             SupplierGetDTO supplierGetDTO=new SupplierGetDTO();
@@ -134,6 +148,16 @@ public class SupplierServiceImp implements SupplierService {
                 });
                 supplierGetDTOList.add(supplierGetDTO);
                         });
+        /**
+         * below if else condition sort supplierGetDTOList based on contactName in {@link SupplierGetDTO}.
+         */
+        if (specification.getKey()==SupplierPagingConstraint.name&&!specification.getAsc()) {
+            supplierGetDTOList.sort(Comparator.comparing(SupplierGetDTO::getContactName,String::compareToIgnoreCase).reversed());
+        }
+        else if (specification.getKey() == SupplierPagingConstraint.name){
+            supplierGetDTOList.sort(Comparator.comparing(SupplierGetDTO::getContactName,String::compareToIgnoreCase));
+        }
+
         SupplierPageDTO supplierPageDTO = new SupplierPageDTO();
         supplierPageDTO.setSupplierList(supplierGetDTOList);
         supplierPageDTO.setPageSize(suppliersPage.getSize());

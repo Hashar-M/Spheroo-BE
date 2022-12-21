@@ -28,6 +28,8 @@ import static com.qburst.spherooadmin.constants.SupplierModelConstants.NAME;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.RATING;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_ID;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.TABLE_NAME;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.VISIBILITY;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.VISIBILITY_COLUMN_DEFINITION;
 
 /**
  * model for supplier.
@@ -75,6 +77,6 @@ public class Supplier {
     /**
      * true value indicate the supplier is enabled and false value for disabled supplier.
      */
-    @Column(name ="visibility",columnDefinition = "boolean default true",nullable = false)
+    @Column(name =VISIBILITY,columnDefinition = VISIBILITY_COLUMN_DEFINITION,nullable = false)
     private boolean visibility=true;
   }
