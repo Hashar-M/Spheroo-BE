@@ -59,6 +59,7 @@ import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H8;
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H9;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CLOSED;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DEPOSITION_HEADER_VALUE;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DISPOSITION_HEADER_VALUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_TYPE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.ESCALATION;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_FOR_CSV_FILE_DOWNLOAD;
@@ -193,7 +194,7 @@ public class OrdersController {
             File file=path.toFile();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DEPOSITION_HEADER_VALUE+FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD+status+FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD);
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_HEADER_VALUE+FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD+status+FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD);
             headers.set(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
             
             List<String> exposedHeader=new ArrayList<>();
