@@ -29,7 +29,6 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import javax.persistence.EntityNotFoundException;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
@@ -42,7 +41,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H1;
@@ -58,7 +56,6 @@ import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H7;
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H8;
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H9;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CLOSED;
-import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DEPOSITION_HEADER_VALUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DISPOSITION_HEADER_VALUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_TYPE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.ESCALATION;
