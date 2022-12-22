@@ -44,6 +44,8 @@ public class SecurityConfiguration {
                 .antMatchers(HttpMethod.GET, SecurityConstants.SWAGGER_UI_PATH).permitAll()
                 .antMatchers(HttpMethod.GET, SecurityConstants.API_DOCS_API_PATH).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.RESET_PASSWORD_PATH).permitAll()
+                .antMatchers(HttpMethod.POST, "/orders/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/orders/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
