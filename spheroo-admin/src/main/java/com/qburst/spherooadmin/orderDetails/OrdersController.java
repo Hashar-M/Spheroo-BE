@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,8 +71,8 @@ import static com.qburst.spherooadmin.constants.DashboardCsvConstants.SORT_COLUM
  */
 @Slf4j
 @RestController
-@AllArgsConstructor
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrdersController {
 
     @Autowired
@@ -186,9 +188,7 @@ public class OrdersController {
      */
     @GetMapping("/orders-export/binary")
     public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status,
-                                                         @Value("${file.path.for.csv.file.download:File-Download/csv-files}") String fileDownloadPath,
-                                                         @Value("${temporary.file.name.prefix.for.csv.download:data-}") String csvTemporaryFilePrefix,
-                                                         @Value("${temporary.file.name.suffix.for.csv.download:.csv}") String csvTemporaryFileSuffix) throws IOException {
+                                                         @Value("${file.path.for.csv.file.download:File-Download/csv-files}") String fileDownloadPath) throws IOException {
         if(status.equalsIgnoreCase(OPEN) || status.equalsIgnoreCase(CLOSED)||
                 status.equalsIgnoreCase(ESCALATION)||status.equalsIgnoreCase(OVERDUE)) {
             String fileName = null;
@@ -212,7 +212,7 @@ public class OrdersController {
                 Files.createDirectories(uploadPath);
             }
 
-            Path path=Files.createTempFile(uploadPath,csvTemporaryFilePrefix,csvTemporaryFileSuffix);
+            Path path=Files.createTempFile(uploadPath,"data-",".csv");
             File file=path.toFile();
 
             HttpHeaders headers = new HttpHeaders();
