@@ -207,8 +207,8 @@ public class OrdersServiceImpl implements OrdersService {
                 throw new WrongDataForActionException("48 hr limit exceeded.");
             }
             //checking any change in any date.
-            if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())==0&&orders.getDeliveryFromDate().compareTo(amendOrderDTO.getDeliveryFromDate())==0){
-                throw new WrongDataForActionException("No change in any date.");
+            if(orders.getDeliveryToDate().compareTo(amendOrderDTO.getDeliveryToDate())==0){
+                throw new WrongDataForActionException("To date should be amended");
             }
             //checking is the given date before current date.
             if(date.compareTo(amendOrderDTO.getDeliveryToDate())>0){
@@ -245,7 +245,7 @@ public class OrdersServiceImpl implements OrdersService {
             }
             InputStream inputStream = imageFile.getInputStream();
             Path filePath = imagePath.resolve(imageFile.getOriginalFilename());
-            if(!Files.exists(imagePath)){
+            if(!Files.exists(filePath)){
                 Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
                 Orders orders =ordersRepo.getReferenceById(orderId);
                 orders.getImagesList().add(IssueImages.builder().issueImages(filePath.toString()).build());
