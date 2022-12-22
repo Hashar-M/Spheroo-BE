@@ -60,9 +60,6 @@ import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CLOSED;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DISPOSITION_HEADER_VALUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_TYPE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.ESCALATION;
-import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_FOR_CSV_FILE_DOWNLOAD;
-import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD;
-import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OPEN;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OVERDUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.SORT_COLUMN;
@@ -78,6 +75,15 @@ public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;
+    @Value("${file.name.for.open.order.csv.fil.download:data-open.csv}")
+    private String openOrderCsvFileName;
+    @Value("${file.name.for.closed.order.csv.fil.download:data-closed.csv}")
+    private String closedOrderCsvFileName;
+    @Value("${file.name.for.overdue.order.csv.fil.download:data-overdue.csv}")
+    private String overdueOrderCsvFileName;
+    @Value("${file.name.for.escalation.order.csv.fil.download:data-escalations.csv}")
+    private String escalationOrderCsvFileName;
+
 
     /**
      * Get an order details by providing its id
@@ -179,22 +185,38 @@ public class OrdersController {
      * @throws IOException
      */
     @GetMapping("/orders-export/binary")
-    public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status,@Value("${file.path.for.csv.file.download:File-Download/csv-files}") String fileDownloadPath,
-                                                         @Value("${file.path.prefix.for.csv.fil.download:data-}") String filePathPrefix,
-                                                         @Value("${file.path.suffix.for.csv.fil.download:.csv}") String filePathSuffix ) throws IOException {
+    public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status,
+                                                         @Value("${file.path.for.csv.file.download:File-Download/csv-files}") String fileDownloadPath,
+                                                         @Value("${temporary.file.name.prefix.for.csv.download:data-}") String csvTemporaryFilePrefix,
+                                                         @Value("${temporary.file.name.suffix.for.csv.download:.csv}") String csvTemporaryFileSuffix) throws IOException {
         if(status.equalsIgnoreCase(OPEN) || status.equalsIgnoreCase(CLOSED)||
                 status.equalsIgnoreCase(ESCALATION)||status.equalsIgnoreCase(OVERDUE)) {
+            String fileName = null;
+            switch (status) {
+                case OPEN:
+                    fileName=openOrderCsvFileName;
+                    break;
+                case CLOSED:
+                    fileName=closedOrderCsvFileName;
+                    break;
+                case OVERDUE:
+                    fileName=overdueOrderCsvFileName;
+                    break;
+                case ESCALATION:
+                    fileName=escalationOrderCsvFileName;
+                    break;
+            }
 
             Path uploadPath = Paths.get(fileDownloadPath);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            Path path=Files.createTempFile(uploadPath,filePathPrefix,filePathSuffix);
+            Path path=Files.createTempFile(uploadPath,csvTemporaryFilePrefix,csvTemporaryFileSuffix);
             File file=path.toFile();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_HEADER_VALUE+filePathPrefix+status+filePathSuffix);
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_HEADER_VALUE+fileName);
             headers.set(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
             
             List<String> exposedHeader=new ArrayList<>();

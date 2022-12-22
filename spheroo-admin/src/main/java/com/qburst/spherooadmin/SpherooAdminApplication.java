@@ -25,6 +25,10 @@ public class SpherooAdminApplication {
 	public ModelMapper getModelMapper(){
 		return new ModelMapper();
 	}
+	@Bean
+	public String stringGenerator(){
+		return new String("");
+	}
 
  	public static void main(String[] args) {
 		new SpringApplicationBuilder(SpherooAdminApplication.class)
