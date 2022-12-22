@@ -41,6 +41,8 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H1;
@@ -191,8 +193,12 @@ public class OrdersController {
             File file=path.toFile();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DEPOSITION_HEADER_VALUE);
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DEPOSITION_HEADER_VALUE+FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD+status+FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD);
             headers.set(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
+            
+            List<String> exposedHeader=new ArrayList<>();
+            exposedHeader.add("Content-Disposition");
+            headers.setAccessControlExposeHeaders(exposedHeader);
 
             Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,SORT_COLUMN,false,status);
             /**
