@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -178,20 +179,22 @@ public class OrdersController {
      * @throws IOException
      */
     @GetMapping("/orders-export/binary")
-    public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status) throws IOException {
+    public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status,@Value("${file.path.for.csv.file.download:File-Download/csv-files}") String fileDownloadPath,
+                                                         @Value("${file.path.prefix.for.csv.fil.download:data-}") String filePathPrefix,
+                                                         @Value("${file.path.suffix.for.csv.fil.download:.csv}") String filePathSuffix ) throws IOException {
         if(status.equalsIgnoreCase(OPEN) || status.equalsIgnoreCase(CLOSED)||
                 status.equalsIgnoreCase(ESCALATION)||status.equalsIgnoreCase(OVERDUE)) {
 
-            Path uploadPath = Paths.get(FILE_PATH_FOR_CSV_FILE_DOWNLOAD);
+            Path uploadPath = Paths.get(fileDownloadPath);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            Path path=Files.createTempFile(uploadPath,FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD,FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD);
+            Path path=Files.createTempFile(uploadPath,filePathPrefix,filePathSuffix);
             File file=path.toFile();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_HEADER_VALUE+FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD+status+FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD);
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_HEADER_VALUE+filePathPrefix+status+filePathSuffix);
             headers.set(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
             
             List<String> exposedHeader=new ArrayList<>();
