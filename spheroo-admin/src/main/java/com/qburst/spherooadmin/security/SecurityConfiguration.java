@@ -16,6 +16,7 @@ import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 
 
 /**
+ * @author Hameel
  * Security configuration class that is used to configure spring security.
  */
 @Configuration
@@ -49,7 +50,7 @@ public class SecurityConfiguration {
                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authenticationFilter)
-                .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class);
+                .sessionManagement().maximumSessions(1);  // User can have 1 session at a time
         return http.build();
     }
 }
