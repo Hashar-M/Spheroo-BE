@@ -18,12 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +44,6 @@ public class SupplierServiceImp implements SupplierService {
     private SupplierRepository supplierRepository;
     @Autowired
     private CategoryRepository categoryRepository;
-    private ServiceRepository serviceRepository;
     private OrdersRepository ordersRepository;
     private AssignedOrderRepository assignedOrderRepository;
 
