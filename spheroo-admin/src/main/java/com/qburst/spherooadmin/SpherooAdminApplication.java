@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -40,6 +41,14 @@ public class SpherooAdminApplication {
 		public void run(String... args) throws Exception {
 				log.info("Active profiles: " + Arrays.toString(environment.getActiveProfiles()));
 		}
+	}
+
+	/**
+	 * This bean is needed so that spring security can be notified when a session is destroyed
+	 */
+	@Bean
+	public HttpSessionEventPublisher httpSessionEventPublisher() {
+		return new HttpSessionEventPublisher();
 	}
 
 }
