@@ -44,7 +44,6 @@ public class SupplierServiceImp implements SupplierService {
     private SupplierRepository supplierRepository;
     @Autowired
     private CategoryRepository categoryRepository;
-    private ServiceRepository serviceRepository;
     private OrdersRepository ordersRepository;
     private AssignedOrderRepository assignedOrderRepository;
 
