@@ -6,13 +6,16 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +32,6 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import javax.persistence.EntityNotFoundException;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
@@ -41,6 +43,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H1;
@@ -56,12 +59,9 @@ import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H7;
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H8;
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H9;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CLOSED;
-import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DEPOSITION_HEADER_VALUE;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DISPOSITION_HEADER_VALUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_TYPE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.ESCALATION;
-import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_FOR_CSV_FILE_DOWNLOAD;
-import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD;
-import static com.qburst.spherooadmin.constants.DashboardCsvConstants.FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OPEN;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OVERDUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.SORT_COLUMN;
@@ -71,12 +71,21 @@ import static com.qburst.spherooadmin.constants.DashboardCsvConstants.SORT_COLUM
  */
 @Slf4j
 @RestController
-@AllArgsConstructor
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;
+    @Value("${file.name.for.open.order.csv.fil.download:data-open.csv}")
+    private String openOrderCsvFileName;
+    @Value("${file.name.for.closed.order.csv.fil.download:data-closed.csv}")
+    private String closedOrderCsvFileName;
+    @Value("${file.name.for.overdue.order.csv.fil.download:data-overdue.csv}")
+    private String overdueOrderCsvFileName;
+    @Value("${file.name.for.escalation.order.csv.fil.download:data-escalations.csv}")
+    private String escalationOrderCsvFileName;
+
 
     /**
      * Get an order details by providing its id
@@ -178,21 +187,41 @@ public class OrdersController {
      * @throws IOException
      */
     @GetMapping("/orders-export/binary")
-    public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status) throws IOException {
+    public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status,
+                                                         @Value("${file.path.for.csv.file.download:File-Download/csv-files}") String fileDownloadPath) throws IOException {
         if(status.equalsIgnoreCase(OPEN) || status.equalsIgnoreCase(CLOSED)||
                 status.equalsIgnoreCase(ESCALATION)||status.equalsIgnoreCase(OVERDUE)) {
+            String fileName = null;
+            switch (status) {
+                case OPEN:
+                    fileName=openOrderCsvFileName;
+                    break;
+                case CLOSED:
+                    fileName=closedOrderCsvFileName;
+                    break;
+                case OVERDUE:
+                    fileName=overdueOrderCsvFileName;
+                    break;
+                case ESCALATION:
+                    fileName=escalationOrderCsvFileName;
+                    break;
+            }
 
-            Path uploadPath = Paths.get(FILE_PATH_FOR_CSV_FILE_DOWNLOAD);
+            Path uploadPath = Paths.get(fileDownloadPath);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            Path path=Files.createTempFile(uploadPath,FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD,FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD);
+            Path path=Files.createTempFile(uploadPath,"data-",".csv");
             File file=path.toFile();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DEPOSITION_HEADER_VALUE);
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_HEADER_VALUE+fileName);
             headers.set(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
+            
+            List<String> exposedHeader=new ArrayList<>();
+            exposedHeader.add("Content-Disposition");
+            headers.setAccessControlExposeHeaders(exposedHeader);
 
             Page<OrdersDisplayDTO> ordersDisplayDTOPage =ordersService.getAllOrdersPaged(0,100,SORT_COLUMN,false,status);
             /**
