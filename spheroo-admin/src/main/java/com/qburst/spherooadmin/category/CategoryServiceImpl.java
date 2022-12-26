@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     @Transactional
-    public String updateCategoryById(Long categoryId, Category category) {
+    public void updateCategoryById(Long categoryId, Category category) {
         boolean isExist = categoryRepository.existsById(categoryId);
         if(isExist){
             category.setCategoryId(categoryId);
@@ -52,7 +52,6 @@ public class CategoryServiceImpl implements CategoryService{
             serviceChargeRepository.deleteAllById(noReferenceChargeIds);
             List<Long> noReferenceServiceIds = serviceRepository.findNullCategoryServices();
             serviceRepository.deleteAllById(noReferenceServiceIds);
-            return "Category Updated successfully";
         }else {
             throw new EntityNotFoundException("No category exist with given id");
         }
@@ -63,8 +62,9 @@ public class CategoryServiceImpl implements CategoryService{
     public void deleteCategory(Long id) {
         if(categoryRepository.existsById(id)){
             categoryRepository.deleteByCategoryId(id);
+        }else{
+            throw new EntityNotFoundException("No category exist with given id");
         }
-       throw new EntityNotFoundException("No category exist with given id");
     }
 
     @Override

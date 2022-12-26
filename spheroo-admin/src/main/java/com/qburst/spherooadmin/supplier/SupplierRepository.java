@@ -1,8 +1,5 @@
 package com.qburst.spherooadmin.supplier;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -34,7 +31,7 @@ public interface SupplierRepository extends JpaRepository<Supplier,Long>, JpaSpe
    */
   @Query(nativeQuery = true,value = "SELECT supplier_id FROM supplier WHERE supplier_name=?1")
   long getSupplierIdFromSupplierName(String supplierName);
-  @Query(value = "SELECT * FROM supplier WHERE category_id =?1 and pin_code=?2 and visibility=true",nativeQuery = true)
+  @Query(value = "SELECT * FROM supplier WHERE category_id =?1 and pin_code=?2 AND visibility=true ORDER BY supplier_name ASC",nativeQuery = true)
   List<Supplier> findByCategoryId(long categoryId,String pinCode);
 
   /**
@@ -44,7 +41,7 @@ public interface SupplierRepository extends JpaRepository<Supplier,Long>, JpaSpe
    * @param pinCode for the {@link Supplier}
    * @return
    */
-  @Query("select new com.qburst.spherooadmin.supplier.FilterSupplierForAssignDTO(s.supplierId,s.supplierName,s.rating) from Supplier s where s.categoryNames=:categoryName and s.rating>=:rating and s.supplierAddress.pinCode like %:pinCode% and s.visibility=true")
+  @Query("select new com.qburst.spherooadmin.supplier.FilterSupplierForAssignDTO(s.supplierId,s.supplierName,s.rating) from Supplier s where s.categoryNames=:categoryName and s.rating>=:rating and s.supplierAddress.pinCode like %:pinCode% and s.visibility=true order by s.rating ASC")
   List<FilterSupplierForAssignDTO> findAllOrderBySupplierName(@Param("categoryName") String  categoryName,@Param("rating") int rating,@Param("pinCode") String pinCode);
 
   @Query(value = "select s.visibility from Supplier s where s.supplierId=:supplierid")

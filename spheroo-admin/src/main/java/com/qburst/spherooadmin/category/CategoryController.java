@@ -70,7 +70,7 @@ public class CategoryController {
      * @return Returns the page data serialized in JSON along with HTTP status OK.
      */
     @GetMapping("/list-categoryName")
-    public ResponseEntity<?> getCategoryListByPage(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int noOfElements){
+    public ResponseEntity<Page<String>> getCategoryListByPage(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int noOfElements){
         if(page<1){
             throw new WrongDataForActionException("page number should be greater than 0");
         }
@@ -87,7 +87,7 @@ public class CategoryController {
      * @return manage category details in the form of array.
      */
     @GetMapping(path="/manage-categories")
-    public ResponseEntity<?> getManageCategoryDetails (@RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "6") int noOfElements){
+    public ResponseEntity<Page<ManageCategoryDetails>> getManageCategoryDetails (@RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "6") int noOfElements){
         if(page<1){
             throw new WrongDataForActionException("page number should be greater than 0");
         }
@@ -104,8 +104,9 @@ public class CategoryController {
      * @return Returns the HTTP status OK.
      */
     @PutMapping("/id={id}")
-    public ResponseEntity<?> updateCategory(@RequestBody Category category, @PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategoryById(id,category));
+    public ResponseEntity updateCategory(@RequestBody Category category, @PathVariable Long id) {
+        categoryService.updateCategoryById(id,category);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -126,7 +127,6 @@ public class CategoryController {
      */
     @PostMapping("/new")
     public ResponseEntity<HttpStatus> createCategory(@Valid @RequestBody Category category) {
-
         categoryService.saveCategory(category);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -139,11 +139,8 @@ public class CategoryController {
     @PostMapping("/id={id}/uploadIcon")
     public ResponseEntity<HttpStatus> uploadCategoryIcon(@RequestParam("file") MultipartFile multipartFile, @PathVariable long id) throws IOException {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        long fileSize = multipartFile.getSize();
-
         String fileCode = UploadCategoryIconUtil.saveFile(fileName, multipartFile);
         categoryService.updateCategoryIconById(id, fileCode);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
