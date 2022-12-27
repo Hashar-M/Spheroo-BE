@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.exception.WrongDataForActionException;
+import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.upload.UploadCategoryIconUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ import java.util.Objects;
 @RequestMapping("/category")
 public class CategoryController {
     private CategoryService categoryService;
+    private final ServiceRepository serviceRepository;
 
     /**
      * Get a category by providing its id.
@@ -95,6 +97,16 @@ public class CategoryController {
             throw new WrongDataForActionException("no of elements should be greater than 0");
         }
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getManageCategoryDetails(page-1,noOfElements));
+    }
+    @GetMapping("/check-category-name")
+    public ResponseEntity checkCategoryName(@RequestParam("category-name") String categoryName){
+        categoryService.checkCategoryName(categoryName);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("/check-service-name")
+    public ResponseEntity checkServiceName(@RequestParam("service-name") String serviceName){
+        categoryService.checkServiceName(serviceName);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

@@ -1,8 +1,11 @@
 package com.qburst.spherooadmin.category;
 
+import com.qburst.spherooadmin.exception.UniqueConstraintViolationException;
+import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +33,24 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public void saveCategory(Category category) {
-        categoryRepository.save(category);
+        try{
+            categoryRepository.save(category);
+        }catch(DataIntegrityViolationException exception){
+            String errorMessage = exception.getMostSpecificCause().toString();
+            if(errorMessage.contains("violates unique constraint")){
+                if(errorMessage.contains("(category_name)")){
+                    int start = errorMessage.indexOf("=(")+2;
+                    int end =errorMessage.indexOf(") already exists");
+                    throw new UniqueConstraintViolationException("Category : '"+ errorMessage.substring(start,end)+"' already exists.");
+                }
+                if(errorMessage.contains("(service_name)")){
+                    int start = errorMessage.indexOf("=(")+2;
+                    int end =errorMessage.indexOf(") already exists");
+                    throw new UniqueConstraintViolationException("Service : '"+ errorMessage.substring(start,end)+"' already exists.");
+                }
+            }
+            throw new WrongDataForActionException(errorMessage);
+        }
     }
 
     @Override
@@ -47,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService{
         boolean isExist = categoryRepository.existsById(categoryId);
         if(isExist){
             category.setCategoryId(categoryId);
-            categoryRepository.save(category);
+            saveCategory(category);
             List<Long> noReferenceChargeIds = serviceChargeRepository.findNullServiceCharges();
             serviceChargeRepository.deleteAllById(noReferenceChargeIds);
             List<Long> noReferenceServiceIds = serviceRepository.findNullCategoryServices();
@@ -101,5 +121,19 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public void saveListOfCategories(List<Category> categoryList) {
         categoryRepository.saveAll(categoryList);
+    }
+
+    @Override
+    public void checkCategoryName(String categoryName) {
+        if(categoryRepository.existsByCategoryName(categoryName)){
+            throw new UniqueConstraintViolationException("Category : '"+categoryName+"' already exists.");
+        }
+    }
+
+    @Override
+    public void checkServiceName(String serviceName) {
+        if(serviceRepository.existsByServiceName(serviceName)){
+            throw new UniqueConstraintViolationException("Service : '"+serviceName+"' already exists.");
+        }
     }
 }

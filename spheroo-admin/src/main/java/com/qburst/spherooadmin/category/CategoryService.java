@@ -65,4 +65,6 @@ public interface CategoryService {
      * @param categoryList the list of categories to save into the database
      */
     void saveListOfCategories(List<Category> categoryList);
+    void checkCategoryName(String categoryName);
+    void checkServiceName(String serviceName);
 }
