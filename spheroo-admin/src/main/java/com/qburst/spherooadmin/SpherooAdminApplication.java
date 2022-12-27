@@ -42,13 +42,4 @@ public class SpherooAdminApplication {
 				log.info("Active profiles: " + Arrays.toString(environment.getActiveProfiles()));
 		}
 	}
-
-	/**
-	 * This bean is needed so that spring security can be notified when a session is destroyed
-	 */
-	@Bean
-	public HttpSessionEventPublisher httpSessionEventPublisher() {
-		return new HttpSessionEventPublisher();
-	}
-
 }

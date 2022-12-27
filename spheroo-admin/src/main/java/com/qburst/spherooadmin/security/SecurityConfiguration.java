@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 
 /**
@@ -50,7 +51,16 @@ public class SecurityConfiguration {
                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authenticationFilter)
-                .sessionManagement().maximumSessions(1);  // User can have 1 session at a time
+                .sessionManagement()
+                .maximumSessions(1);  // User can have 1 session at a time
         return http.build();
+    }
+
+    /**
+     * This bean is needed so that spring security can be notified when a session is destroyed
+     */
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }
