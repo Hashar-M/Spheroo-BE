@@ -99,13 +99,13 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getManageCategoryDetails(page-1,noOfElements));
     }
     @GetMapping("/check-category-name")
-    public ResponseEntity checkCategoryName(@RequestParam("category-name") String categoryName){
-        categoryService.checkCategoryName(categoryName);
+    public ResponseEntity checkCategoryName(@RequestParam("category-name") String categoryName,@RequestParam(value = "category-id",defaultValue = "0")long categoryId){
+        categoryService.checkCategoryName(categoryName,categoryId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/check-service-name")
-    public ResponseEntity checkServiceName(@RequestParam("service-name") String serviceName){
-        categoryService.checkServiceName(serviceName);
+    public ResponseEntity checkServiceName(@RequestParam("service-name") String serviceName, @RequestParam(value = "service-id",defaultValue = "0") long serviceId){
+        categoryService.checkServiceName(serviceName,serviceId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -124,16 +124,46 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public void checkCategoryName(String categoryName) {
-        if(categoryRepository.existsByCategoryName(categoryName)){
-            throw new UniqueConstraintViolationException("Category : '"+categoryName+"' already exists.");
+    public void checkCategoryName(String categoryName, long categoryId) {
+        //checking whether it is new category adding or updating
+        if(categoryId==0) {
+            if (categoryRepository.existsByCategoryName(categoryName)) {
+                throw new UniqueConstraintViolationException("Category : '" + categoryName + "' already exists.");
+            }
+        }else{
+            if (categoryRepository.existsById(categoryId)){
+                //checking category name unique or not
+                if(categoryRepository.existsByCategoryName(categoryName)){
+                    //conforming the existence not from its previous name.(case: category name not changed)
+                    if(!categoryRepository.getReferenceById(categoryId).getCategoryName().equals(categoryName)){
+                        throw new UniqueConstraintViolationException("Category : '" + categoryName + "' already exists.");
+                    }
+                }
+            }else{
+                throw new EntityNotFoundException("category not found");
+            }
         }
     }
 
     @Override
-    public void checkServiceName(String serviceName) {
-        if(serviceRepository.existsByServiceName(serviceName)){
-            throw new UniqueConstraintViolationException("Service : '"+serviceName+"' already exists.");
+    public void checkServiceName(String serviceName,long serviceId) {
+        if(serviceId==0){
+            if(serviceRepository.existsByServiceName(serviceName)){
+                throw new UniqueConstraintViolationException("Service : '"+serviceName+"' already exists.");
+            }
+        }else{
+            if (serviceRepository.existsById(serviceId)){
+                //checking service name unique or not
+                if(serviceRepository.existsByServiceName(serviceName)){
+                    //conforming the existence not from its previous name.(case: service name not changed)
+                    if(!serviceRepository.getReferenceById(serviceId).getServiceName().equals(serviceName)){
+                        throw new UniqueConstraintViolationException("Service : '" + serviceName + "' already exists.");
+                    }
+                }
+            }else{
+                throw new EntityNotFoundException("service not found");
+            }
         }
+
     }
 }
