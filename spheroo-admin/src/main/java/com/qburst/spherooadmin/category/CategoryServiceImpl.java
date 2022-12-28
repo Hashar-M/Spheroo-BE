@@ -123,6 +123,11 @@ public class CategoryServiceImpl implements CategoryService{
         categoryRepository.saveAll(categoryList);
     }
 
+    /**
+     * function for checking whether the given category name is acceptable or not.
+     * @param categoryName accepts given category name.
+     * @param categoryId accepts category id
+     */
     @Override
     public void checkCategoryName(String categoryName, long categoryId) {
         //checking whether it is new category adding or updating
@@ -145,6 +150,11 @@ public class CategoryServiceImpl implements CategoryService{
         }
     }
 
+    /**
+     * function for checking whether the given service name is acceptable or not.
+     * @param serviceName accepts the given service name.
+     * @param serviceId accepts the service id.
+     */
     @Override
     public void checkServiceName(String serviceName,long serviceId) {
         if(serviceId==0){
@@ -164,6 +174,5 @@ public class CategoryServiceImpl implements CategoryService{
                 throw new EntityNotFoundException("service not found");
             }
         }
-
     }
 }

@@ -98,11 +98,25 @@ public class CategoryController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getManageCategoryDetails(page-1,noOfElements));
     }
+
+    /**
+     * API for checking whether the given category name is acceptable or not.
+     * @param categoryName accepts category name.
+     * @param categoryId accepts category id.
+     * @return return response messages with status code.
+     */
     @GetMapping("/check-category-name")
     public ResponseEntity checkCategoryName(@RequestParam("category-name") String categoryName,@RequestParam(value = "category-id",defaultValue = "0")long categoryId){
         categoryService.checkCategoryName(categoryName,categoryId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * API for checking whether the given service name is acceptable or not.
+     * @param serviceName accepts service name.
+     * @param serviceId accepts service id.
+     * @return return response messages with status code.
+     */
     @GetMapping("/check-service-name")
     public ResponseEntity checkServiceName(@RequestParam("service-name") String serviceName, @RequestParam(value = "service-id",defaultValue = "0") long serviceId){
         categoryService.checkServiceName(serviceName,serviceId);
