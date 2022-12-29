@@ -24,4 +24,5 @@ public interface OrdersService {
      * @param ordersList the list of services to save into the database
      */
     void saveListOfOrders(List<Orders> ordersList);
+    byte[] createZipImageFileForTheOrder(long orderId);
 }
