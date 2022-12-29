@@ -9,7 +9,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,6 @@ import static com.qburst.spherooadmin.constants.SupplierModelConstants.VISIBILIT
 @Data
 public class SupplierPaginationFilter implements Specification<Supplier> {
     private SupplierPagingConstraint key;
-    @NotNull
     private Boolean asc;
     private Boolean enabledSupplier;
     @Override
