@@ -3,11 +3,12 @@ package com.qburst.spherooadmin.orderDetails;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.qburst.spherooadmin.constants.OrdersConstants;
 import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -399,5 +400,43 @@ public class OrdersController {
         }
         ordersService.saveListOfOrders(ordersList);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("attachment/download/as-zip")
+    public ResponseEntity<byte []> downloadAttachmentImagesAsZip(@RequestParam(name = "order-id") long orderId) throws IOException {
+        byte [] zipBytes=null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_HEADER_VALUE+"data.zip");
+        headers.set(HttpHeaders.CONTENT_TYPE, "application/zip");
+
+        List<String> exposedHeader=new ArrayList<>();
+        exposedHeader.add("Content-Disposition");
+        headers.setAccessControlExposeHeaders(exposedHeader);
+
+        Path orderImagesDirPath=Paths.get(OrdersConstants.IMAGE_FOLDER_PATH+"order_"+orderId+"/");
+        if (Files.exists(orderImagesDirPath)){
+            try(DirectoryStream<Path> imagePaths = Files.newDirectoryStream(orderImagesDirPath)) {
+                List<File> paths = new ArrayList<>();
+                for (Path image : imagePaths) {
+                    if (Files.isRegularFile(image))
+                        paths.add(image.toFile());
+                }
+                if (!paths.isEmpty()) {
+                    Path zipFile = Paths.get("./order_" + orderId + ".zip");
+                    if (Files.exists(zipFile))
+                        Files.delete(zipFile);
+                    try (ZipFile zip=new ZipFile(zipFile.toString())){
+                        zip.addFiles(paths);
+                        zipBytes = FileUtils.readFileToByteArray(zipFile.toFile());
+                        Files.delete(zipFile);
+                    }
+                }
+            }
+            catch (IOException e){
+                log.info(e.getMessage());
+            }
+        }
+
+        return new ResponseEntity<>(zipBytes,headers,HttpStatus.OK);
     }
 }
