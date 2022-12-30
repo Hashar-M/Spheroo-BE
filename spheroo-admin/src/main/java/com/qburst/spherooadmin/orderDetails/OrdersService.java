@@ -13,7 +13,7 @@ public interface OrdersService {
     void updateOrdersById(AmendOrderDTO amendOrderDTO);
     void deleteOrderById(long Id);
     OrderStatisticsDTO getOrdersStatistics();
-    Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
+    Page<OrdersDisplayDTO> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements);
     void assignOrder(AssignedOrder assignedOrder);
     RejectReasonsDTO getRejectReasons();
     void rejectOrder(long orderId, long reasonId);

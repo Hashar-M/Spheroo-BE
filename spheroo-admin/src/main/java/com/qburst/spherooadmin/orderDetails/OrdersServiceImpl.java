@@ -306,8 +306,17 @@ public class OrdersServiceImpl implements OrdersService {
      * @return A page object which contains orders based on the specified criteria
      */
     @Override
-    public Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements) {
+    public Page<OrdersDisplayDTO> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements) {
         Pageable pageable = PageRequest.of(pageNo, noOfElements);
-        return ordersRepo.findAll(orderFilter, pageable);
+        Page<OrdersDisplayDTO> ordersDisplayDTOPage = ordersRepo.getOrdersByFilter(orderFilter,pageable);
+        ordersDisplayDTOPage.forEach(order-> {
+            order.setCharge(serviceChargeRepository.findChargeByPriority(order.getServiceId(),"NORMAL"));
+            String supplier = assignedOrderRepository.findSupplierByOrderId(order.getOrderId());
+            order.setAssignedSupplier((supplier != null)? supplier: "Not assigned");
+            order.setImagesList(issueImagesRepository.findIssueImagesByOrderId(order.getOrderId()));
+        });
+        return ordersDisplayDTOPage;
+//        return ordersRepo.findAll(orderFilter, pageable);
+
     }
 }
