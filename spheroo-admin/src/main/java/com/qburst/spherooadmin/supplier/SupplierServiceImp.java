@@ -2,6 +2,7 @@ package com.qburst.spherooadmin.supplier;
 
 import com.qburst.spherooadmin.category.CategoryRepository;
 import com.qburst.spherooadmin.exception.CategoryNotFoundException;
+import com.qburst.spherooadmin.exception.SupplierNameConstraintException;
 import com.qburst.spherooadmin.exception.SupplierNotFoundException;
 import com.qburst.spherooadmin.orderDetails.AssignedOrderRepository;
 import com.qburst.spherooadmin.orderDetails.Orders;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.qburst.spherooadmin.constants.CategoryConstants.CATEGORY_NOT_FOUND;
+import static com.qburst.spherooadmin.constants.ResponseConstants.SUPPLIER_NAME_DUPLICATE_VALUE;
 import static com.qburst.spherooadmin.constants.SpherooConstants.SOMETHING_WENT_WRONG;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.ALREADY_IN_REQUESTED_STATE;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_NOT_FOUND;
@@ -58,6 +60,8 @@ public class SupplierServiceImp implements SupplierService {
         /**
          * Creates a new supplier address from the {@link SupplierAddressAddDTO} in {@link SupplierAddDTO}
          */
+        if (supplierRepository.existsBySupplierName(supplierAddDTO.getSupplierName()))
+            throw new SupplierNameConstraintException(SUPPLIER_NAME_DUPLICATE_VALUE);
         SupplierAddress supplierAddress =new SupplierAddress();
         supplierAddress.setDistrict(supplierAddDTO.getSupplierAddressAddDTO().getDistrict());
         supplierAddress.setTown(supplierAddDTO.getSupplierAddressAddDTO().getTown());
