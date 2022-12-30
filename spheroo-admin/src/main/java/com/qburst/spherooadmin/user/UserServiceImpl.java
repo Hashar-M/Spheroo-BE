@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -104,6 +105,11 @@ public class UserServiceImpl implements UserService{
         else {
             throw new EntityNotFoundException();
         }
+    }
+
+    @Override
+    public void setLastLoginForUser(long userId, Date lastLogin) {
+        usersRepository.updateLastLoginByUserId(lastLogin, userId);
     }
 
 }

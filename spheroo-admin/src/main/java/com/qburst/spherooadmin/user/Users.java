@@ -18,6 +18,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
+import static com.qburst.spherooadmin.constants.UserModelConstants.LAST_LOGIN;
 import static com.qburst.spherooadmin.constants.UserModelConstants.PASSWORD;
 import static com.qburst.spherooadmin.constants.UserModelConstants.USERS_TABLE;
 import static com.qburst.spherooadmin.constants.UserModelConstants.USER_EMAIL_ID;
@@ -64,4 +68,7 @@ public class Users
     @Column(name=USER_ROLE, nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private UserRole userRole;
+
+    @Column(name=LAST_LOGIN)
+    private Date lastLogin;
 }

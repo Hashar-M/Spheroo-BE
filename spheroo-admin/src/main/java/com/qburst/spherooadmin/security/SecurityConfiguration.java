@@ -51,8 +51,7 @@ public class SecurityConfiguration {
                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authenticationFilter)
-                .sessionManagement()
-                .maximumSessions(1);  // User can have 1 session at a time
+                .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class);
         return http.build();
     }
 
