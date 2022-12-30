@@ -318,8 +318,16 @@ public class OrdersServiceImpl implements OrdersService {
         return ordersRepo.findAll(orderFilter, pageable);
     }
 
+    /**
+     * create zip file of images and converted into byte array for the given order.
+     * @param orderId id value of an order
+     * @param zipFileSavingFileLocation Directory for save created zip file
+     * @param zipFileNamePrefix prefix for zip file name for the order
+     * @param zipFileNameSuffix suffix for zip file name for the order
+     * @return byte array of zip file
+     */
     @Override
-    public byte[] createZipImageFileForTheOrder(long orderId) {
+    public byte[] createZipImageFileForTheOrder(long orderId,String zipFileSavingFileLocation,String zipFileNamePrefix,String zipFileNameSuffix) {
         byte [] zipBytes=null;
 
         Path orderImagesDirPath=Paths.get(OrdersConstants.IMAGE_FOLDER_PATH+"order_"+orderId+"/");
@@ -331,7 +339,7 @@ public class OrdersServiceImpl implements OrdersService {
                         paths.add(image.toFile());
                 }
                 if (!paths.isEmpty()) {
-                    Path zipFile = Paths.get("./order_" + orderId + ".zip");
+                    Path zipFile = Paths.get(zipFileSavingFileLocation+zipFileNamePrefix + orderId + zipFileNameSuffix);
                     if (Files.exists(zipFile))
                         Files.delete(zipFile);
                     try (ZipFile zip=new ZipFile(zipFile.toString())){
