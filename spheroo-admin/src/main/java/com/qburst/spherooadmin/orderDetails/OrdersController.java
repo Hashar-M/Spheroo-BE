@@ -5,7 +5,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.search.OrderFilter;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,6 +60,7 @@ import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CLOSED;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_DISPOSITION_HEADER_VALUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.CONTENT_TYPE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.ESCALATION;
+import static com.qburst.spherooadmin.constants.DashboardCsvConstants.ONGOING;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OPEN;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.OVERDUE;
 import static com.qburst.spherooadmin.constants.DashboardCsvConstants.SORT_COLUMN;
@@ -77,14 +76,16 @@ public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;
-    @Value("${file.name.for.open.order.csv.fil.download:data-open.csv}")
+    @Value("${file.name.for.open.order.csv.file.download:data-open.csv}")
     private String openOrderCsvFileName;
-    @Value("${file.name.for.closed.order.csv.fil.download:data-closed.csv}")
+    @Value("${file.name.for.closed.order.csv.file.download:data-closed.csv}")
     private String closedOrderCsvFileName;
-    @Value("${file.name.for.overdue.order.csv.fil.download:data-overdue.csv}")
+    @Value("${file.name.for.overdue.order.csv.file.download:data-overdue.csv}")
     private String overdueOrderCsvFileName;
-    @Value("${file.name.for.escalation.order.csv.fil.download:data-escalations.csv}")
+    @Value("${file.name.for.escalation.order.csv.file.download:data-escalations.csv}")
     private String escalationOrderCsvFileName;
+    @Value("${file.name.for.ongoing.order.csv.file.download:data-ongoing.csv}")
+    private String ongoingOrderCsvFileName;
 
 
     /**
@@ -190,7 +191,7 @@ public class OrdersController {
     public ResponseEntity<byte []>  exportOrdersAsBinary(@RequestParam String status,
                                                          @Value("${file.path.for.csv.file.download:File-Download/csv-files}") String fileDownloadPath) throws IOException {
         if(status.equalsIgnoreCase(OPEN) || status.equalsIgnoreCase(CLOSED)||
-                status.equalsIgnoreCase(ESCALATION)||status.equalsIgnoreCase(OVERDUE)) {
+                status.equalsIgnoreCase(ESCALATION)||status.equalsIgnoreCase(OVERDUE) || status.equalsIgnoreCase(ONGOING)) {
             String fileName = null;
             switch (status) {
                 case OPEN:
@@ -205,6 +206,10 @@ public class OrdersController {
                 case ESCALATION:
                     fileName=escalationOrderCsvFileName;
                     break;
+                case ONGOING:
+                    fileName=ongoingOrderCsvFileName;
+                    break;
+
             }
 
             Path uploadPath = Paths.get(fileDownloadPath);
@@ -399,5 +404,33 @@ public class OrdersController {
         }
         ordersService.saveListOfOrders(ordersList);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * method for get operation on images uploaded by users while placing the order.
+     * Here all images associated with given order is made into a zip file and converted into byte array.
+     * @param orderId id value of an order
+     * @param zipFileSavingFileLocation Directory for save created zip file
+     * @param zipFileNamePrefix prefix for zip file name for the order
+     * @param zipFileNameSuffix suffix for zip file name for the order
+     * @return byte array of zip file
+     */
+    @GetMapping("attachment/download/as-zip")
+    public ResponseEntity<byte []> downloadAttachmentImagesAsZip(@RequestParam(name = "order-id") long orderId,
+                                                                 @Value("${order.images.zip.attachment.download.saving.file.location:./}") String zipFileSavingFileLocation,
+                                                                 @Value("${order.images.zip.attachment.download.file.name.prefix:order_}") String zipFileNamePrefix,
+                                                                 @Value("${order.images.zip.attachment.download.file.name.suffix:.zip}") String zipFileNameSuffix){
+        byte [] zipBytes;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_HEADER_VALUE+zipFileNamePrefix+orderId+zipFileNameSuffix);
+        headers.set(HttpHeaders.CONTENT_TYPE, "application/zip");
+
+        List<String> exposedHeader=new ArrayList<>();
+        exposedHeader.add("Content-Disposition");
+        headers.setAccessControlExposeHeaders(exposedHeader);
+
+        zipBytes=ordersService.createZipImageFileForTheOrder(orderId,zipFileSavingFileLocation,zipFileNamePrefix,zipFileNameSuffix);
+        return new ResponseEntity<>(zipBytes,headers,HttpStatus.OK);
     }
 }
