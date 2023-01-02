@@ -34,11 +34,6 @@ public interface OrdersRepository extends JpaRepository<Orders,Long>, JpaSpecifi
             " INNER JOIN Service ser ON ord.serviceId = ser.serviceId " +
             " where ord.orderStatus in ('UNASSIGNED','UNACCEPTED','ACCEPTED') and Extract(epoch from(current_timestamp-ord.deliveryToDate))/(60*60) >= ?1")
     Page<OrdersDisplayDTO> getOrderByDuePeriod(int duePeriodInHours, Pageable pageable);
-    @Query(value = "SELECT new com.qburst.spherooadmin.orderDetails.OrdersDisplayDTO(ord.orderId, ord.customerName, ord.createdDate, ord.deliveryFromDate, ord.deliveryToDate, ord.comments, ord.zipCode, ord.orderStatus, ord.categoryId, ord.serviceId, cat.categoryName, ser.serviceName, ord.isAmended)  " +
-            "FROM Orders ord " +
-            "INNER JOIN Category cat ON (ord.categoryId = cat.categoryId)" +
-            " INNER JOIN Service ser ON ord.serviceId = ser.serviceId ")
-    Page<OrdersDisplayDTO> getOrdersByFilter(Specification<Orders> spec, Pageable pageable);
 
     /**
      * function for selecting orders which are included in open order category.

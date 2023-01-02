@@ -15,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +34,6 @@ import org.supercsv.prefs.CsvPreference;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.io.File;
 import java.io.FileInputStream;
@@ -384,11 +382,11 @@ public class OrdersController {
      * @return A Page of orders based on the provided criteria.
      */
     @GetMapping("/search")
-    public ResponseEntity<Page<OrdersDisplayDTO>> findAllOrdersBySpecification(@RequestParam(defaultValue = "1") @Positive int pageNo, @RequestParam(defaultValue = "6") @Positive int noOfElements,
-                                                                     @RequestParam(value = "service-name") String serviceName,
-                                                                     @RequestParam(value = "zip-code",required = false) String zipCode,
-                                                                     @RequestParam(value = "from-date",required = false) @DateTimeFormat(iso =DateTimeFormat.ISO.DATE) Date fromDate,
-                                                                     @RequestParam(value = "to-date",required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate) {
+    public ResponseEntity<OrdersDisplayDTOPage> findAllOrdersBySpecification(@RequestParam(defaultValue = "1") @Positive int pageNo, @RequestParam(defaultValue = "6") @Positive int noOfElements,
+                                                                             @RequestParam(value = "service-name") String serviceName,
+                                                                             @RequestParam(value = "zip-code",required = false) String zipCode,
+                                                                             @RequestParam(value = "from-date",required = false) @DateTimeFormat(iso =DateTimeFormat.ISO.DATE) Date fromDate,
+                                                                             @RequestParam(value = "to-date",required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate) {
         OrderFilter orderFilter = new OrderFilter();
         orderFilter.setServiceName(serviceName);
         orderFilter.setZipCode(zipCode);
