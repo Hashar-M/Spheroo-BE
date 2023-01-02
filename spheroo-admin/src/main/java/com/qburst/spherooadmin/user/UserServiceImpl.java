@@ -107,6 +107,11 @@ public class UserServiceImpl implements UserService{
         }
     }
 
+    /**
+     * Set the last login date for the user
+     * @param userId The id of the user
+     * @param lastLogin the date of the login
+     */
     @Override
     public void setLastLoginForUser(long userId, Date lastLogin) {
         usersRepository.updateLastLoginByUserId(lastLogin, userId);

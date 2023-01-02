@@ -13,6 +13,11 @@ import java.util.Date;
  */
 public interface UsersRepository extends JpaRepository<Users,Long>
 {
+    /**
+     * Update the last login field for the user by its id
+     * @param lastLogin The new login date
+     * @param userId The id of the user
+     */
     @Transactional
     @Modifying
     @Query("update Users u set u.lastLogin = ?1 where u.userId = ?2")

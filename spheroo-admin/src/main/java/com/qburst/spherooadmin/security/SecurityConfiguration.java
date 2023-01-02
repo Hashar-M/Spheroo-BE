@@ -6,6 +6,7 @@ import com.qburst.spherooadmin.security.filter.CorsFilter;
 import com.qburst.spherooadmin.security.filter.ExceptionHandlerFilter;
 import com.qburst.spherooadmin.security.filter.JWTAuthorizationFilter;
 import com.qburst.spherooadmin.security.manager.CustomAuthenticationManager;
+import com.qburst.spherooadmin.user.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 public class SecurityConfiguration {
 
     private CustomAuthenticationManager customAuthenticationManager;
+    private final UserServiceImpl userService;
 
     /**
      * Each request is passed through the SecurityFilterChain and is processed to authenticate
@@ -51,15 +53,7 @@ public class SecurityConfiguration {
                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authenticationFilter)
-                .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class);
+                .addFilterAfter(new JWTAuthorizationFilter(userService), AuthenticationFilter.class);
         return http.build();
-    }
-
-    /**
-     * This bean is needed so that spring security can be notified when a session is destroyed
-     */
-    @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
     }
 }
