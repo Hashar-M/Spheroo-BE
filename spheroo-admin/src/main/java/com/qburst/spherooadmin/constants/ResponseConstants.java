@@ -10,4 +10,7 @@ public class ResponseConstants {
     /**{@value #SERVICE_NAME_ALREADY_IN_USE} value of SERVICE_NAME_ALREADY_IN_USE*/
     public static final String SERVICE_NAME_ALREADY_IN_USE="service name already in use.";
     public static final String PASSWORD_RESET_TOKEN_EXPIRED = "Your password reset request has expired.";
+    public static final String PAGINATION_PAGE_NUMBER="page number should be non zero positive integers";
+    public static final String PAGINATION_PAGE_SIZE="page size should be non zero positive integers";
+    public static final String SUPPLIER_NAME_DUPLICATE_VALUE="supplier of given name already exists";
 }

@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Optional;
 
-import static com.qburst.spherooadmin.constants.ResponseConstants.ILLEGAL_ARGUMENT_EXCEPTION_RESPONSE;
+import static com.qburst.spherooadmin.constants.ResponseConstants.PAGINATION_PAGE_NUMBER;
+import static com.qburst.spherooadmin.constants.ResponseConstants.PAGINATION_PAGE_SIZE;
 
 @Validated
 @RestController
@@ -40,17 +42,28 @@ public class SupplierController {
 
     /**
      * method return a {@link org.springframework.data.domain.Page} of Supplier details({@link SupplierGetDTO})
-     * @param supplierPaginationFilter Jpa specification used for supplier search.
      * @param pageNo page number.
      * @param pageSize size for page.
+     * @param key name of constraints for sorting.
+     * @param asc sorting direction, ascending or descending
+     * @param enabledSupplier sorting supplier by their visibility.
      * @return
      */
     @GetMapping("/get/list")
-    public ResponseEntity<Object> getSuppliersAsPage(@Valid @RequestBody SupplierPaginationFilter supplierPaginationFilter,@RequestParam(name = "page-no",defaultValue = "0") int pageNo, @RequestParam(name = "page-size",defaultValue = "1") int pageSize){
-        if (pageSize<1|| pageNo<0 ){
-            throw new IllegalArgumentException(ILLEGAL_ARGUMENT_EXCEPTION_RESPONSE);
-        }
-        return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo,pageSize,supplierPaginationFilter));
+    public ResponseEntity<SupplierPageDTO> getSuppliersAsPage(@RequestParam(name = "page-no",defaultValue = "0") @Positive(message = PAGINATION_PAGE_NUMBER) int pageNo,
+                                                              @RequestParam(name = "page-size",defaultValue = "6") @Positive(message = PAGINATION_PAGE_SIZE) int pageSize,
+                                                              @RequestParam(name = "key") SupplierPagingConstraint key,
+                                                              @RequestParam(name = "asc",defaultValue = "true") Boolean asc,
+                                                              @RequestParam(name = "enabledSupplier",required = false) Boolean enabledSupplier,
+                                                              @RequestParam(name = "searchName") String searchName){
+
+        SupplierPaginationFilter supplierPaginationFilter=new SupplierPaginationFilter();
+        supplierPaginationFilter.setKey(key);
+        supplierPaginationFilter.setAsc(asc);
+        supplierPaginationFilter.setEnabledSupplier(enabledSupplier);
+        supplierPaginationFilter.setSearchName(searchName);
+
+        return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo-1,pageSize,supplierPaginationFilter));
     }
 
     /**
@@ -65,10 +78,16 @@ public class SupplierController {
         matchedSuppliersGetDTO.setFilterSupplierForAssignDTOList(supplierService.getSuppliersToAssign(orderId));
         return new ResponseEntity<>(matchedSuppliersGetDTO,HttpStatus.OK);
     }
+
+    /**
+     * deletes a supplier of given {@link Supplier} name
+     * @param supplierName name of supplier to delete.
+     * @return {@link ResponseDTO} with a true boolean value for successful deletion.
+     */
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDTO> deleteASupplier(@RequestBody SupplierDeleteDTO supplierDeleteDTO){
+    public ResponseEntity<ResponseDTO> deleteASupplier(@RequestParam(name = "supplier-name") String supplierName){
         ResponseDTO responseDTO=new ResponseDTO();
-        if(supplierService.deleteSupplierFromSupplierName(supplierDeleteDTO.getSupplierName())){
+        if(supplierService.deleteSupplierFromSupplierName(supplierName)){
             responseDTO.setSuccess(true);
             return ResponseEntity.ok(responseDTO);
         }
