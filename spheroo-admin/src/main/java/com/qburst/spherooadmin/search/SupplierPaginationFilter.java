@@ -38,12 +38,12 @@ public class SupplierPaginationFilter implements Specification<Supplier> {
             predicates.add(criteriaBuilder.equal(root.get(VISIBILITY), false));
         }
         if(!searchName.isEmpty()){
-            Predicate first=criteriaBuilder.like(root.get("supplierName"),"%"+searchName+"%");
+            Predicate supplierName=criteriaBuilder.like(root.get("supplierName"),"%"+searchName+"%");
 
-            Predicate paertialpredicate=criteriaBuilder.and(criteriaBuilder.equal(supplierUserJoin.get("supplierUserType"), SupplierUserType.MANAGER),
+            Predicate adminEmail=criteriaBuilder.and(criteriaBuilder.equal(supplierUserJoin.get("supplierUserType"), SupplierUserType.MANAGER),
                                                             criteriaBuilder.like(supplierUserJoin.get("supplierUserEmail"),"%"+searchName+"%"));
-            Predicate finalPredicate=criteriaBuilder.or(first,paertialpredicate);
-            predicates.add(finalPredicate);
+            Predicate searchPredicate=criteriaBuilder.or(supplierName,adminEmail);
+            predicates.add(searchPredicate);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
