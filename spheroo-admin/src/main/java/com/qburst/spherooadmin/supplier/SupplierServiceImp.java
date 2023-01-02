@@ -164,6 +164,7 @@ public class SupplierServiceImp implements SupplierService {
         supplierPageDTO.setPageSize(suppliersPage.getSize());
         supplierPageDTO.setPageNumber(suppliersPage.getNumber());
         supplierPageDTO.setTotalPages(suppliersPage.getTotalPages());
+        supplierPageDTO.setTotalElements(suppliersPage.getTotalElements());
         return supplierPageDTO;
     }
 

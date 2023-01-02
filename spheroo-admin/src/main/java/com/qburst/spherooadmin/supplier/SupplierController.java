@@ -78,10 +78,16 @@ public class SupplierController {
         matchedSuppliersGetDTO.setFilterSupplierForAssignDTOList(supplierService.getSuppliersToAssign(orderId));
         return new ResponseEntity<>(matchedSuppliersGetDTO,HttpStatus.OK);
     }
+
+    /**
+     * deletes a supplier of given {@link Supplier} name
+     * @param supplierName name of supplier to delete.
+     * @return {@link ResponseDTO} with a true boolean value for successful deletion.
+     */
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDTO> deleteASupplier(@RequestBody SupplierDeleteDTO supplierDeleteDTO){
+    public ResponseEntity<ResponseDTO> deleteASupplier(@RequestParam(name = "supplier-name") String supplierName){
         ResponseDTO responseDTO=new ResponseDTO();
-        if(supplierService.deleteSupplierFromSupplierName(supplierDeleteDTO.getSupplierName())){
+        if(supplierService.deleteSupplierFromSupplierName(supplierName)){
             responseDTO.setSuccess(true);
             return ResponseEntity.ok(responseDTO);
         }
