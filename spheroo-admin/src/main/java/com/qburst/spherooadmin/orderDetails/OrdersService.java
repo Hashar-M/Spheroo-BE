@@ -24,4 +24,14 @@ public interface OrdersService {
      * @param ordersList the list of services to save into the database
      */
     void saveListOfOrders(List<Orders> ordersList);
+
+    /**
+     * create zip file of images and converted into byte array for the given order.
+     * @param orderId
+     * @param zipFileSavingFileLocation
+     * @param zipFileNamePrefix
+     * @param zipFileNameSuffix
+     * @return
+     */
+    byte[] createZipImageFileForTheOrder(long orderId,String zipFileSavingFileLocation,String zipFileNamePrefix,String zipFileNameSuffix);
 }

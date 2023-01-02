@@ -70,6 +70,13 @@ public class CategoryController {
      * @return Returns the page data serialized in JSON along with HTTP status OK.
      */
     @GetMapping("/list-categoryName")
+    public ResponseEntity<Page<String>> getCategoryListByPage(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int noOfElements){
+        if(page<1){
+            throw new WrongDataForActionException("page number should be greater than 0");
+        }
+        if(noOfElements<1){
+            throw new WrongDataForActionException("no of elements should be greater than 0");
+        }
     public ResponseEntity<?> getCategoryListByPage(@RequestParam(defaultValue = "1") @Positive int page, @RequestParam(defaultValue = "10") @Positive int noOfElements){
         return ResponseEntity.ok(categoryService.getAllCategoryNamesPaged(page-1,noOfElements));
     }
@@ -81,6 +88,13 @@ public class CategoryController {
      * @return manage category details in the form of array.
      */
     @GetMapping(path="/manage-categories")
+    public ResponseEntity<Page<ManageCategoryDetails>> getManageCategoryDetails (@RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "6") int noOfElements){
+        if(page<1){
+            throw new WrongDataForActionException("page number should be greater than 0");
+        }
+        if(noOfElements<1){
+            throw new WrongDataForActionException("no of elements should be greater than 0");
+        }
     public ResponseEntity<?> getManageCategoryDetails (@RequestParam(defaultValue = "1") @Positive int page, @RequestParam(defaultValue = "6") @Positive int noOfElements){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getManageCategoryDetails(page-1,noOfElements));
     }
@@ -115,6 +129,10 @@ public class CategoryController {
      * @param id the category_id to retrieve from the database.
      * @return Returns the HTTP status OK.
      */
+    @PutMapping("/id={id}")
+    public ResponseEntity updateCategory(@RequestBody Category category, @PathVariable Long id) {
+        categoryService.updateCategoryById(id,category);
+        return new ResponseEntity<>(HttpStatus.OK);
     @PutMapping
     public ResponseEntity<?> updateCategory(@Valid @RequestBody Category category, @RequestParam @Positive Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategoryById(id,category));
