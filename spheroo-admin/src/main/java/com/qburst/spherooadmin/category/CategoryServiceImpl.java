@@ -37,8 +37,9 @@ public class CategoryServiceImpl implements CategoryService{
     public Category getCategory(Long id) {
         if(categoryRepository.existsById(id)){
             return categoryRepository.getReferenceById(id);
+        }else {
+            throw new EntityNotFoundException("No category exist with given id");
         }
-        throw new EntityNotFoundException("No category exist with given id");
     }
 
     @Override
