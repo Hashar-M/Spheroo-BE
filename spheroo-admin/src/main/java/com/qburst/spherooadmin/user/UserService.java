@@ -1,5 +1,7 @@
 package com.qburst.spherooadmin.user;
 
+import java.util.Date;
+
 /**
  * interface for user related services.
  */
@@ -37,4 +39,11 @@ public interface UserService {
      * @param password The new password of the user
      */
     void resetPassword(String token, String password);
+
+    /**
+     * Set the last login date for the user
+     * @param userId The id of the user
+     * @param lastLogin the date of the login
+     */
+    void setLastLoginForUser(long userId, Date lastLogin);
 }

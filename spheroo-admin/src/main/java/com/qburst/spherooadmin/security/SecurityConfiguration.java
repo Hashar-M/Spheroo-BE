@@ -6,6 +6,7 @@ import com.qburst.spherooadmin.security.filter.CorsFilter;
 import com.qburst.spherooadmin.security.filter.ExceptionHandlerFilter;
 import com.qburst.spherooadmin.security.filter.JWTAuthorizationFilter;
 import com.qburst.spherooadmin.security.manager.CustomAuthenticationManager;
+import com.qburst.spherooadmin.user.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +14,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 
 /**
+ * @author Hameel
  * Security configuration class that is used to configure spring security.
  */
 @Configuration
@@ -23,6 +26,7 @@ import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 public class SecurityConfiguration {
 
     private CustomAuthenticationManager customAuthenticationManager;
+    private final UserServiceImpl userService;
 
     /**
      * Each request is passed through the SecurityFilterChain and is processed to authenticate
@@ -49,7 +53,7 @@ public class SecurityConfiguration {
                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authenticationFilter)
-                .addFilterAfter(new JWTAuthorizationFilter(), AuthenticationFilter.class);
+                .addFilterAfter(new JWTAuthorizationFilter(userService), AuthenticationFilter.class);
         return http.build();
     }
 }
