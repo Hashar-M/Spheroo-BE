@@ -117,8 +117,8 @@ public class CategoryController {
      */
     @PutMapping
     public ResponseEntity updateCategory(@Valid @RequestBody Category category, @RequestParam @Positive Long id) {
-            categoryService.updateCategoryById(id,category);
-            return new ResponseEntity<>(HttpStatus.OK);
+        categoryService.updateCategoryById(id,category);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
