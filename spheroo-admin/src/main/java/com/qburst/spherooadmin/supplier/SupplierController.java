@@ -54,12 +54,14 @@ public class SupplierController {
                                                               @RequestParam(name = "page-size",defaultValue = "6") @Positive(message = PAGINATION_PAGE_SIZE) int pageSize,
                                                               @RequestParam(name = "key") SupplierPagingConstraint key,
                                                               @RequestParam(name = "asc",defaultValue = "true") Boolean asc,
-                                                              @RequestParam(name = "enabledSupplier",required = false) Boolean enabledSupplier){
+                                                              @RequestParam(name = "enabledSupplier",required = false) Boolean enabledSupplier,
+                                                              @RequestParam(name = "searchName") String searchName){
 
         SupplierPaginationFilter supplierPaginationFilter=new SupplierPaginationFilter();
         supplierPaginationFilter.setKey(key);
         supplierPaginationFilter.setAsc(asc);
         supplierPaginationFilter.setEnabledSupplier(enabledSupplier);
+        supplierPaginationFilter.setSearchName(searchName);
 
         return ResponseEntity.ok(supplierService.getPageOfSupplier(pageNo-1,pageSize,supplierPaginationFilter));
     }

@@ -147,4 +147,10 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ErrorResponse error = new ErrorResponse(Collections.singletonList(ex.getMessage()), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(SupplierNameConstraintException.class)
+    public ResponseEntity<Object> handleSupplierNameConstraintException(SupplierNameConstraintException ex) {
+        ErrorResponse error = new ErrorResponse(Collections.singletonList(ex.getMessage()), HttpStatus.OK);
+        return new ResponseEntity<>(error, HttpStatus.OK);
+    }
 }
