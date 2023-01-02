@@ -16,4 +16,5 @@ public class SupplierPageDTO {
     private int totalPages;
     private int pageSize;
     private int pageNumber;
+    private long totalElements;
 }

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -41,5 +42,4 @@ public class SpherooAdminApplication {
 				log.info("Active profiles: " + Arrays.toString(environment.getActiveProfiles()));
 		}
 	}
-
 }

@@ -5,6 +5,7 @@ public final class DashboardCsvConstants {
     public static final String CLOSED="closed";
     public static final String OVERDUE="overdue";
     public static final String ESCALATION="escalations";
+    public static final String ONGOING="ongoing";
     public static final String FILE_PATH_FOR_CSV_FILE_DOWNLOAD="File-Download/csv-files";
     public static final String FILE_PATH_PREFIX_FOR_CSV_FILE_DOWNLOAD="data-";
     public static final String FILE_PATH_SUFFIX_FOR_CSV_FILE_DOWNLOAD=".csv";

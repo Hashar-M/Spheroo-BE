@@ -8,6 +8,9 @@ import com.qburst.spherooadmin.service.ServiceChargeRepository;
 import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.supplier.SupplierRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.ZipFile;
+import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,17 +20,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OrdersServiceImpl implements OrdersService {
 
     private OrdersRepository ordersRepo;
@@ -318,5 +325,43 @@ public class OrdersServiceImpl implements OrdersService {
         return ordersDisplayDTOPage;
 //        return ordersRepo.findAll(orderFilter, pageable);
 
+    }
+
+    /**
+     * create zip file of images and converted into byte array for the given order.
+     * @param orderId id value of an order
+     * @param zipFileSavingFileLocation Directory for save created zip file
+     * @param zipFileNamePrefix prefix for zip file name for the order
+     * @param zipFileNameSuffix suffix for zip file name for the order
+     * @return byte array of zip file
+     */
+    @Override
+    public byte[] createZipImageFileForTheOrder(long orderId,String zipFileSavingFileLocation,String zipFileNamePrefix,String zipFileNameSuffix) {
+        byte [] zipBytes=null;
+
+        Path orderImagesDirPath=Paths.get(OrdersConstants.IMAGE_FOLDER_PATH+"order_"+orderId+"/");
+        if (Files.exists(orderImagesDirPath)){
+            try(DirectoryStream<Path> imagePaths = Files.newDirectoryStream(orderImagesDirPath)) {
+                List<File> paths = new ArrayList<>();
+                for (Path image : imagePaths) {
+                    if (Files.isRegularFile(image))
+                        paths.add(image.toFile());
+                }
+                if (!paths.isEmpty()) {
+                    Path zipFile = Paths.get(zipFileSavingFileLocation+zipFileNamePrefix + orderId + zipFileNameSuffix);
+                    if (Files.exists(zipFile))
+                        Files.delete(zipFile);
+                    try (ZipFile zip=new ZipFile(zipFile.toString())){
+                        zip.addFiles(paths);
+                        zipBytes = FileUtils.readFileToByteArray(zipFile.toFile());
+                        Files.delete(zipFile);
+                    }
+                }
+            }
+            catch (IOException e){
+                log.info(e.getMessage());
+            }
+        }
+        return zipBytes;
     }
 }
