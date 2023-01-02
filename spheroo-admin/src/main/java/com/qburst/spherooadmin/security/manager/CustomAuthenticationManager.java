@@ -11,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -38,7 +39,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         } else {
             throw new BadCredentialsException("Invalid Username or Password!");
         }
-
+        userService.setLastLoginForUser(user.get().getUserId(), new Date(System.currentTimeMillis()));
         return new UsernamePasswordAuthenticationToken(authentication.getName(), authentication.getCredentials());
     }
 }
