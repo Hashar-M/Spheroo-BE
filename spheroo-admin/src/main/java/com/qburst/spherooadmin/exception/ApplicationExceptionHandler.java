@@ -150,6 +150,11 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ErrorResponse error = new ErrorResponse(Collections.singletonList(ex.getMessage()), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(UniqueConstraintViolationException.class)
+    public ResponseEntity<Object> handleUniqueConstraintViolationException(UniqueConstraintViolationException ex){
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()),HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(error,HttpStatus.NOT_ACCEPTABLE);
+    }
 
     @ExceptionHandler(SupplierNameConstraintException.class)
     public ResponseEntity<Object> handleSupplierNameConstraintException(SupplierNameConstraintException ex) {

@@ -3,16 +3,15 @@ package com.qburst.spherooadmin.category;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.qburst.spherooadmin.exception.WrongDataForActionException;
 import com.qburst.spherooadmin.upload.UploadCategoryIconUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +33,7 @@ import java.util.Objects;
  * The controller for the Category entity.
  * Provides the endpoints to access the entities stored in the database.
  */
+@Validated
 @RestController
 @AllArgsConstructor
 @RequestMapping("/category")
@@ -41,8 +45,8 @@ public class CategoryController {
      * @param id the category_id to retrieve from the database.
      * @return Returns the category serialized in JSON along with HTTP status OK.
      */
-    @GetMapping("/id={id}")
-    public ResponseEntity<Category> getById(@PathVariable long id){
+    @GetMapping
+    public ResponseEntity<Category> getById(@RequestParam @Positive long id){
         return new ResponseEntity<>(categoryService.getCategory(id), HttpStatus.OK);
     }
 
@@ -53,13 +57,7 @@ public class CategoryController {
      * @return Returns the page data serialized in JSON along with HTTP status OK.
      */
     @GetMapping("/list-category")
-    public ResponseEntity<Page<Category>> findAllById(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "6") int noOfElements){
-        if(page<1){
-            throw new WrongDataForActionException("page number should be greater than 0");
-        }
-        if (noOfElements<1){
-            throw new WrongDataForActionException("no of elements should be greater than 0");
-        }
+    public ResponseEntity<Page<Category>> findAllById(@RequestParam(defaultValue = "1") @Positive int page, @RequestParam(defaultValue = "6") @Positive int noOfElements){
         return new ResponseEntity<>(categoryService.getAllCategoriesPaged(page-1, noOfElements), HttpStatus.OK);
     }
 
@@ -70,13 +68,7 @@ public class CategoryController {
      * @return Returns the page data serialized in JSON along with HTTP status OK.
      */
     @GetMapping("/list-categoryName")
-    public ResponseEntity<Page<String>> getCategoryListByPage(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int noOfElements){
-        if(page<1){
-            throw new WrongDataForActionException("page number should be greater than 0");
-        }
-        if(noOfElements<1){
-            throw new WrongDataForActionException("no of elements should be greater than 0");
-        }
+    public ResponseEntity<Page<String>>getCategoryListByPage(@RequestParam(defaultValue = "1") @Positive int page, @RequestParam(defaultValue = "10") @Positive int noOfElements){
         return ResponseEntity.ok(categoryService.getAllCategoryNamesPaged(page-1,noOfElements));
     }
 
@@ -87,14 +79,32 @@ public class CategoryController {
      * @return manage category details in the form of array.
      */
     @GetMapping(path="/manage-categories")
-    public ResponseEntity<Page<ManageCategoryDetails>> getManageCategoryDetails (@RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "6") int noOfElements){
-        if(page<1){
-            throw new WrongDataForActionException("page number should be greater than 0");
-        }
-        if(noOfElements<1){
-            throw new WrongDataForActionException("no of elements should be greater than 0");
-        }
+    public ResponseEntity<Page<ManageCategoryDetails>> getManageCategoryDetails (@RequestParam(defaultValue = "1") @Positive int page, @RequestParam(defaultValue = "6") @Positive int noOfElements){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getManageCategoryDetails(page-1,noOfElements));
+    }
+
+    /**
+     * API for checking whether the given category name is acceptable or not.
+     * @param categoryName accepts category name.
+     * @param categoryId accepts category id.
+     * @return return response messages with status code.
+     */
+    @GetMapping("/check-category-name")
+    public ResponseEntity checkCategoryName(@RequestParam("category-name") @NotBlank @Size(min =4, max=64) String categoryName, @RequestParam(value = "category-id",defaultValue = "0") @PositiveOrZero long categoryId){
+        categoryService.checkCategoryName(categoryName.trim(),categoryId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * API for checking whether the given service name is acceptable or not.
+     * @param serviceName accepts service name.
+     * @param serviceId accepts service id.
+     * @return return response messages with status code.
+     */
+    @GetMapping("/check-service-name")
+    public ResponseEntity checkServiceName(@RequestParam("service-name") @NotBlank @Size(min =4, max=64) String serviceName, @RequestParam(value = "service-id",defaultValue = "0") @PositiveOrZero long serviceId){
+        categoryService.checkServiceName(serviceName.trim(),serviceId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -103,8 +113,8 @@ public class CategoryController {
      * @param id the category_id to retrieve from the database.
      * @return Returns the HTTP status OK.
      */
-    @PutMapping("/id={id}")
-    public ResponseEntity updateCategory(@RequestBody Category category, @PathVariable Long id) {
+    @PutMapping
+    public ResponseEntity updateCategory(@Valid @RequestBody Category category, @RequestParam @Positive Long id) {
         categoryService.updateCategoryById(id,category);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -114,8 +124,8 @@ public class CategoryController {
      * @param id the category_id to delete from the database.
      * @return Returns the HTTP status NO_CONTENT.
      */
-    @DeleteMapping("/id={id}")
-    public ResponseEntity<HttpStatus> deleteCategory(@PathVariable long id){
+    @DeleteMapping
+    public ResponseEntity<HttpStatus> deleteCategory(@RequestParam @Positive long id){
         categoryService.deleteCategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -136,8 +146,8 @@ public class CategoryController {
      * @param id the category_id to store the icon to in the database.
      * @return Returns HTTP status OK.
      */
-    @PostMapping("/id={id}/uploadIcon")
-    public ResponseEntity<HttpStatus> uploadCategoryIcon(@RequestParam("file") MultipartFile multipartFile, @PathVariable long id) throws IOException {
+    @PostMapping("/uploadIcon")
+    public ResponseEntity<HttpStatus> uploadCategoryIcon(@RequestParam("file") MultipartFile multipartFile, @RequestParam @Positive long id) throws IOException {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         String fileCode = UploadCategoryIconUtil.saveFile(fileName, multipartFile);
         categoryService.updateCategoryIconById(id, fileCode);
@@ -166,4 +176,3 @@ public class CategoryController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
-
