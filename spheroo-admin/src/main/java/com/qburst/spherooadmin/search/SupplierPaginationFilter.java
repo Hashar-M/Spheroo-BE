@@ -29,7 +29,6 @@ public class SupplierPaginationFilter implements Specification<Supplier> {
     private String searchName;
     @Override
     public Predicate toPredicate(Root<Supplier> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        Join<Supplier, SupplierUser> supplierUserJoin= root.join("supplierUsers");
         List<Predicate> predicates = new ArrayList<>();
         if (Boolean.TRUE.equals(enabledSupplier)){
             predicates.add(criteriaBuilder.equal(root.get(VISIBILITY),true));
@@ -38,7 +37,9 @@ public class SupplierPaginationFilter implements Specification<Supplier> {
             predicates.add(criteriaBuilder.equal(root.get(VISIBILITY), false));
         }
         if(!searchName.isEmpty()){
-            Predicate supplierName=criteriaBuilder.like(root.get("supplierName"),"%"+searchName+"%");
+            Join<Supplier, SupplierUser> supplierUserJoin= root.join("supplierUsers");
+            Predicate supplierName=criteriaBuilder.and(criteriaBuilder.like(root.get("supplierName"),"%"+searchName+"%"),
+                    criteriaBuilder.equal(supplierUserJoin.get("supplierUserType"), SupplierUserType.MANAGER));
 
             Predicate adminEmail=criteriaBuilder.and(criteriaBuilder.equal(supplierUserJoin.get("supplierUserType"), SupplierUserType.MANAGER),
                                                             criteriaBuilder.like(supplierUserJoin.get("supplierUserEmail"),"%"+searchName+"%"));
