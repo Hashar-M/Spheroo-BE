@@ -9,8 +9,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,11 +54,11 @@ public class OrderFilter implements Specification<Orders> {
             predicates.add(criteriaBuilder.like(root.get("zipCode"), "%" + zipCode + "%"));
         }
         if (fromDate != null) {
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("deliveryFromDate"), toDate));
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("deliveryToDate"), fromDate));
         }
         if (toDate != null){
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("deliveryToDate"), fromDate));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("deliveryToDate"), toDate));
         }
-        return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 }

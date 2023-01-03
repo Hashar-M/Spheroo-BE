@@ -313,9 +313,43 @@ public class OrdersServiceImpl implements OrdersService {
      * @return A page object which contains orders based on the specified criteria
      */
     @Override
-    public Page<Orders> findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements) {
+    public OrdersDisplayDTOPage findAllOrdersBySpecification(OrderFilter orderFilter, int pageNo, int noOfElements) {
         Pageable pageable = PageRequest.of(pageNo, noOfElements);
-        return ordersRepo.findAll(orderFilter, pageable);
+        Page<Orders> ordersPage = ordersRepo.findAll(orderFilter,pageable);
+        List<OrdersDisplayDTO> ordersDisplayDTOList = new ArrayList<>();
+        ordersPage.forEach(orders -> {
+            OrdersDisplayDTO ordersDisplayDTO= new OrdersDisplayDTO();
+            ordersDisplayDTO.setOrderId(orders.getOrderId());
+            ordersDisplayDTO.setCustomerName(orders.getCustomerName());
+            ordersDisplayDTO.setCreatedDate(orders.getCreatedDate());
+            ordersDisplayDTO.setDeliveryFromDate(orders.getDeliveryFromDate());
+            ordersDisplayDTO.setDeliveryToDate(orders.getDeliveryToDate());
+            ordersDisplayDTO.setComments(orders.getComments());
+            ordersDisplayDTO.setZipCode(orders.getZipCode());
+            ordersDisplayDTO.setOrderStatus(orders.getOrderStatus());
+            ordersDisplayDTO.setCategoryId(orders.getCategoryId());
+            ordersDisplayDTO.setServiceId(orders.getServiceId());
+            ordersDisplayDTO.setCategoryName(categoryRepository.getReferenceById(orders.getCategoryId()).getCategoryName());
+            ordersDisplayDTO.setServiceName(serviceRepository.getReferenceById(orders.getServiceId()).getServiceName());
+            String supplier = assignedOrderRepository.findSupplierByOrderId(ordersDisplayDTO.getOrderId());
+            ordersDisplayDTO.setAssignedSupplier((supplier != null)? supplier: "Not assigned");
+            ordersDisplayDTO.setCharge(serviceChargeRepository.findChargeByPriority(orders.getServiceId(),"NORMAL"));
+            ordersDisplayDTO.setImagesList(orders.getImagesList());
+            ordersDisplayDTO.setAmended(orders.isAmended());
+            String reason = null;
+            if(orders.getReasonId()!=0){
+                reason = rejectReasonRepository.getReferenceById(orders.getReasonId()).getReason();
+            }
+            ordersDisplayDTO.setRejectReason(reason);
+            ordersDisplayDTOList.add(ordersDisplayDTO);
+        });
+        OrdersDisplayDTOPage ordersDisplayDTOPage = new OrdersDisplayDTOPage();
+        ordersDisplayDTOPage.setContent(ordersDisplayDTOList);
+        ordersDisplayDTOPage.setPageNumber(ordersPage.getNumber());
+        ordersDisplayDTOPage.setPageSize(ordersPage.getSize());
+        ordersDisplayDTOPage.setTotalPages(ordersPage.getTotalPages());
+        ordersDisplayDTOPage.setTotalElements(ordersPage.getTotalElements());
+        return ordersDisplayDTOPage;
     }
 
     /**

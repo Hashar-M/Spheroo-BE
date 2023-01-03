@@ -11,9 +11,11 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +34,7 @@ import org.supercsv.prefs.CsvPreference;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,6 +45,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.qburst.spherooadmin.constants.CsvHeaderConstants.H1;
@@ -68,6 +72,7 @@ import static com.qburst.spherooadmin.constants.DashboardCsvConstants.SORT_COLUM
 /**
  * Controller for order entity
  */
+@Validated
 @Slf4j
 @RestController
 @RequestMapping("/orders")
@@ -368,21 +373,28 @@ public class OrdersController {
     /**
      * Allows you to search through orders based on the criteria defined in
      * the OrderFilter
-     * @param orderFilter The criteria by which we search for the orders.
+     * @param serviceName Accepts service name.
+     * @param zipCode Accepts zip-code.
+     * @param fromDate Accepts from date.
+     * @param toDate Accepts to date.
      * @param pageNo The page number of the list of orders.
      * @param noOfElements The number of elements to return at a time.
      * @return A Page of orders based on the provided criteria.
      */
     @GetMapping("/search")
-    public ResponseEntity<Page<Orders>> findAllOrdersBySpecification(@RequestBody OrderFilter orderFilter, @RequestParam(defaultValue = "1") int pageNo, @RequestParam(defaultValue = "6") int noOfElements) {
-        if(pageNo<1){
-            throw new WrongDataForActionException("page should not be less than 1");
-        }
-        if(noOfElements<1){
-            throw new WrongDataForActionException("no of elements should be grater than 0");
-        }
+    public ResponseEntity<OrdersDisplayDTOPage> findAllOrdersBySpecification(@RequestParam(defaultValue = "1") @Positive int pageNo, @RequestParam(defaultValue = "6") @Positive int noOfElements,
+                                                                             @RequestParam(value = "service-name") String serviceName,
+                                                                             @RequestParam(value = "zip-code",required = false) String zipCode,
+                                                                             @RequestParam(value = "from-date",required = false) @DateTimeFormat(iso =DateTimeFormat.ISO.DATE) Date fromDate,
+                                                                             @RequestParam(value = "to-date",required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate) {
+        OrderFilter orderFilter = new OrderFilter();
+        orderFilter.setServiceName(serviceName);
+        orderFilter.setZipCode(zipCode);
+        orderFilter.setFromDate(fromDate);
+        orderFilter.setToDate(toDate);
         return new ResponseEntity<>(ordersService.findAllOrdersBySpecification(orderFilter, pageNo-1, noOfElements), HttpStatus.OK);
     }
+
 
     /**
      * This method allows you to import a CSV file straight into the database provided that the
