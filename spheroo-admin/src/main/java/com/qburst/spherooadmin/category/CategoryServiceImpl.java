@@ -33,6 +33,10 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @Transactional
     public void saveCategory(Category category) {
+        saveCategoryData(category);
+    }
+
+    private void saveCategoryData(Category category) {
         try{
             categoryRepository.save(category);
         }catch(DataIntegrityViolationException exception){
@@ -68,7 +72,7 @@ public class CategoryServiceImpl implements CategoryService{
         boolean isExist = categoryRepository.existsById(categoryId);
         if(isExist){
             category.setCategoryId(categoryId);
-            saveCategory(category);
+            saveCategoryData(category);
             List<Long> noReferenceChargeIds = serviceChargeRepository.findNullServiceCharges();
             serviceChargeRepository.deleteAllById(noReferenceChargeIds);
             List<Long> noReferenceServiceIds = serviceRepository.findNullCategoryServices();
