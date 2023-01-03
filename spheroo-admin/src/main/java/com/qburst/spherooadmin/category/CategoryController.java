@@ -3,7 +3,6 @@ package com.qburst.spherooadmin.category;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.qburst.spherooadmin.service.ServiceRepository;
 import com.qburst.spherooadmin.upload.UploadCategoryIconUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,7 +39,6 @@ import java.util.Objects;
 @RequestMapping("/category")
 public class CategoryController {
     private CategoryService categoryService;
-    private final ServiceRepository serviceRepository;
 
     /**
      * Get a category by providing its id.
