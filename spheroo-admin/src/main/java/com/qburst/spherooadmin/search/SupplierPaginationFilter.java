@@ -15,6 +15,11 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qburst.spherooadmin.constants.SpherooConstants.PERCENT_SIGN;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_NAME;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_USERS;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_USER_EMAIL;
+import static com.qburst.spherooadmin.constants.SupplierModelConstants.SUPPLIER_USER_TYPE;
 import static com.qburst.spherooadmin.constants.SupplierModelConstants.VISIBILITY;
 
 /**
@@ -37,12 +42,12 @@ public class SupplierPaginationFilter implements Specification<Supplier> {
             predicates.add(criteriaBuilder.equal(root.get(VISIBILITY), false));
         }
         if(!searchName.isEmpty()){
-            Join<Supplier, SupplierUser> supplierUserJoin= root.join("supplierUsers");
-            Predicate supplierName=criteriaBuilder.and(criteriaBuilder.like(root.get("supplierName"),"%"+searchName+"%"),
-                    criteriaBuilder.equal(supplierUserJoin.get("supplierUserType"), SupplierUserType.MANAGER));
+            Join<Supplier, SupplierUser> supplierUserJoin= root.join(SUPPLIER_USERS);
+            Predicate supplierName=criteriaBuilder.and(criteriaBuilder.like(root.get(SUPPLIER_NAME),PERCENT_SIGN+searchName+PERCENT_SIGN),
+                    criteriaBuilder.equal(supplierUserJoin.get(SUPPLIER_USER_TYPE), SupplierUserType.MANAGER));
 
-            Predicate adminEmail=criteriaBuilder.and(criteriaBuilder.equal(supplierUserJoin.get("supplierUserType"), SupplierUserType.MANAGER),
-                                                            criteriaBuilder.like(supplierUserJoin.get("supplierUserEmail"),"%"+searchName+"%"));
+            Predicate adminEmail=criteriaBuilder.and(criteriaBuilder.equal(supplierUserJoin.get(SUPPLIER_USER_TYPE), SupplierUserType.MANAGER),
+                                                            criteriaBuilder.like(supplierUserJoin.get(SUPPLIER_USER_EMAIL),PERCENT_SIGN+searchName+PERCENT_SIGN));
             Predicate searchPredicate=criteriaBuilder.or(supplierName,adminEmail);
             predicates.add(searchPredicate);
         }
