@@ -5,4 +5,5 @@ public final class SpherooConstants {
     public static final String REGISTRATION_FAILURE_RESPONSE_MESSAGE="email already in use";
     public static final String REGISTRATION_PATH="/registration";
     public static final String SOMETHING_WENT_WRONG="something went wrong";
+    public static final String PERCENT_SIGN="%";
 }
